@@ -18,8 +18,10 @@ import com.revrobotics.SparkPIDController;
 
 public class MotorSubsystem extends SubsystemBase {
   /** Creates a new MotorSubsystem. */
-  // CANSparkFlex motor = new CANSparkFlex(Constants.motorID, MotorType.kBrushless);;
-  // CANSparkFlex motorAngle = new CANSparkFlex(Constants.motorAngleID, MotorType.kBrushless);;
+  
+  /*
+  Initalize each SparkFlex with specific IDs
+  */
   BrushlessSparkFlexController controller1 = new BrushlessSparkFlexController(1);
   BrushlessSparkFlexController controller2 = new BrushlessSparkFlexController(4);
   BrushlessSparkFlexController controller3 = new BrushlessSparkFlexController(7);
@@ -30,6 +32,12 @@ public class MotorSubsystem extends SubsystemBase {
   BrushlessSparkFlexController controller7 = new BrushlessSparkFlexController(8);
   BrushlessSparkFlexController controller8 = new BrushlessSparkFlexController(11);
   
+  /*
+  Without The Line of code below, the vortexs run perfectly fine.
+  Just with the CTRE CANcoder initialized, the issue of quickly
+  switching between brake mode and coast mode, occurs. The same 
+  happens with CTRE Pigeon IMU.
+  */
   CANcoder coder = new CANcoder(3);
   
   public MotorSubsystem() {
