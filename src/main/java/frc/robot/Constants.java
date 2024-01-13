@@ -68,9 +68,9 @@ public final class Constants {
   public static final int rotationRightId = 15;
   public static final int extensionId = 16;
 
-  public static final int wristId = 17;
+  public static final int wristId = 30;
 
-  public static final int intakeId = 18;
+  public static final int intakeId = 31;
   
 
   public static final double baseWidth = 0.4953;
@@ -122,6 +122,10 @@ public final class Constants {
       new Translation2d(-Constants.baseWidth / 2, -Constants.baseLength / 2),
       new Translation2d(Constants.baseWidth / 2, -Constants.baseLength / 2)
     );
+  public static double maxTurretPosition;
+  public static double minTurretPosition;
+  public static double maxWristPos = 0.97 - 0.1;
+  public static double minWristPos = 0.399 + 0.1;
 
   
 

@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -30,6 +32,18 @@ public class Robot extends TimedRobot {
     m_robotContainer = new RobotContainer();
   }
 
+  private final PowerDistribution PDH = new PowerDistribution(Hardware.PDP_ID, ModuleType.kRev);
+  private static Robot instance = null;
+  
+  public static Robot getInstance() {
+		if (instance == null) instance = new Robot();
+		return instance;
+	}
+
+  public double getVoltage() {
+		return /* PDH.getVoltage() */ 12;
+	}
+  
   /**
    * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
    * that you want ran during disabled, autonomous, teleoperated and test.
@@ -68,6 +82,11 @@ public class Robot extends TimedRobot {
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
+    
+  }
+
+  @Override
+  public void teleopExit() {
     
   }
 
