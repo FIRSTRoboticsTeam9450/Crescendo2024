@@ -4,10 +4,15 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.util.motorcontroller.BrushlessSparkFlexController;
 
+import com.ctre.phoenix.sensors.Pigeon2;
+import com.ctre.phoenix.sensors.PigeonIMU;
+import com.ctre.phoenix.sensors.WPI_Pigeon2;
+import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -39,6 +44,10 @@ public class MotorSubsystem extends SubsystemBase {
   happens with CTRE Pigeon IMU.
   */
   CANcoder coder = new CANcoder(3);
+  // CANcoder coder = new CANcoder(3);
+  Talon hello = new Talon(19);
+  // PigeonIMU pigeonIMU = new PigeonIMU(13);
+  
   
   public MotorSubsystem() {
     
