@@ -37,22 +37,17 @@ public class MotorSubsystem extends SubsystemBase {
   BrushlessSparkFlexController controller7 = new BrushlessSparkFlexController(8);
   BrushlessSparkFlexController controller8 = new BrushlessSparkFlexController(11);
   
-  /*
-  Without The Line of code below, the vortexs run perfectly fine.
-  Just with the CTRE CANcoder initialized, the issue of quickly
-  switching between brake mode and coast mode, occurs. The same 
-  happens with CTRE Pigeon IMU.
+  /* <!---- IMPORTANT ----!>
+  Without the two line of code below, the vortexs run perfectly fine.
+  However, with the CTRE CANcoder initialized or the CTRE PigeonIMU, 
+  the issue of the vortexes switching between brake mode and 
+  coast mode occurs.
   */
   CANcoder coder = new CANcoder(3);
-  // CANcoder coder = new CANcoder(3);
-  Talon hello = new Talon(19);
-  // PigeonIMU pigeonIMU = new PigeonIMU(13);
+  PigeonIMU pigeonIMU = new PigeonIMU(13);
   
   
-  public MotorSubsystem() {
-    
-
-  } 
+  public MotorSubsystem() {} 
 
   
   public void runMotor(double power) {
