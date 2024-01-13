@@ -2,7 +2,6 @@ package swervelib.motors;
 
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkFlex;
-import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -68,9 +67,9 @@ public class SparkFlexSwerve extends SwerveMotor
   }
 
   /**
-   * Initialize the {@link SwerveMotor} as a {@link CANSparkMax} connected to a Brushless Motor.
+   * Initialize the {@link SwerveMotor} as a {@link CANSparkFlex} connected to a Brushless Motor.
    *
-   * @param id           CAN ID of the SparkMax.
+   * @param id           CAN ID of the SparkFlex.
    * @param isDriveMotor Is the motor being initialized a drive motor?
    */
   public SparkFlexSwerve(int id, boolean isDriveMotor)
@@ -301,6 +300,7 @@ public class SparkFlexSwerve extends SwerveMotor
   public void setMotorBrake(boolean isBrakeMode)
   {
     configureSparkFlex(() -> motor.setIdleMode(isBrakeMode ? IdleMode.kBrake : IdleMode.kCoast));
+    
   }
 
   /**

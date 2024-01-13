@@ -3,7 +3,6 @@ package swervelib.encoders;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVLibError;
 import com.revrobotics.SparkAnalogSensor;
-import com.revrobotics.SparkAnalogSensor;
 import com.revrobotics.SparkAnalogSensor.Mode;
 import edu.wpi.first.wpilibj.DriverStation;
 import java.util.function.Supplier;
