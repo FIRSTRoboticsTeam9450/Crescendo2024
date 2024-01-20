@@ -40,9 +40,8 @@ public class ClimbSubsystem extends SubsystemBase {
   SparkAbsoluteEncoder wristEncoder;
   CANSparkMax climb;
   RelativeEncoder encoder;
-  Double target;
-  PIDController climbController = new PIDController(0.5, 0, 0);
-  
+  PIDController climbController;
+
   /* <!---- IMPORTANT ----!>
   Without the two line of code below, the vortexs run perfectly fine.
   However, with the CTRE CANcoder initialized or the CTRE PigeonIMU, 
@@ -54,11 +53,12 @@ public class ClimbSubsystem extends SubsystemBase {
   public ClimbSubsystem() {
     climb = new CANSparkMax(25, MotorType.kBrushless);
     encoder = climb.getEncoder();
+    encoder.setPosition(0);
+    climbController = new PIDController(0.5, 0, 0);
+    climbController.setSetpoint(90);
 
     wrist = new CANSparkFlex(30, MotorType.kBrushless);
     wristEncoder = wrist.getAbsoluteEncoder(com.revrobotics.SparkAbsoluteEncoder.Type.kDutyCycle);
-
-    target = 10.0;
   } 
 
   
@@ -71,12 +71,15 @@ public class ClimbSubsystem extends SubsystemBase {
   }
 
   public void setTargetPosition(double position) {
-    target = position;
+    climbController.setSetpoint(position);
   }
 
   public void updatePID() {
-    double power = climbController.calculate(getPosition(), target);
-    power = MathUtil.clamp(power, 0, 2);
+    System.out.println("Running!");
+    double power = climbController.calculate(getPosition());
+    power = MathUtil.clamp(power, -12, 12);
+    SmartDashboard.putNumber("Climb power", power);
+    //power = -1;
     runMotor(power);
   }
 
@@ -85,5 +88,8 @@ public class ClimbSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Climb pos", getPosition());
     SmartDashboard.putNumber("Wrist Encoder", wristEncoder.getPosition());
+    SmartDashboard.putNumber("Target", climbController.getSetpoint());
+    SmartDashboard.putNumber("Error", climbController.getPositionError());
+
   }
 }

@@ -10,6 +10,7 @@ import frc.robot.commands.MotorCommand;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.MotorSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -22,7 +23,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
 
-  private final ClimbSubsystem ClimbSubsystem = new ClimbSubsystem();
+  private final ClimbSubsystem climbSubsystem = new ClimbSubsystem();
   // private final DrivebaseSubsystem driveTest = new DrivebaseSubsystem(0);
   // private final DriveCommand driveCommand = new DriveCommand(driveSubsystem);
 
@@ -35,9 +36,8 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the trigger bindings
    //driveSubsystem.setDefaultCommand(driveCommand);
-    Command climbCommand = new ClimbCommand(ClimbSubsystem);
-
-    ClimbSubsystem.setDefaultCommand(climbCommand);
+    Command climbCommand = new ClimbCommand(climbSubsystem, m_driverController);
+    climbSubsystem.setDefaultCommand(climbCommand);
     configureBindings();
   }
 
