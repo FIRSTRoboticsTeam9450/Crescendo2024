@@ -2,17 +2,17 @@
   "drive": {
     "type": "sparkflex",
     "id": 1,
-    "canbus": null
+    "canbus": "rio"
   },
   "angle": {
     "type": "sparkflex",
     "id": 2,
-    "canbus": null
+    "canbus": "rio"
   },
   "encoder": {
     "type": "cancoder",
     "id": 3,
-    "canbus": null
+    "canbus": "rio"
   },
   "inverted": {
     "drive": false,
