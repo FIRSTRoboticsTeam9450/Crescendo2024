@@ -43,8 +43,8 @@ public class MotorSubsystem extends SubsystemBase {
   the issue of the vortexes switching between brake mode and 
   coast mode occurs.
   */
-  CANcoder coder = new CANcoder(3);
-  PigeonIMU pigeonIMU = new PigeonIMU(13);
+  // CANcoder coder = new CANcoder(3);
+  // PigeonIMU pigeonIMU = new PigeonIMU(13);
   
   
   public MotorSubsystem() {} 
