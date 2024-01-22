@@ -47,7 +47,7 @@ public class MotorSubsystem extends SubsystemBase {
   // PigeonIMU pigeonIMU = new PigeonIMU(13);
   
   
-  public MotorSubsystem() {} 
+  public MotorSubsystem() {}
 
   
   public void runMotor(double power) {
