@@ -45,12 +45,12 @@ public class ArmSubsystem extends SubsystemBase{
     private CANSparkMax extensionMotor = new CANSparkMax(Constants.extensionId, com.revrobotics.CANSparkLowLevel.MotorType.kBrushless);
     
     
-    private final ProfiledPIDController rotation = new ProfiledPIDController(6.1, 0, 0, new Constraints(1, 0.5));//maxVel = 3.5 and maxAccel = 2.5
-    private final ArmFeedforward rotationFF = new ArmFeedforward(0, 0.027, 0.00001); //0.027, 0.00001
-    private final ArmFeedforward rotationExtendedFF = new ArmFeedforward(0, 0.03, 0.00001);
+    private final ProfiledPIDController armPid = new ProfiledPIDController(6.1, 0, 0, new Constraints(1, 0.5));//maxVel = 3.5 and maxAccel = 2.5
+    private final ArmFeedforward armFF = new ArmFeedforward(0, 0.027, 0.00001); //0.027, 0.00001
+    private final ArmFeedforward armExtendedFF = new ArmFeedforward(0, 0.03, 0.00001);
 
     //Extension
-    private final PIDController extension = new PIDController(0.37, 0,0);
+    private final PIDController extensionPid = new PIDController(0.37, 0,0);
 
     private PIDController pid = new PIDController(0.1, 0, 0), downPID = new PIDController(0.0085, 0, 0);
     
@@ -62,94 +62,31 @@ public class ArmSubsystem extends SubsystemBase{
 
 
     public ArmSubsystem(){
-        //leftMotor.setSmartCurrentLimit(40);
+        armMotor.restoreFactoryDefaults();
+        extensionMotor.restoreFactoryDefaults();
+
         armMotor.setSmartCurrentLimit(40);
+        extensionMotor.setSmartCurrentLimit(40);
         armMotor.setIdleMode(IdleMode.kBrake);
         extensionMotor.setIdleMode(IdleMode.kBrake);
 
         extensionMotor.getEncoder().setPosition(0);
-
-        // leftMotor.restoreFactoryDefaults();
-       
-
-
-        // leftMotor.setIdleMode(IdleMode.kCoast);
         
-        
-        //leftMotor.setInverted(true);  
-        //rightMotor.setInverted(false);  
-
-        //extensionMotor.setIdleMode(IdleMode.kBrake);
-        
-        //Might need this line
-        //intake.setIdleMode(IdleMode.kBrake);
-        
-        //leftMotor.getEncoder().setVelocityConversionFactor();
-        // 144 revolutions of motor to 1 rev of arm
-        // 360 / 144 = 2.5 degrees / arm revolution
-        // 360 / 120 = 3 degrees / wrist revolution
-        
-        //leftMotor.setInverted(false);
-        // leftMotor.getEncoder().setPosition(0);
-        
-
-
-        //timer.start();
-        
-        
-        //setWristGoal(0);
-        // if (intialization) {
         armMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 300);   //For follower motors
         armMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 65535); //Analog Sensor Voltage + Velocity + position
         armMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 65535); //Duty cycler velocity + pos
-        //rightMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 65535);        //Duty Cycle Absolute Encoder Position and Abs angle
         armMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 65535); //Duty Cycle Absolute Encoder Velocity + Frequency
 
-        
+        armPid.reset(getArmPosition());
         
         setArmGoal(0.53);
-
-    }
-
-    public double getPosition(){
-        return absEncoder.get();
-    }
-
-    
-
-    public void initialize(){
-        armMotor.restoreFactoryDefaults();
-        extensionMotor.restoreFactoryDefaults();
-
-
-        extensionMotor.setIdleMode(IdleMode.kCoast);
-        extensionMotor.getEncoder().setPosition(0);
-        
-
-        
-        armMotor.setIdleMode(IdleMode.kBrake);
-
-        //wristMotor.getEncoder().setPosition(0);
-
-        //wrist.reset(getWristAngle());
-        rotation.reset(getPosition());
-        //setWristGoal(0);
-
-        //initialSetWristEncoder();
-           
-        setArmGoal(0.285);
         setExtensionGoal(1);
 
     }
-    
 
-   
-
-  
-
-
-
-
+    public double getArmPosition(){
+        return absEncoder.get();
+    }
 
     // private double getLeftPosition(){
     //     return leftMotor.getEncoder().getPosition() * -2.5 * Math.PI / 180;
@@ -202,19 +139,19 @@ public class ArmSubsystem extends SubsystemBase{
     }
 
     public double getGoal(){
-        return rotation.getGoal().position;
+        return armPid.getGoal().position;
     }
 
     public double calculateRotationPID(){
-        return rotation.calculate(getPosition(), armTarget);
+        return armPid.calculate(getArmPosition(), armTarget);
     }
     
     public double calculateExtensionPID(){
-        return extension.calculate(getExtensionPosition(), extensionTarget);
+        return extensionPid.calculate(getExtensionPosition(), extensionTarget);
     }
 
     public double calculateExtensionFF() {
-        return (-1 * Math.abs((1.44 * getPosition()) - 0.7632)) + 0.135;
+        return (-1 * Math.abs((1.44 * getArmPosition()) - 0.7632)) + 0.135;
     }
 
     public void updateExtensionOutput(){
@@ -260,10 +197,10 @@ public class ArmSubsystem extends SubsystemBase{
 
     public double calculateRotationFF(){
         if(extensionTarget == 30){
-            return rotationExtendedFF.calculate(getPosition(), rotation.getSetpoint().velocity);
+            return armExtendedFF.calculate(getArmPosition(), armPid.getSetpoint().velocity);
         }
 
-        return rotationFF.calculate(getPosition(), rotation.getSetpoint().velocity);
+        return armFF.calculate(getArmPosition(), armPid.getSetpoint().velocity);
 
         
     }
@@ -284,11 +221,11 @@ public class ArmSubsystem extends SubsystemBase{
 
         }else{
             setArmVoltage(0);
-           
+            setExtensionVoltage(0);
         }
         // SmartDashboard.putNumber("LeftPosition", getLeftPosition());
-        // SmartDashboard.putNumber("Right Arm Position", getPosition());
-        // SmartDashboard.putNumber("Target", armTarget);
+        SmartDashboard.putNumber("Arm Position", getArmPosition());
+        SmartDashboard.putNumber("Target", armTarget);
         SmartDashboard.putNumber("Extension Position", getExtensionPosition());
         SmartDashboard.putNumber("Extension Target", extensionTarget);
 
