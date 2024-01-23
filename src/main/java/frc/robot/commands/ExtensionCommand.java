@@ -4,26 +4,29 @@
 
 package frc.robot.commands;
 
+
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ArmWristSubsystem;
+import frc.robot.subsystems.ExtensionSubsystem;
 
-public class ArmWristCommand extends Command {
+public class ExtensionCommand extends Command {
   /** Creates a new WristIntakeCommand. */
-  private ArmWristSubsystem armWrist;
-  private double armTarget, wristTarget;
+  private ExtensionSubsystem extension;
+  private double extensionTarget;
 
-  public ArmWristCommand(ArmWristSubsystem armWrist, double armTarget, double wristTarget){
+  public ExtensionCommand(ExtensionSubsystem extension, double extensionTarget){
     // Use addRequirements() here to declare subsystem dependencies.
-    this.armWrist = armWrist;
-    this.armTarget = armTarget;
-    this.wristTarget = wristTarget;
-    addRequirements(armWrist);
+    this.extension = extension;
+    this.extensionTarget = extensionTarget;
+    addRequirements(extension);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    armWrist.setArmWristGoal(armTarget, wristTarget);
+
+    //Need to figure out how to pass arm value into this so that the FF works
+    extension.setExtensionGoal(extensionTarget);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

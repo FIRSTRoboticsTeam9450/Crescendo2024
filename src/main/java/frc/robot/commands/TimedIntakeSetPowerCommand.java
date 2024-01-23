@@ -4,31 +4,43 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ArmWristSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 
-public class ArmWristCommand extends Command {
+public class TimedIntakeSetPowerCommand extends Command {
   /** Creates a new WristIntakeCommand. */
-  private ArmWristSubsystem armWrist;
-  private double armTarget, wristTarget;
+  private IntakeSubsystem intake;
+  private double voltage, seconds;
+  private boolean finished;
+  Timer time;
 
-  public ArmWristCommand(ArmWristSubsystem armWrist, double armTarget, double wristTarget){
+  public TimedIntakeSetPowerCommand(IntakeSubsystem intake, double voltage, double seconds){
     // Use addRequirements() here to declare subsystem dependencies.
-    this.armWrist = armWrist;
-    this.armTarget = armTarget;
-    this.wristTarget = wristTarget;
-    addRequirements(armWrist);
+    this.intake = intake;
+    this.voltage = voltage;
+    time = new Timer();
+    addRequirements(intake);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    armWrist.setArmWristGoal(armTarget, wristTarget);
+    time.reset();
+    time.start();
+    finished = false;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    if(time.get() < seconds){
+        intake.setIntakeVoltage(voltage);
+    }else{
+        intake.setIntakeVoltage(0);
+        finished = true;
+    }
 
   }
 
@@ -41,6 +53,6 @@ public class ArmWristCommand extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return true;
+    return finished;
   }
 }
