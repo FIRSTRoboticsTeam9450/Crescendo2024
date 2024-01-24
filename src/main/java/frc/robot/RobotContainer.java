@@ -89,7 +89,7 @@ public class RobotContainer
         drivebase,
         () -> MathUtil.applyDeadband(driverController.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
         () -> MathUtil.applyDeadband(driverController.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
-        () -> driverController.getRawAxis(2), () -> true); // change the int in the parameter to the appropriate axis
+        () -> driverController.getRawAxis(4), () -> true); // change the int in the parameter to the appropriate axis
 
     drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simClosedFieldRel : closedFieldRel);
     
