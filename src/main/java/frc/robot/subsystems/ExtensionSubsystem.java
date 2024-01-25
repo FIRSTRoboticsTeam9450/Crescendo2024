@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkBase.IdleMode;
+import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.math.MathUtil;
@@ -27,6 +28,15 @@ public class ExtensionSubsystem extends SubsystemBase{
         extensionMotor.setSmartCurrentLimit(40);
 
         extensionMotor.setIdleMode(IdleMode.kBrake);
+        //If we use data port on extesnion, make sure to comment  the lines kstauts3-6
+        extensionMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 300);   //For follower motors
+        extensionMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 65535); // For Motor Position
+        extensionMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 65535); //Analog Sensor Voltage + Velocity + position
+        extensionMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 65535); //Duty cycler velocity + pos
+        extensionMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 65535); //Duty Cycle Absolute Encoder Position and Abs angle
+        extensionMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 65535); //Duty Cycle Absolute Encoder Velocity + Frequency
+
+
         extensionMotor.getEncoder().setPosition(0);
 
         setExtensionGoal(1);

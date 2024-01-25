@@ -8,6 +8,7 @@ import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
 import com.revrobotics.SparkAbsoluteEncoder;
 
@@ -42,11 +43,32 @@ public class WristIntakeSubsystem extends SubsystemBase {
 
   /* Constructor -> creates new WristIntakeSubsystem */
   public WristIntakeSubsystem() {
+
+    /* Status frames 3-6 set to 65535 if not using data port in spark max otherwise can prob leave them all alone*/
     wrist.setIdleMode(IdleMode.kBrake);
+    wrist.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 300);   //For follower motors
+    //wrist.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 65535); //Analog Sensor Voltage + Velocity + position
+    //wrist.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 65535); //Duty cycler velocity + pos
+    //wrist.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 50); //Duty Cycle Absolute Encoder Position and Abs angle
+    //wrist.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 65535); //Duty Cycle Absolute Encoder Velocity + Frequency
+   
     intake.setIdleMode(IdleMode.kBrake);
+    //intake.setSmartCurrentLimit(20);
+    intake.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 300);   //For follower motors
+    intake.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 65535); // For Motor Position
+    intake.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 65535); //Analog Sensor Voltage + Velocity + position
+    intake.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 65535); //Duty cycler velocity + pos
+    intake.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 50); //Duty Cycle Absolute Encoder Position and Abs angle
+    intake.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 65535); //Duty Cycle Absolute Encoder Velocity + Frequency
+    
+    intake.burnFlash();
+    wrist.burnFlash();
+    
     wristPIDRun = false;
     wristBrakeToggle = false;
     isIntaking = false;
+
+    
   }
 
 
