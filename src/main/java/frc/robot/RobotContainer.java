@@ -6,6 +6,7 @@ package frc.robot;
 
 
 import frc.robot.commands.MotorCommand;
+import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.MotorSubsystem;
 import frc.robot.subsystems.WristIntakeSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -25,10 +26,11 @@ public class RobotContainer {
   private final MotorSubsystem driveSubsystem = new MotorSubsystem();
   private final MotorCommand driveCommand = new MotorCommand(driveSubsystem);
   private final WristIntakeSubsystem wristIntake = new WristIntakeSubsystem();
+  private final ArmSubsystem armSubsystem = new ArmSubsystem();
   // private final DrivebaseSubsystem driveTest = new DrivebaseSubsystem(0);
   // private final DriveCommand driveCommand = new DriveCommand(driveSubsystem);
 
-
+// can't terminate on vortex, can't have more than 10 vortexs, and a sparkflex motorcontroller randomly stopped working
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController controller =
       new CommandXboxController(0);
