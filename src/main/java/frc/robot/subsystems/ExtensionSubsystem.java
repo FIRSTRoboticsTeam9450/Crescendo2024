@@ -61,6 +61,7 @@ public class ExtensionSubsystem extends SubsystemBase{
         return extensionPid.calculate(getExtensionPosition(), extensionTarget);
     }
 
+    
     public void updateExtensionOutput(){
         double ffValue = calculateExtensionFF();
         SmartDashboard.putNumber("Extension FF", ffValue);

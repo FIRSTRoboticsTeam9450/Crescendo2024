@@ -5,8 +5,10 @@
 package frc.robot;
 
 
+import frc.robot.commands.ArmWristCommand;
 import frc.robot.commands.MotorCommand;
 import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.ArmWristSubsystem;
 import frc.robot.subsystems.MotorSubsystem;
 import frc.robot.subsystems.WristIntakeSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -26,7 +28,7 @@ public class RobotContainer {
   private final MotorSubsystem driveSubsystem = new MotorSubsystem();
   private final MotorCommand driveCommand = new MotorCommand(driveSubsystem);
   private final WristIntakeSubsystem wristIntake = new WristIntakeSubsystem();
-  private final ArmSubsystem armSubsystem = new ArmSubsystem();
+  private final ArmWristSubsystem armWristSubsystem = new ArmWristSubsystem();
   // private final DrivebaseSubsystem driveTest = new DrivebaseSubsystem(0);
   // private final DriveCommand driveCommand = new DriveCommand(driveSubsystem);
 
@@ -54,7 +56,12 @@ public class RobotContainer {
     controller.leftBumper().onTrue(new InstantCommand( () -> wristIntake.setIntakePower(-0.5) ));
     controller.leftBumper().onFalse(new InstantCommand( () -> wristIntake.stopIntake() ));
 
+    /* arm */
+    controller.b().onTrue(new ArmWristCommand(armWristSubsystem, 0, 0));
+    controller.povDown().onTrue(new ArmWristCommand(armWristSubsystem, 0, 0));
 
+    /* extension */
+    
     configureBindings();
   }
 
