@@ -15,7 +15,7 @@ public class ExtensionSubsystem extends SubsystemBase{
     private double extensionTarget = 1;
 
     private CANSparkMax extensionMotor = new CANSparkMax(Constants.extensionId, com.revrobotics.CANSparkLowLevel.MotorType.kBrushless);
-    private boolean runStuff = true;
+    private boolean runStuff = false;
 
 
     private final PIDController extensionPid = new PIDController(0.37, 0,0);

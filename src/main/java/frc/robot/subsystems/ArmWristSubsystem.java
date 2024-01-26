@@ -29,7 +29,7 @@ public class ArmWristSubsystem extends SubsystemBase{
     }
     private Height currentHeight = Height.GROUND;
 
-    private double armTarget = 0.53;
+    private double armTarget = 0.453;//0.53;
 
     boolean wristBrakeToggle;
     boolean wristPIDRun;
@@ -53,7 +53,7 @@ public class ArmWristSubsystem extends SubsystemBase{
   // if absolute encoder plugged into cansparkmax:
     //CANSparkMax wristmax = new CANSparkMax(Constants.wristId, MotorType.kBrushless);
     SparkAbsoluteEncoder wristEncoder = wrist.getAbsoluteEncoder(Type.kDutyCycle);
-    
+    SparkAbsoluteEncoder armEncoder = armMotor.getAbsoluteEncoder(Type.kDutyCycle);
     private final ProfiledPIDController armPid = new ProfiledPIDController(6.1, 0, 0, new Constraints(1, 0.5));//maxVel = 3.5 and maxAccel = 2.5
     private final ArmFeedforward armFF = new ArmFeedforward(0, 0.027, 0.00001); //0.027, 0.00001
     private final ArmFeedforward armExtendedFF = new ArmFeedforward(0, 0.03, 0.00001);
@@ -98,12 +98,15 @@ public class ArmWristSubsystem extends SubsystemBase{
         
         armMotor.burnFlash();
         wrist.burnFlash();
-        //setArmGoal(0.53);
+        setArmGoal(0.453);
 
     }
 
     public double getArmPosition(){
         return absEncoder.get();
+    }
+    public double getAbsArmPos(){
+        return armEncoder.getPosition();
     }
 
     // private double getLeftPosition(){
@@ -159,7 +162,8 @@ public class ArmWristSubsystem extends SubsystemBase{
     }
 
     public double calculateRotationPID(){
-        return armPid.calculate(getArmPosition(), armTarget);
+        //return armPid.calculate(getArmPosition(), armTarget);
+        return armPid.calculate(getAbsArmPos(), armTarget);
     }
     
     
@@ -195,8 +199,8 @@ public class ArmWristSubsystem extends SubsystemBase{
         //     return armExtendedFF.calculate(getArmPosition(), armPid.getSetpoint().velocity);
         // }
 
-        return armFF.calculate(getArmPosition(), armPid.getSetpoint().velocity);
-
+        //return armFF.calculate(getArmPosition(), armPid.getSetpoint().velocity);
+        return armFF.calculate(getAbsArmPos(), armPid.getSetpoint().velocity);
         
     }
     
@@ -208,16 +212,16 @@ public class ArmWristSubsystem extends SubsystemBase{
     @Override
     public void periodic(){
         if(runStuff){
-            //updateRotationOutput();
-            //updateWristPos();
+            updateRotationOutput();
+           // updateWristPos();
 
 
         
         }else{
-            //setArmVoltage(0);
+            setArmVoltage(0);
         }
         //SmartDashboard.putNumber("LeftPosition", getLeftPosition());
-        SmartDashboard.putNumber("Arm Position", getArmPosition());
+        SmartDashboard.putNumber("Arm Position", getAbsArmPos());
         SmartDashboard.putNumber("Target", armTarget);
         SmartDashboard.putNumber("Wrist Pos", getWristAbsPos());
         SmartDashboard.putBoolean("Wrist is Brake", wrist.getIdleMode() == IdleMode.kBrake ? true : false);

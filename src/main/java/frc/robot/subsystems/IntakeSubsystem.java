@@ -28,7 +28,7 @@ public class IntakeSubsystem extends SubsystemBase {
   /* Constructor -> creates new WristIntakeSubsystem */
   public IntakeSubsystem() {
     
-    intake.setIdleMode(IdleMode.kBrake);
+    intake.setIdleMode(IdleMode.kCoast);
     //intake.setSmartCurrentLimit(20);
     intake.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 300);   //For follower motors
     intake.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 65535); // For Motor Position
