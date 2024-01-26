@@ -27,7 +27,7 @@ public class RobotContainer {
   // private final DrivebaseSubsystem driveTest = new DrivebaseSubsystem(0);
   // private final DriveCommand driveCommand = new DriveCommand(driveSubsystem);
 
-
+// can't terminate on vortex, can't have more than 10 vortexs, and a sparkflex motorcontroller randomly stopped working
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController controller =
       new CommandXboxController(0);
@@ -50,7 +50,16 @@ public class RobotContainer {
     // controller.leftBumper().onTrue(new InstantCommand( () -> wristIntake.setIntakePower(-0.5) ));
     // controller.leftBumper().onFalse(new InstantCommand( () -> wristIntake.stopIntake() ));
     
+    // /* outtake */
+    // controller.leftBumper().onTrue(new InstantCommand( () -> wristIntake.setIntakePower(-0.5) ));
+    // controller.leftBumper().onFalse(new InstantCommand( () -> wristIntake.stopIntake() ));
 
+    // /* arm */
+    // controller.b().onTrue(new ArmWristCommand(armWristSubsystem, 0, 0));
+    // controller.povDown().onTrue(new ArmWristCommand(armWristSubsystem, 0, 0));
+
+    // /* extension */
+    
     configureBindings();
   }
 
