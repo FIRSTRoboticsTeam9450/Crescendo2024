@@ -64,12 +64,12 @@ public final class Constants {
 
   public static final int gyroId = 13;
 
-  public static final int armId = 15;
-  public static final int extensionId = 16;
+  public static final int armId = 22;
+  public static final int extensionId = 23;
 
-  public static final int wristId = 30;
+  public static final int wristId = 24;
 
-  public static final int intakeId = 31;
+  public static final int intakeId = 25;
   
 
   public static final double baseWidth = 0.4953;

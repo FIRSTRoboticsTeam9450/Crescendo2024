@@ -38,8 +38,8 @@ public class ExtensionSubsystem extends SubsystemBase{
 
 
         extensionMotor.getEncoder().setPosition(0);
-
-        setExtensionGoal(1);
+        extensionMotor.burnFlash();
+        //setExtensionGoal(1);
 
 
     }

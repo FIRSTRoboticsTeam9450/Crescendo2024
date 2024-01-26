@@ -1,24 +1,20 @@
 package frc.robot.subsystems;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.SparkAbsoluteEncoder;
-import com.revrobotics.SparkAbsoluteEncoder.Type;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.SparkAbsoluteEncoder;
+import com.revrobotics.SparkAbsoluteEncoder.Type;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -43,8 +39,8 @@ public class ArmWristSubsystem extends SubsystemBase{
     //public CANSparkMax intake = new CANSparkMax(Constants.intakeId, MotorType.kBrushless);
 
     // private CANSparkMax leftMotor = new CANSparkMax(Constants.rotationLeftId,MotorType.kBrushless);
-    private CANSparkMax armMotor = new CANSparkMax(Constants.armId, com.revrobotics.CANSparkLowLevel.MotorType.kBrushless);
-    private CANSparkFlex wrist = new CANSparkFlex(Constants.wristId, MotorType.kBrushless);
+    private CANSparkMax armMotor = new CANSparkMax(Constants.armId, MotorType.kBrushless);
+    private CANSparkMax wrist = new CANSparkMax(Constants.wristId, MotorType.kBrushless);
 
     
     
@@ -55,8 +51,8 @@ public class ArmWristSubsystem extends SubsystemBase{
 
     /* Absolute Encoder */
   // if absolute encoder plugged into cansparkmax:
-    CANSparkMax wristmax = new CANSparkMax(29, MotorType.kBrushless);
-    SparkAbsoluteEncoder wristEncoder = wristmax.getAbsoluteEncoder(Type.kDutyCycle);
+    //CANSparkMax wristmax = new CANSparkMax(Constants.wristId, MotorType.kBrushless);
+    SparkAbsoluteEncoder wristEncoder = wrist.getAbsoluteEncoder(Type.kDutyCycle);
     
     private final ProfiledPIDController armPid = new ProfiledPIDController(6.1, 0, 0, new Constraints(1, 0.5));//maxVel = 3.5 and maxAccel = 2.5
     private final ArmFeedforward armFF = new ArmFeedforward(0, 0.027, 0.00001); //0.027, 0.00001
@@ -87,13 +83,22 @@ public class ArmWristSubsystem extends SubsystemBase{
         // armMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 65535); //Duty cycler velocity + pos
         // armMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 65535); //Duty Cycle Absolute Encoder Velocity + Frequency
 
+        /* Status frames 3-6 set to 65535 if not using data port in spark max otherwise can prob leave them all alone*/
+        wrist.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 300);   //For follower motors
+        //wrist.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 65535); //Analog Sensor Voltage + Velocity + position
+        //wrist.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 65535); //Duty cycler velocity + pos
+        //wrist.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 50); //Duty Cycle Absolute Encoder Position and Abs angle
+        //wrist.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 65535); //Duty Cycle Absolute Encoder Velocity + Frequency
+    
         armPid.reset(getArmPosition());
 
         wrist.setIdleMode(IdleMode.kBrake);
         wristPIDRun = false;
         wristBrakeToggle = false;
         
-        setArmGoal(0.53);
+        armMotor.burnFlash();
+        wrist.burnFlash();
+        //setArmGoal(0.53);
 
     }
 
@@ -202,22 +207,20 @@ public class ArmWristSubsystem extends SubsystemBase{
 
     @Override
     public void periodic(){
-        
         if(runStuff){
-            updateRotationOutput();
-            updateWristPos();
+            //updateRotationOutput();
+            //updateWristPos();
 
 
         
         }else{
-            setArmVoltage(0);
+            //setArmVoltage(0);
         }
-        // SmartDashboard.putNumber("LeftPosition", getLeftPosition());
+        //SmartDashboard.putNumber("LeftPosition", getLeftPosition());
         SmartDashboard.putNumber("Arm Position", getArmPosition());
         SmartDashboard.putNumber("Target", armTarget);
         SmartDashboard.putNumber("Wrist Pos", getWristAbsPos());
         SmartDashboard.putBoolean("Wrist is Brake", wrist.getIdleMode() == IdleMode.kBrake ? true : false);
-
 
         
 

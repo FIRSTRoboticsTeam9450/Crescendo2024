@@ -32,7 +32,6 @@ public class Robot extends TimedRobot {
     m_robotContainer = new RobotContainer();
   }
 
-  private final PowerDistribution PDH = new PowerDistribution(Hardware.PDP_ID, ModuleType.kRev);
   private static Robot instance = null;
   
   public static Robot getInstance() {
@@ -41,7 +40,7 @@ public class Robot extends TimedRobot {
 	}
 
   public double getVoltage() {
-		return /* PDH.getVoltage() */ 12;
+		return 12;
 	}
   
   /**

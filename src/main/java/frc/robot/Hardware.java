@@ -5,7 +5,7 @@ import edu.wpi.first.cscore.UsbCamera;
 public class Hardware {
 	public static final int CAN_TIMEOUT_MS = 20;
 
-	public static final int PDP_ID = 25;
+	public static final int PDP_ID = 30;
 
 	// Drive devices are from range 1-19
 	public static final int DRIVEBASE_FRONT_LEFT_DRIVE_MOTOR = 1,
