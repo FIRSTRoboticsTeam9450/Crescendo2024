@@ -55,7 +55,7 @@ public class ArmWristSubsystem extends SubsystemBase{
     SparkAbsoluteEncoder wristEncoder = wrist.getAbsoluteEncoder(Type.kDutyCycle);
     SparkAbsoluteEncoder armEncoder = armMotor.getAbsoluteEncoder(Type.kDutyCycle);
     private final ProfiledPIDController armPid = new ProfiledPIDController(6.1, 0, 0, new Constraints(1, 0.5));//maxVel = 3.5 and maxAccel = 2.5
-    private final ArmFeedforward armFF = new ArmFeedforward(0, 0.027, 0.00001); //0.027, 0.00001
+    private final ArmFeedforward armFF = new ArmFeedforward(0, 0.1, 20); //0.027, 0.00001
     private final ArmFeedforward armExtendedFF = new ArmFeedforward(0, 0.03, 0.00001);
 
     //Extension
@@ -177,10 +177,12 @@ public class ArmWristSubsystem extends SubsystemBase{
 
     public void updateRotationOutput(){
         double ffValue = calculateRotationFF();
-        double percentOutput = MathUtil.clamp(calculateRotationPID() + ffValue, -1.0, 1.0);
+        double pidValue = calculateRotationPID();
+        double percentOutput = MathUtil.clamp(ffValue, -1, 1);
         double voltage = convertToVolts(percentOutput);
-
+        SmartDashboard.putNumber("percentOutput", percentOutput);
         SmartDashboard.putNumber("Rotation FF", ffValue);
+        SmartDashboard.putNumber("PIDRotate", pidValue);
         SmartDashboard.putNumber("Rotation Voltage", voltage);
         
         
@@ -200,8 +202,8 @@ public class ArmWristSubsystem extends SubsystemBase{
         // }
 
         //return armFF.calculate(getArmPosition(), armPid.getSetpoint().velocity);
-        return armFF.calculate(getAbsArmPos(), armPid.getSetpoint().velocity);
-        
+        //return armFF.calculate(getAbsArmPos(), armPid.getSetpoint().velocity);
+        return armFF.calculate(getAbsArmPos(), 5);
     }
     
 
