@@ -276,7 +276,7 @@ public class SwerveSubsystem extends SubsystemBase
    */
   public Rotation2d getHeading()
   {
-    return swerveDrive.getOdometryHeading();
+    return swerveDrive.getYaw();
   }
 
   /**
