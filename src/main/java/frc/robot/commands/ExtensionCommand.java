@@ -5,6 +5,8 @@
 package frc.robot.commands;
 
 
+import java.util.function.BooleanSupplier;
+
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -16,8 +18,8 @@ public class ExtensionCommand extends Command {
   private ExtensionSubsystem extension;
   private double extensionTarget;
   private ArmWristSubsystem armWristSub;
-  private boolean rightBumper;
-  public ExtensionCommand(ExtensionSubsystem extension, ArmWristSubsystem armWristSub, boolean rightBumper, double extensionTarget){
+  private BooleanSupplier rightBumper;
+  public ExtensionCommand(ExtensionSubsystem extension, ArmWristSubsystem armWristSub, BooleanSupplier rightBumper, double extensionTarget){
     // Use addRequirements() here to declare subsystem dependencies.
     this.extension = extension;
     this.extensionTarget = extensionTarget;
@@ -29,7 +31,9 @@ public class ExtensionCommand extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-
+    if(rightBumper.getAsBoolean()){
+      extension.toggleRun();
+    }
     //Need to figure out how to pass arm value into this so that the FF works
     //extension.setExtensionGoal(extensionTarget);
   }
@@ -37,9 +41,7 @@ public class ExtensionCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(rightBumper){
-      extension.updateExtensionOutput();
-    }
+    
     armWristSub.updateArmFF(extension.getExtensionAbsPosition());
 
   }

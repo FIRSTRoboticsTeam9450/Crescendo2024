@@ -25,7 +25,7 @@ public class ExtensionSubsystem extends SubsystemBase{
     private double hardLowerLimit = 0.89;
     private double hardUpperLimit = 0.145;
 
-    private final PIDController extensionPid = new PIDController(0.37, 0,0);
+    private final PIDController extensionPid = new PIDController(20, 0,0);
 
 
 
@@ -46,6 +46,9 @@ public class ExtensionSubsystem extends SubsystemBase{
 
         extensionMotor.burnFlash();
         setExtensionGoal(0.47);
+
+        SmartDashboard.putNumber("Change Extension Target", 0.47);
+
 
 
     }
@@ -71,12 +74,12 @@ public class ExtensionSubsystem extends SubsystemBase{
     public void updateExtensionOutput(){
         double ffValue = calculateExtensionFF();
         SmartDashboard.putNumber("Extension FF", ffValue);
-        double percentOutput = MathUtil.clamp(calculateExtensionPID(), -1.0, 1.0);
-        SmartDashboard.putNumber("Extension Percent", percentOutput);
+        double voltage = MathUtil.clamp(calculateExtensionPID(), -4.0, 4.0);
+        // SmartDashboard.putNumber("Extension Percent", percentOutput);
 
-        double voltage = 12 * percentOutput;
+        // double voltage = 12 * percentOutput;
 
-        voltage = MathUtil.clamp(voltage /*+ ffValue*/, -6, 6);
+        // voltage = MathUtil.clamp(voltage /*+ ffValue*/, -6, 6);
 
         SmartDashboard.putNumber("Extension Voltage", voltage);
 
@@ -91,6 +94,9 @@ public class ExtensionSubsystem extends SubsystemBase{
         return 0;
     }
 
+    public void toggleRun() {
+        runStuff = !runStuff;
+    }
 
 
     @Override
@@ -104,7 +110,8 @@ public class ExtensionSubsystem extends SubsystemBase{
         
         SmartDashboard.putNumber("Extension Position", getExtensionAbsPosition());
         SmartDashboard.putNumber("Extension Target", extensionTarget);
-
+        extensionTarget = SmartDashboard.getNumber("Change Extension Target", 0.47);
+        setExtensionGoal(extensionTarget);
     }
     
 }

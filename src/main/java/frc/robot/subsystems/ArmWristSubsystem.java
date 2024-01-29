@@ -1,5 +1,8 @@
 package frc.robot.subsystems;
 import com.revrobotics.CANSparkBase.IdleMode;
+
+import java.util.function.DoubleSupplier;
+
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
@@ -29,9 +32,12 @@ public class ArmWristSubsystem extends SubsystemBase{
     }
     private Height currentHeight = Height.GROUND;
 
-    private double armTarget = 0.453;//0.53;
+    
+
+    private double armTarget = 0.295;//0.53;  //.453
     private double hardLowerLimit = 0.08;
     private double hardUpperLimit = 0.51;
+    private double middle = 0.46;
 
     boolean wristBrakeToggle;
     boolean wristPIDRun;
@@ -56,12 +62,12 @@ public class ArmWristSubsystem extends SubsystemBase{
     //CANSparkMax wristmax = new CANSparkMax(Constants.wristId, MotorType.kBrushless);
     SparkAbsoluteEncoder wristEncoder = wrist.getAbsoluteEncoder(Type.kDutyCycle);
     SparkAbsoluteEncoder armEncoder = armMotor.getAbsoluteEncoder(Type.kDutyCycle);
-    private final ProfiledPIDController armPid = new ProfiledPIDController(5, 0, 0, new Constraints(1, 0.5));//maxVel = 3.5 and maxAccel = 2.5
+    private final ProfiledPIDController armPid = new ProfiledPIDController(40, 0, 0, new Constraints(1, 0.5));//maxVel = 3.5 and maxAccel = 2.5
     // extension all the way in kg 0.12(0.89 for ext) 0.19 middle(0.47 for ext pos) and 0.24(0.145 for ext) full extended
     // Equation for this is ffVal = -0.16134 * ExtPos + 0.26427
-    private ArmFeedforward armFF = new ArmFeedforward(0, 0.12,0); //0.027, 0.00001
+    DoubleSupplier armFFkg = () -> 0.065;
+    private ArmFeedforward armFF = new ArmFeedforward(0, 0.065,0); //0.027, 0.00001 => halfway is 0.013505
     private final ArmFeedforward armExtendedFF = new ArmFeedforward(0, 0.03, 0.00001);
-
     //Extension
 
     private PIDController pid = new PIDController(0.1, 0, 0), downPID = new PIDController(0.0085, 0, 0);
@@ -104,6 +110,8 @@ public class ArmWristSubsystem extends SubsystemBase{
         wrist.burnFlash();
         setArmGoal(0.2);
 
+        SmartDashboard.putNumber("Change ArmFF", 0.065);
+
     }
 
     public double getArmPosition(){
@@ -114,7 +122,10 @@ public class ArmWristSubsystem extends SubsystemBase{
     }
     //Janky ff stuff
     public void updateArmFF(double extPosition){
-        armFF = new ArmFeedforward(0, -0.16134 * extPosition + 0.26427 ,0);
+        armFF = new ArmFeedforward(0, -0.16134 * extPosition + armFFkg.getAsDouble() ,0);
+    }
+    public void updateArmFFkg() {
+        armFF = new ArmFeedforward(0, armFFkg.getAsDouble(), 0);
     }
 
     // private double getLeftPosition(){
@@ -186,11 +197,12 @@ public class ArmWristSubsystem extends SubsystemBase{
     
 
     public void updateRotationOutput(){
+        updateArmFFkg();
         double ffValue = calculateRotationFF();
         double pidValue = calculateRotationPID();
-        double percentOutput = MathUtil.clamp(pidValue + ffValue, -1, 1);
-        double voltage = convertToVolts(percentOutput);
-        SmartDashboard.putNumber("percentOutput", percentOutput);
+        double voltage = MathUtil.clamp(pidValue + ffValue, -4, 4);
+        // double voltage = convertToVolts(percentOutput);
+        // SmartDashboard.putNumber("percentOutput", percentOutput);
         SmartDashboard.putNumber("Rotation FF", ffValue);
         SmartDashboard.putNumber("PIDRotate", pidValue);
         SmartDashboard.putNumber("Rotation Voltage", voltage);
@@ -200,9 +212,12 @@ public class ArmWristSubsystem extends SubsystemBase{
             //Technically should set a ff constant negative 
             //Mainly b/c of the limit on the chain rn(if gone can remove this if statment)
             setArmVoltage(0);
-
         }else{
-            setArmVoltage(voltage);
+            if (Math.abs(voltage) < 4) {
+                setArmVoltage(voltage);
+            } else {
+                setArmVoltage(4);
+            }
 
         }
         
@@ -221,7 +236,11 @@ public class ArmWristSubsystem extends SubsystemBase{
 
         //return armFF.calculate(getArmPosition(), armPid.getSetpoint().velocity);
         //return armFF.calculate(getAbsArmPos(), armPid.getSetpoint().velocity);
-        return armFF.calculate(getAbsArmPos(), armPid.getSetpoint().velocity);
+        if (getAbsArmPos() >= 0.46) {
+            return -armFF.calculate(getAbsArmPos(), 0);
+        } else {
+            return armFF.calculate(getAbsArmPos(), 0);
+        }
     }
     
 
@@ -246,8 +265,9 @@ public class ArmWristSubsystem extends SubsystemBase{
         SmartDashboard.putNumber("Wrist Pos", getWristAbsPos());
         SmartDashboard.putBoolean("Wrist is Brake", wrist.getIdleMode() == IdleMode.kBrake ? true : false);
         SmartDashboard.putNumber("Arm Actual Voltage", armMotor.getOutputCurrent()*0.6);
+        SmartDashboard.putNumber("ArmFF kg", armFF.kg);
         
-
+        armFFkg = () -> SmartDashboard.getNumber("Change ArmFF", 0.065);
 
         //SmartDashboard.putNumber("Wrist Error", wrist.getPositionError());
         //SmartDashboard.putNumber("Position Error", rotation.getPositionError());

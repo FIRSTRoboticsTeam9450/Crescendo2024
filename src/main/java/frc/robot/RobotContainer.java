@@ -36,8 +36,10 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
-    extSub.setDefaultCommand(new ExtensionCommand(extSub, armWristSub, controller.rightBumper().getAsBoolean(), 0));
-    
+    extSub.setDefaultCommand(new ExtensionCommand(extSub, armWristSub, () -> controller.rightBumper().getAsBoolean(), 0));
+    // controller.leftBumper().onTrue(new InstantCommand( () -> extSub.setExtensionVoltage(1)));
+    // controller.leftBumper().onFalse(new InstantCommand( () -> extSub.setExtensionVoltage(0)));
+
     /* intake */
     // controller.rightBumper().onTrue(new InstantCommand( () -> wristIntake.intakeNote(0.5) ));
     // controller.rightBumper().onFalse(new InstantCommand( () -> wristIntake.stopIntake() ));
