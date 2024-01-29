@@ -5,6 +5,8 @@
 package frc.robot.commands;
 
 
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ArmWristSubsystem;
 import frc.robot.subsystems.ExtensionSubsystem;
@@ -13,11 +15,14 @@ public class ExtensionCommand extends Command {
   /** Creates a new WristIntakeCommand. */
   private ExtensionSubsystem extension;
   private double extensionTarget;
-
-  public ExtensionCommand(ExtensionSubsystem extension, double extensionTarget){
+  private ArmWristSubsystem armWristSub;
+  private boolean rightBumper;
+  public ExtensionCommand(ExtensionSubsystem extension, ArmWristSubsystem armWristSub, boolean rightBumper, double extensionTarget){
     // Use addRequirements() here to declare subsystem dependencies.
     this.extension = extension;
     this.extensionTarget = extensionTarget;
+    this.armWristSub = armWristSub;
+    this.rightBumper = rightBumper;
     addRequirements(extension);
   }
 
@@ -26,12 +31,16 @@ public class ExtensionCommand extends Command {
   public void initialize() {
 
     //Need to figure out how to pass arm value into this so that the FF works
-    extension.setExtensionGoal(extensionTarget);
+    //extension.setExtensionGoal(extensionTarget);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    if(rightBumper){
+      extension.updateExtensionOutput();
+    }
+    armWristSub.updateArmFF(extension.getExtensionAbsPosition());
 
   }
 

@@ -5,6 +5,7 @@
 package frc.robot;
 
 
+import frc.robot.commands.ExtensionCommand;
 import frc.robot.subsystems.ArmWristSubsystem;
 import frc.robot.subsystems.ExtensionSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -35,7 +36,8 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
-
+    extSub.setDefaultCommand(new ExtensionCommand(extSub, armWristSub, controller.rightBumper().getAsBoolean(), 0));
+    
     /* intake */
     // controller.rightBumper().onTrue(new InstantCommand( () -> wristIntake.intakeNote(0.5) ));
     // controller.rightBumper().onFalse(new InstantCommand( () -> wristIntake.stopIntake() ));
