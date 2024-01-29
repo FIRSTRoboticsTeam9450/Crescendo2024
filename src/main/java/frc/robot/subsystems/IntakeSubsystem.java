@@ -4,26 +4,19 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.SparkAbsoluteEncoder.Type;
-import com.revrobotics.SparkAbsoluteEncoder;
+import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.Robot;
 
 public class IntakeSubsystem extends SubsystemBase {
   /* Initializing Motors */
-  CANSparkFlex intake = new CANSparkFlex(Constants.intakeId, MotorType.kBrushless);
-
+  CANSparkMax intake = new CANSparkMax(Constants.intakeId, MotorType.kBrushless);
   
 
   /* PID/FF */
@@ -35,8 +28,15 @@ public class IntakeSubsystem extends SubsystemBase {
   /* Constructor -> creates new WristIntakeSubsystem */
   public IntakeSubsystem() {
     
-    intake.setIdleMode(IdleMode.kBrake);
-    
+    intake.setIdleMode(IdleMode.kCoast);
+    //intake.setSmartCurrentLimit(20);
+    intake.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 300);   //For follower motors
+    intake.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 65535); // For Motor Position
+    intake.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 65535); //Analog Sensor Voltage + Velocity + position
+    intake.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 65535); //Duty cycler velocity + pos
+    intake.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 50); //Duty Cycle Absolute Encoder Position and Abs angle
+    intake.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 65535); //Duty Cycle Absolute Encoder Velocity + Frequency
+    intake.burnFlash();
     isIntaking = false;
   }
 
@@ -49,7 +49,7 @@ public class IntakeSubsystem extends SubsystemBase {
     /* Telemetry */
     SmartDashboard.putNumber("Intake Pos", getIntakePos());
     SmartDashboard.putNumber("Intake Velocity", getIntakeVelocity());
-    System.out.println(getIntakeVelocity());
+    //System.out.println(getIntakeVelocity());
     
   }
 

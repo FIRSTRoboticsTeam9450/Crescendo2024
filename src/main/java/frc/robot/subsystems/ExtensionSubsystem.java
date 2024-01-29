@@ -1,7 +1,10 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkBase.IdleMode;
+import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.SparkAbsoluteEncoder;
+import com.revrobotics.SparkAbsoluteEncoder.Type;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
@@ -11,11 +14,16 @@ import frc.robot.Constants;
 
 public class ExtensionSubsystem extends SubsystemBase{
 
-    private double extensionTarget = 1;
+    private double extensionTarget = 0.47;
 
     private CANSparkMax extensionMotor = new CANSparkMax(Constants.extensionId, com.revrobotics.CANSparkLowLevel.MotorType.kBrushless);
-    private boolean runStuff = true;
+    private SparkAbsoluteEncoder extEncoder = extensionMotor.getAbsoluteEncoder(Type.kDutyCycle);
 
+    private boolean runStuff = false;
+
+    //Technically starting pos
+    private double hardLowerLimit = 0.89;
+    private double hardUpperLimit = 0.145;
 
     private final PIDController extensionPid = new PIDController(0.37, 0,0);
 
@@ -26,10 +34,18 @@ public class ExtensionSubsystem extends SubsystemBase{
         extensionMotor.restoreFactoryDefaults();
         extensionMotor.setSmartCurrentLimit(40);
 
-        extensionMotor.setIdleMode(IdleMode.kBrake);
-        extensionMotor.getEncoder().setPosition(0);
+        extensionMotor.setIdleMode(IdleMode.kCoast);
+        //If we use data port on extesnion, make sure to comment  the lines kstauts3-6
+        extensionMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 300);   //For follower motors
+        extensionMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 65535); // For Motor Position
+        // extensionMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 65535); //Analog Sensor Voltage + Velocity + position
+        // extensionMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 65535); //Duty cycler velocity + pos
+        // extensionMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 65535); //Duty Cycle Absolute Encoder Position and Abs angle
+        // extensionMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 65535); //Duty Cycle Absolute Encoder Velocity + Frequency
 
-        setExtensionGoal(1);
+
+        extensionMotor.burnFlash();
+        setExtensionGoal(0.47);
 
 
     }
@@ -38,8 +54,8 @@ public class ExtensionSubsystem extends SubsystemBase{
         extensionMotor.setVoltage(voltage);
     }
 
-    public double getExtensionPosition(){  
-        return extensionMotor.getEncoder().getPosition();
+    public double getExtensionAbsPosition(){  
+        return extEncoder.getPosition();
     }
 
     public void setExtensionGoal(double target){
@@ -48,9 +64,10 @@ public class ExtensionSubsystem extends SubsystemBase{
 
 
     public double calculateExtensionPID(){
-        return extensionPid.calculate(getExtensionPosition(), extensionTarget);
+        return extensionPid.calculate(getExtensionAbsPosition(), extensionTarget);
     }
 
+    
     public void updateExtensionOutput(){
         double ffValue = calculateExtensionFF();
         SmartDashboard.putNumber("Extension FF", ffValue);
@@ -70,7 +87,7 @@ public class ExtensionSubsystem extends SubsystemBase{
     }
 
     public double calculateExtensionFF() {
-        //return (-1 * Math.abs((1.44 * getArmPosition()) - 0.7632)) + 0.135;
+        //return (-1 * Math.Abs((1.44 * getArmPosition()) - 0.7632)) + 0.135;
         return 0;
     }
 
@@ -83,10 +100,9 @@ public class ExtensionSubsystem extends SubsystemBase{
 
         }else{
             setExtensionVoltage(0);
-
         }
-
-        SmartDashboard.putNumber("Extension Position", getExtensionPosition());
+        
+        SmartDashboard.putNumber("Extension Position", getExtensionAbsPosition());
         SmartDashboard.putNumber("Extension Target", extensionTarget);
 
     }
