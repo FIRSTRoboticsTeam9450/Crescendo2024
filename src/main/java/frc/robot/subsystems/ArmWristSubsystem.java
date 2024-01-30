@@ -128,6 +128,11 @@ public class ArmWristSubsystem extends SubsystemBase{
         armFF = new ArmFeedforward(0, armFFkg.getAsDouble(), 0);
     }
 
+    // cosine equation FF
+    public double getFFEquationVoltage() {
+        return 0.065 * Math.cos(5.12 * getAbsArmPos() - Math.PI / 4)
+    }
+
     // private double getLeftPosition(){
     //     return leftMotor.getEncoder().getPosition() * -2.5 * Math.PI / 180;
     // }
