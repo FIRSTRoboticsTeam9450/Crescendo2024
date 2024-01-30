@@ -67,9 +67,9 @@ public final class Constants {
   public static final int armId = 22;
   public static final int extensionId = 23;
 
-  public static final int wristId = 24;
+  public static final int wristId = 25;
 
-  public static final int intakeId = 25;
+  public static final int intakeId = 24;
   
 
   public static final double baseWidth = 0.4953;

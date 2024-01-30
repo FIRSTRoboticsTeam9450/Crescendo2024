@@ -52,7 +52,7 @@ public class ArmWristSubsystem extends SubsystemBase{
 
     
     
-    private boolean runStuff = true;
+    private boolean runStuff = false;
 
     private final PIDController wristPIDController = new PIDController(0.9, 0, 0); 
     public SimpleMotorFeedforward wristFeedForward = new SimpleMotorFeedforward(0.00001, 0.00003, 0.00001); 
@@ -85,7 +85,7 @@ public class ArmWristSubsystem extends SubsystemBase{
 
         armMotor.setSmartCurrentLimit(40);
         
-        armMotor.setIdleMode(IdleMode.kBrake);
+        armMotor.setIdleMode(IdleMode.kCoast);
         
         
         armMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 300);   //For follower motors
@@ -102,7 +102,7 @@ public class ArmWristSubsystem extends SubsystemBase{
     
         armPid.reset(getArmPosition());
 
-        wrist.setIdleMode(IdleMode.kBrake);
+        wrist.setIdleMode(IdleMode.kCoast);
         wristPIDRun = false;
         wristBrakeToggle = false;
         
@@ -120,6 +120,10 @@ public class ArmWristSubsystem extends SubsystemBase{
     public double getAbsArmPos(){
         return armEncoder.getPosition();
     }
+    public double getAbsWristPos(){
+        return wristEncoder.getPosition();
+    }
+
     //Janky ff stuff
     public void updateArmFF(double extPosition){
         armFF = new ArmFeedforward(0, -0.16134 * extPosition + armFFkg.getAsDouble() ,0);
@@ -267,7 +271,7 @@ public class ArmWristSubsystem extends SubsystemBase{
         //SmartDashboard.putNumber("LeftPosition", getLeftPosition());
         SmartDashboard.putNumber("Arm Position", getAbsArmPos());
         SmartDashboard.putNumber("Target", armTarget);
-        SmartDashboard.putNumber("Wrist Pos", getWristAbsPos());
+        SmartDashboard.putNumber("Wrist Pos", getAbsWristPos());
         SmartDashboard.putBoolean("Wrist is Brake", wrist.getIdleMode() == IdleMode.kBrake ? true : false);
         SmartDashboard.putNumber("Arm Actual Voltage", armMotor.getOutputCurrent()*0.6);
         SmartDashboard.putNumber("ArmFF kg", armFF.kg);
