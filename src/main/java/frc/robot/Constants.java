@@ -99,9 +99,9 @@ public final class Constants {
   public static final int armId = 22;
   public static final int extensionId = 23;
 
-  public static final int wristId = 24;
+  public static final int wristId = 25;
 
-  public static final int intakeId = 25;
+  public static final int intakeId = 24;
   
 
   public static final double baseWidth = 0.4953;
@@ -158,7 +158,7 @@ public final class Constants {
   public static double maxWristPos = 0.97 - 0.1;
   public static double minWristPos = 0.399 + 0.1;
 
-  
+  public static boolean intakeIsOut = false;
 
   //Width:  19.5in 0.4953m
   //Length: 25.5in 0.6477m

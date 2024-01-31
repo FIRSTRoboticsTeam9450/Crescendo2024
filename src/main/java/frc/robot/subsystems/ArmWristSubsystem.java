@@ -37,8 +37,10 @@ public class ArmWristSubsystem extends SubsystemBase{
     private double armTarget = 0.295;//0.53;  //.453
     private double hardLowerLimit = 0.08;
     private double hardUpperLimit = 0.51;
-    private double middle = 0.46;
-
+    private double armStraightUp = 0.46;
+    private double armBalanced = 0.36;
+    private double armPurpenGround = 0.206;
+    
     boolean wristBrakeToggle;
     boolean wristPIDRun;
 
@@ -85,7 +87,7 @@ public class ArmWristSubsystem extends SubsystemBase{
 
         armMotor.setSmartCurrentLimit(40);
         
-        armMotor.setIdleMode(IdleMode.kBrake);
+        armMotor.setIdleMode(IdleMode.kCoast);
         
         
         armMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 300);   //For follower motors
@@ -102,7 +104,7 @@ public class ArmWristSubsystem extends SubsystemBase{
     
         armPid.reset(getArmPosition());
 
-        wrist.setIdleMode(IdleMode.kBrake);
+        wrist.setIdleMode(IdleMode.kCoast);
         wristPIDRun = false;
         wristBrakeToggle = false;
         
@@ -111,6 +113,7 @@ public class ArmWristSubsystem extends SubsystemBase{
         setArmGoal(0.2);
 
         SmartDashboard.putNumber("Change ArmFF", 0.065);
+        SmartDashboard.putNumber("Change Arm Is Brake", 1);
 
     }
 
@@ -120,13 +123,29 @@ public class ArmWristSubsystem extends SubsystemBase{
     public double getAbsArmPos(){
         return armEncoder.getPosition();
     }
-    //Janky ff stuff
-    public void updateArmFF(double extPosition){
-        armFF = new ArmFeedforward(0, -0.16134 * extPosition + armFFkg.getAsDouble() ,0);
+    public double getAbsWristPos(){
+        return wristEncoder.getPosition();
+    }
+
+   
+    private double extPosition = 0;
+    public void currentExtPos(double extPos){
+        extPosition = extPos;
+    }
+    // for equation, see https://www.desmos.com/calculator/nsax66b2fa
+    public double updateArmFF(){
+        //return (-0.16134 * extPosition + armFFkg.getAsDouble());
+        return -0.56966* extPosition + 1.52295;
     }
     public void updateArmFFkg() {
         armFF = new ArmFeedforward(0, armFFkg.getAsDouble(), 0);
     }
+
+    // cosine equation FF, see https://www.desmos.com/calculator/f6nfrvq9hk
+    public double getFFEquationVoltage() {
+        
+        return  0.42 * updateArmFF() * Math.cos((2*Math.PI/((armBalanced - armPurpenGround)*4)) * (getAbsArmPos() - armPurpenGround)); 
+    } 
 
     // private double getLeftPosition(){
     //     return leftMotor.getEncoder().getPosition() * -2.5 * Math.PI / 180;
@@ -198,7 +217,7 @@ public class ArmWristSubsystem extends SubsystemBase{
 
     public void updateRotationOutput(){
         updateArmFFkg();
-        double ffValue = calculateRotationFF();
+        double ffValue = getFFEquationVoltage()/*calculateRotationFF()*/;
         double pidValue = calculateRotationPID();
         double voltage = MathUtil.clamp(/*pidValue +*/ ffValue, -4, 4);
         // double voltage = convertToVolts(percentOutput);
@@ -262,12 +281,19 @@ public class ArmWristSubsystem extends SubsystemBase{
         //SmartDashboard.putNumber("LeftPosition", getLeftPosition());
         SmartDashboard.putNumber("Arm Position", getAbsArmPos());
         SmartDashboard.putNumber("Target", armTarget);
-        SmartDashboard.putNumber("Wrist Pos", getWristAbsPos());
+        SmartDashboard.putNumber("Wrist Pos", getAbsWristPos());
         SmartDashboard.putBoolean("Wrist is Brake", wrist.getIdleMode() == IdleMode.kBrake ? true : false);
         SmartDashboard.putNumber("Arm Actual Voltage", armMotor.getOutputCurrent()*0.6);
         SmartDashboard.putNumber("ArmFF kg", armFF.kg);
+        SmartDashboard.putNumber("FF Equation Value", getFFEquationVoltage());
         
         armFFkg = () -> SmartDashboard.getNumber("Change ArmFF", 0.065);
+        if (SmartDashboard.getNumber("Change Arm Is Brake", 1) == 1) {
+            armMotor.setIdleMode(IdleMode.kBrake);
+        } else {
+            armMotor.setIdleMode(IdleMode.kCoast);
+        }
+
 
         //SmartDashboard.putNumber("Wrist Error", wrist.getPositionError());
         //SmartDashboard.putNumber("Position Error", rotation.getPositionError());
