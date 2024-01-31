@@ -127,9 +127,15 @@ public class ArmWristSubsystem extends SubsystemBase{
         return wristEncoder.getPosition();
     }
 
-    //Janky ff stuff
-    public void updateArmFF(double extPosition){
-        armFF = new ArmFeedforward(0, -0.16134 * extPosition + armFFkg.getAsDouble() ,0);
+   
+    private double extPosition = 0;
+    public void currentExtPos(double extPos){
+        extPosition = extPos;
+    }
+    // for equation, see https://www.desmos.com/calculator/nsax66b2fa
+    public double updateArmFF(){
+        //return (-0.16134 * extPosition + armFFkg.getAsDouble());
+        return -0.56966* extPosition + 1.52295;
     }
     public void updateArmFFkg() {
         armFF = new ArmFeedforward(0, armFFkg.getAsDouble(), 0);
@@ -138,8 +144,7 @@ public class ArmWristSubsystem extends SubsystemBase{
     // cosine equation FF, see https://www.desmos.com/calculator/f6nfrvq9hk
     public double getFFEquationVoltage() {
         
-        return !Constants.intakeIsOut ? 0.42 * Math.cos((2*Math.PI/((armBalanced - armPurpenGround)*4)) * (getAbsArmPos() - armPurpenGround))
-                                    : 0.45 * Math.cos((2*Math.PI/((armBalanced - armPurpenGround)*4)) * (getAbsArmPos() - armPurpenGround)); 
+        return  0.42 * updateArmFF() * Math.cos((2*Math.PI/((armBalanced - armPurpenGround)*4)) * (getAbsArmPos() - armPurpenGround)); 
     } 
 
     // private double getLeftPosition(){

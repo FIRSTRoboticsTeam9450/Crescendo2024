@@ -25,7 +25,7 @@ public class ExtensionSubsystem extends SubsystemBase{
     private double hardLowerLimit = 0.918; // all the way retracted
     private double hardUpperLimit = 0.15; // all the way extended
 
-    private final PIDController extensionPid = new PIDController(20, 0,0);
+    private final PIDController extensionPid = new PIDController(40, 0,0);
 
 
 

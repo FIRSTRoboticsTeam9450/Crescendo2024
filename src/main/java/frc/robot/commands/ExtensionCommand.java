@@ -42,13 +42,14 @@ public class ExtensionCommand extends Command {
   @Override
   public void execute() {
     
-    armWristSub.updateArmFF(extension.getExtensionAbsPosition());
+    armWristSub.currentExtPos(extension.getExtensionAbsPosition());
 
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    extension.toggleRun();
 
   }
 
