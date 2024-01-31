@@ -42,6 +42,38 @@ public final class Constants {
     public static final double MaxSpeed = 55;
     public static final double MaxAngularSpeed = 50*Math.PI;
   }
+
+  //Extension Limiting Equation Constants----------------------------
+  public static class Chassis{
+    public static final double pivotToFront = 17;
+    public static final double pivotToBack = 13.75;
+    public static final double pivotHeight = 19;
+  }
+
+  public static class Arm{
+    public static final double armLength = 18;
+    public static final double intakeArmTics = 0.12;
+    public static final double intakeArmAngle = -30;
+    public static final double ampArmTics = 0.518;
+    public static final double ampArmAngle = 114.4;
+
+  }
+
+  public static class Extension{
+    public static final double maxExtensionInches = 14.5;
+    public static final double maxExtensionTics = 14.5;
+    public static final double zeroTics = 0.918;
+  }
+
+  public static class Wrist{
+    public static final double straightWristTics = 0.687;
+    public static final double upWristTics = 0.987;
+    public static final double straightWristInches = 8;
+    public static final double upWristInches = 2;
+
+  }
+
+  //-----------------------------------------------------------------
   
   public static final int flDriveId = 1; //1
   public static final int flTurnId = 2; //2

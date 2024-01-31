@@ -200,7 +200,7 @@ public class ArmWristSubsystem extends SubsystemBase{
         updateArmFFkg();
         double ffValue = calculateRotationFF();
         double pidValue = calculateRotationPID();
-        double voltage = MathUtil.clamp(pidValue + ffValue, -4, 4);
+        double voltage = MathUtil.clamp(/*pidValue +*/ ffValue, -4, 4);
         // double voltage = convertToVolts(percentOutput);
         // SmartDashboard.putNumber("percentOutput", percentOutput);
         SmartDashboard.putNumber("Rotation FF", ffValue);
