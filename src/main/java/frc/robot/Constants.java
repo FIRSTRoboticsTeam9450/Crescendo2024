@@ -126,7 +126,7 @@ public final class Constants {
   public static double maxWristPos = 0.97 - 0.1;
   public static double minWristPos = 0.399 + 0.1;
 
-  
+  public static boolean intakeIsOut = false;
 
   //Width:  19.5in 0.4953m
   //Length: 25.5in 0.6477m

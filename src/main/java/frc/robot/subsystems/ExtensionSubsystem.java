@@ -21,9 +21,9 @@ public class ExtensionSubsystem extends SubsystemBase{
 
     private boolean runStuff = false;
 
-    //Technically starting pos
-    private double hardLowerLimit = 0.89;
-    private double hardUpperLimit = 0.145;
+    //Technically starting pos 14.5 INCHES DIFFERENCE  
+    private double hardLowerLimit = 0.918; // all the way retracted
+    private double hardUpperLimit = 0.15; // all the way extended
 
     private final PIDController extensionPid = new PIDController(20, 0,0);
 
