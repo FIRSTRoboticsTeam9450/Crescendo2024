@@ -51,7 +51,7 @@ public class ArmWristSubsystem extends SubsystemBase{
 
     // private CANSparkMax leftMotor = new CANSparkMax(Constants.rotationLeftId,MotorType.kBrushless);
     private CANSparkMax armMotor = new CANSparkMax(Constants.armId, MotorType.kBrushless);
-    private CANSparkMax wrist = new CANSparkMax(Constants.wristId, MotorType.kBrushless);
+    private CANSparkFlex wrist = new CANSparkFlex(Constants.wristId, MotorType.kBrushless);
 
     
     

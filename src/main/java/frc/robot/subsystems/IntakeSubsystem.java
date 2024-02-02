@@ -16,7 +16,7 @@ import frc.robot.Constants;
 
 public class IntakeSubsystem extends SubsystemBase {
   /* Initializing Motors */
-  CANSparkMax intake = new CANSparkMax(Constants.intakeId, MotorType.kBrushless);
+  CANSparkFlex intake = new CANSparkFlex(Constants.intakeId, MotorType.kBrushless);
   
 
   /* PID/FF */
