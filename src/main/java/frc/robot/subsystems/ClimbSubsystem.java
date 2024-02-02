@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -41,6 +42,7 @@ public class ClimbSubsystem extends SubsystemBase {
   CANSparkMax climb;
   RelativeEncoder encoder;
   PIDController climbController;
+  DigitalInput limitSwitch;
 
   /* <!---- IMPORTANT ----!>
   Without the two line of code below, the vortexs run perfectly fine.
@@ -59,6 +61,8 @@ public class ClimbSubsystem extends SubsystemBase {
 
     wrist = new CANSparkFlex(30, MotorType.kBrushless);
     wristEncoder = wrist.getAbsoluteEncoder(com.revrobotics.SparkAbsoluteEncoder.Type.kDutyCycle);
+
+    limitSwitch = new DigitalInput(0);
   } 
 
   
@@ -90,6 +94,6 @@ public class ClimbSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Wrist Encoder", wristEncoder.getPosition());
     SmartDashboard.putNumber("Target", climbController.getSetpoint());
     SmartDashboard.putNumber("Error", climbController.getPositionError());
-
+    SmartDashboard.putBoolean("Switch", limitSwitch.get());
   }
 }

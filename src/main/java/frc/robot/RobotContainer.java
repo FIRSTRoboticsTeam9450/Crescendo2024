@@ -21,10 +21,13 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
+
+//HELLO
+
   // The robot's subsystems and commands are defined here...
 
-  //private final ClimbSubsystem ClimbSubsystem = new ClimbSubsystem();
-   private final MotorSubsystem driveTest = new MotorSubsystem();
+  private final ClimbSubsystem ClimbSubsystem = new ClimbSubsystem();
+  // private final MotorSubsystem driveTest = new MotorSubsystem();
 
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
@@ -34,7 +37,7 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
-   driveTest.setDefaultCommand(new MotorCommand(driveTest));
+   //driveTest.setDefaultCommand(new MotorCommand(driveTest));
     //Command climbCommand = new ClimbCommand(ClimbSubsystem);
 
    // ClimbSubsystem.setDefaultCommand(climbCommand);
