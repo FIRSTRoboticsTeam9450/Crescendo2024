@@ -60,9 +60,9 @@ public final class Constants {
   }
 
   public static class Extension{
-    public static final double maxExtensionInches = 14.5;
-    public static final double maxExtensionTics = 14.5;
-    public static final double zeroTics = 0.918;
+    public static final double maxExtensionInches = 12; //14.5
+    public static final double maxExtensionTics = 0.075; 
+    public static final double zeroTics = 0.72;
   }
 
   public static class Wrist{
@@ -155,8 +155,9 @@ public final class Constants {
     );
   public static double maxTurretPosition;
   public static double minTurretPosition;
-  public static double maxWristPos = 0.97 - 0.1;
-  public static double minWristPos = 0.399 + 0.1;
+  public static double maxWristPos = 0.97 - 0.02;
+  public static double minWristPos = 0.421 + 0.02;//0.68
+  public static double midWristPos = 0.68;
 
   public static boolean intakeIsOut = false;
 

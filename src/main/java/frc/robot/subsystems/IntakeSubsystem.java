@@ -64,14 +64,14 @@ public class IntakeSubsystem extends SubsystemBase {
 
   
   /* Intake Methods */
-  public void intakeNote(double power) {
+  public void intakeNote(double voltage) {
     // goal voltage
 
-    if (getIntakeVelocity() > -2500 && !isIntaking) {
-      setIntakePower(power);
+    if (getIntakeVelocity() == 0 && !isIntaking) {
+      setIntakeVoltage(voltage);
       isIntaking = !isIntaking;
-    } else {
-      setIntakePower(0.05);
+    } else if (getIntakeVelocity() == 0 && isIntaking){
+      setIntakeVoltage(0);
     }
   }
 
@@ -86,7 +86,7 @@ public class IntakeSubsystem extends SubsystemBase {
   public void setIntakePower(double power) { intake.set(-power); }
 
   //NEED TO CHECK IF THIS IS THE RIGHT DIRECTION
-  public void setIntakeVoltage(double voltage) { intake.setVoltage(voltage); }
+  public void setIntakeVoltage(double voltage) { intake.setVoltage(-voltage); }
 
 
   public double getIntakePos() { return intake.getEncoder().getPosition(); }

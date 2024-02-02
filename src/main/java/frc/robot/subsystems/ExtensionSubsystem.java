@@ -22,10 +22,11 @@ public class ExtensionSubsystem extends SubsystemBase{
     private boolean runStuff = false;
 
     //Technically starting pos 14.5 INCHES DIFFERENCE  
-    private double hardLowerLimit = 0.918; // all the way retracted
-    private double hardUpperLimit = 0.15; // all the way extended
-
-    private final PIDController extensionPid = new PIDController(40, 0,0);
+    private double hardLowerLimit = 0.7; // all the way retracted 0.918
+    private double hardUpperLimit = 0.1; // all the way extended 0.15
+    // the actual hardUpperLimit is like negative if it could be
+    
+    private final PIDController extensionPid = new PIDController(35, 0,0);
 
 
 
@@ -74,7 +75,7 @@ public class ExtensionSubsystem extends SubsystemBase{
     public void updateExtensionOutput(){
         double ffValue = calculateExtensionFF();
         SmartDashboard.putNumber("Extension FF", ffValue);
-        double voltage = MathUtil.clamp(calculateExtensionPID(), -4.0, 4.0);
+        double voltage = MathUtil.clamp(calculateExtensionPID(), -12.0, 12.0);
         // SmartDashboard.putNumber("Extension Percent", percentOutput);
 
         // double voltage = 12 * percentOutput;

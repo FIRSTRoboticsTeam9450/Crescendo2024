@@ -37,6 +37,7 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the trigger bindings
     extSub.setDefaultCommand(new ExtensionCommand(extSub, armWristSub, () -> controller.rightBumper().getAsBoolean(), 0));
+    
     // controller.leftBumper().onTrue(new InstantCommand( () -> extSub.setExtensionVoltage(1)));
     // controller.leftBumper().onFalse(new InstantCommand( () -> extSub.setExtensionVoltage(0)));
 
@@ -44,11 +45,11 @@ public class RobotContainer {
     // controller.rightBumper().onTrue(new InstantCommand( () -> wristIntake.intakeNote(0.5) ));
     // controller.rightBumper().onFalse(new InstantCommand( () -> wristIntake.stopIntake() ));
 
-    // /* toggle wrist idlemode */
-    // controller.leftTrigger().onTrue(new InstantCommand( () -> wristIntake.toggleWristBrake() ));
+    /* toggle wrist idlemode */
+    controller.leftTrigger().onTrue(new InstantCommand( () -> armWristSub.toggleWristBrake() ));
 
-    // /* right trigger run wrist pid */
-    // controller.rightTrigger().onTrue(new InstantCommand( () -> wristIntake.setWristSetpoint(0.5) ));
+    /* right trigger run wrist pid */
+    controller.rightTrigger().onTrue(new InstantCommand( () -> armWristSub.toggleWrist() ));
     
     // /* outtake */
     // controller.leftBumper().onTrue(new InstantCommand( () -> wristIntake.setIntakePower(-0.5) ));

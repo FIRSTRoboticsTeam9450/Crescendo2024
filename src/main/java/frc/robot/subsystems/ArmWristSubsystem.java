@@ -34,7 +34,8 @@ public class ArmWristSubsystem extends SubsystemBase{
 
     
 
-    private double armTarget = 0.295;//0.53;  //.453
+    private double armTarget = 0.2;//0.53;  //.453
+    private double wristTarget = Constants.midWristPos;
     private double hardLowerLimit = 0.08;
     private double hardUpperLimit = 0.51;
     private double armStraightUp = 0.46;
@@ -56,7 +57,7 @@ public class ArmWristSubsystem extends SubsystemBase{
     
     private boolean runStuff = true;
 
-    private final PIDController wristPIDController = new PIDController(0.9, 0, 0); 
+    private final PIDController wristPIDController = new PIDController(50, 0, 0); 
     public SimpleMotorFeedforward wristFeedForward = new SimpleMotorFeedforward(0.00001, 0.00003, 0.00001); 
 
     /* Absolute Encoder */
@@ -104,16 +105,20 @@ public class ArmWristSubsystem extends SubsystemBase{
     
         armPid.reset(getArmPosition());
 
-        wrist.setIdleMode(IdleMode.kCoast);
+        wrist.setIdleMode(IdleMode.kBrake);
         wristPIDRun = false;
         wristBrakeToggle = false;
         
         armMotor.burnFlash();
         wrist.burnFlash();
-        setArmGoal(0.2);
+        setArmGoal(armTarget);
+        setWristSetpoint(wristTarget);
 
+        SmartDashboard.putNumber("Change Arm Target", armTarget);
+        SmartDashboard.putNumber("Change Wrist Target", Constants.midWristPos);
         SmartDashboard.putNumber("Change ArmFF", 0.065);
         SmartDashboard.putNumber("Change Arm Is Brake", 1);
+
 
     }
 
@@ -132,10 +137,10 @@ public class ArmWristSubsystem extends SubsystemBase{
     public void currentExtPos(double extPos){
         extPosition = extPos;
     }
-    // for equation, see https://www.desmos.com/calculator/nsax66b2fa
+    // for equation, see https://www.desmos.com/calculator/pqkdjoydzd
     public double updateArmFF(){
         //return (-0.16134 * extPosition + armFFkg.getAsDouble());
-        return -0.56966* extPosition + 1.52295;
+        return -0.56966* extPosition + 1.39876302083; // old b value was 1.52295
     }
     public void updateArmFFkg() {
         armFF = new ArmFeedforward(0, armFFkg.getAsDouble(), 0);
@@ -219,7 +224,7 @@ public class ArmWristSubsystem extends SubsystemBase{
         updateArmFFkg();
         double ffValue = getFFEquationVoltage()/*calculateRotationFF()*/;
         double pidValue = calculateRotationPID();
-        double voltage = MathUtil.clamp(/*pidValue +*/ ffValue, -4, 4);
+        double voltage = MathUtil.clamp(pidValue + ffValue, -4, 4);
         // double voltage = convertToVolts(percentOutput);
         // SmartDashboard.putNumber("percentOutput", percentOutput);
         SmartDashboard.putNumber("Rotation FF", ffValue);
@@ -271,28 +276,41 @@ public class ArmWristSubsystem extends SubsystemBase{
     public void periodic(){
         if(runStuff){
             updateRotationOutput();
-           // updateWristPos();
+            
+            if (wristPIDRun) {
+                updateWristPos();
+            } else {
+                wrist.setVoltage(0);
+            }
 
 
         
         }else{
             setArmVoltage(0);
+            wrist.setVoltage(0);
         }
         //SmartDashboard.putNumber("LeftPosition", getLeftPosition());
         SmartDashboard.putNumber("Arm Position", getAbsArmPos());
-        SmartDashboard.putNumber("Target", armTarget);
+        SmartDashboard.putNumber("Arm Target", armTarget);
         SmartDashboard.putNumber("Wrist Pos", getAbsWristPos());
         SmartDashboard.putBoolean("Wrist is Brake", wrist.getIdleMode() == IdleMode.kBrake ? true : false);
         SmartDashboard.putNumber("Arm Actual Voltage", armMotor.getOutputCurrent()*0.6);
         SmartDashboard.putNumber("ArmFF kg", armFF.kg);
         SmartDashboard.putNumber("FF Equation Value", getFFEquationVoltage());
-        
+        SmartDashboard.putBoolean("Wrist Enabled", wristPIDRun);
+        SmartDashboard.putNumber("Wrist Target", wristTarget);
+
         armFFkg = () -> SmartDashboard.getNumber("Change ArmFF", 0.065);
         if (SmartDashboard.getNumber("Change Arm Is Brake", 1) == 1) {
             armMotor.setIdleMode(IdleMode.kBrake);
         } else {
             armMotor.setIdleMode(IdleMode.kCoast);
         }
+
+
+        wristTarget = SmartDashboard.getNumber("Change Wrist Target", 0.68);
+        armTarget = SmartDashboard.getNumber("Change Arm Target", 0.2);
+
 
 
         //SmartDashboard.putNumber("Wrist Error", wrist.getPositionError());
@@ -312,27 +330,26 @@ public class ArmWristSubsystem extends SubsystemBase{
 
     public void updateWristPos() {
         double goalPos = wristPIDController.getSetpoint();
-        double pidValue = wristPIDController.calculate(getWristAbsPos(), goalPos);
+        double pidValue = wristPIDController.calculate(getWristAbsPos(), wristTarget); //change back to goalPos after testing
         double changeInTime = Timer.getFPGATimestamp() - oldTime;
         double velSetpoint = (getWristAbsPos() - oldPos) / changeInTime;
         double accel = (velSetpoint - oldVel) / (changeInTime); 
         double ffVal = wristFeedForward.calculate(velSetpoint, accel); //takes velocity, and acceleration
         
-        double percentOutput = MathUtil.clamp(pidValue + ffVal, -1.0, 1.0);
-        double voltage = convertToVolts(percentOutput);
+        double voltage = MathUtil.clamp(pidValue /*+ ffVal*/, -5.0, 5.0);
         
         
-        SmartDashboard.putNumber("PID Value", pidValue);
-        SmartDashboard.putNumber("Feed Forward", ffVal);
-        SmartDashboard.putNumber("Voltage", voltage);
-        SmartDashboard.putNumber("Position error", wristPIDController.getPositionError());
+        SmartDashboard.putNumber("Wrist PID", pidValue);
+        SmartDashboard.putNumber("Wrist FF", ffVal);
+        SmartDashboard.putNumber("Wrist Voltage", voltage);
+        SmartDashboard.putNumber("Wrist Pos Error", wristPIDController.getPositionError());
       
     
         if (Math.abs(getWristAbsPos() - goalPos) <= 0.05) { // no voltage
           wrist.setVoltage(0);
         } else { // set voltage
           if (getWristAbsPos() <= Constants.maxWristPos && getWristAbsPos() >= Constants.minWristPos) { // is between max and min
-            wrist.setVoltage(voltage); // could be negative voltage based upon direction of motor and gear
+            wrist.setVoltage(-voltage); // could be negative voltage based upon direction of motor and gear
           }
         }
         
@@ -344,7 +361,11 @@ public class ArmWristSubsystem extends SubsystemBase{
 
     public void setWristSetpoint(double goalPos) {
         wristPIDController.setSetpoint(goalPos);
-        wristPIDRun = true;
+        
+    }
+
+    public void toggleWrist() {
+        wristPIDRun = !wristPIDRun;
     }
 
 
