@@ -34,7 +34,7 @@ public class ArmWristSubsystem extends SubsystemBase{
 
     
 
-    private double armTarget = 0.2;//0.53;  //.453
+    private double armTarget = 0.36;//0.53;  //.453
     private double wristTarget = Constants.midWristPos;
     private double hardLowerLimit = 0.08;
     private double hardUpperLimit = 0.51;
@@ -44,6 +44,7 @@ public class ArmWristSubsystem extends SubsystemBase{
     
     boolean wristBrakeToggle;
     boolean wristPIDRun;
+    boolean armPIDRun;
 
     //double p = 0;
 
@@ -107,6 +108,7 @@ public class ArmWristSubsystem extends SubsystemBase{
 
         wrist.setIdleMode(IdleMode.kBrake);
         wristPIDRun = false;
+        armPIDRun = false;
         wristBrakeToggle = false;
         
         armMotor.burnFlash();
@@ -275,7 +277,12 @@ public class ArmWristSubsystem extends SubsystemBase{
     @Override
     public void periodic(){
         if(runStuff){
-            updateRotationOutput();
+            
+            if (armPIDRun) {
+                updateRotationOutput();
+            } else {
+                armMotor.setVoltage(0);
+            }
             
             if (wristPIDRun) {
                 updateWristPos();
@@ -298,6 +305,7 @@ public class ArmWristSubsystem extends SubsystemBase{
         SmartDashboard.putNumber("ArmFF kg", armFF.kg);
         SmartDashboard.putNumber("FF Equation Value", getFFEquationVoltage());
         SmartDashboard.putBoolean("Wrist Enabled", wristPIDRun);
+        SmartDashboard.putBoolean("Arm Enabled", armPIDRun);
         SmartDashboard.putNumber("Wrist Target", wristTarget);
 
         armFFkg = () -> SmartDashboard.getNumber("Change ArmFF", 0.065);
@@ -309,7 +317,7 @@ public class ArmWristSubsystem extends SubsystemBase{
 
 
         wristTarget = SmartDashboard.getNumber("Change Wrist Target", 0.68);
-        armTarget = SmartDashboard.getNumber("Change Arm Target", 0.2);
+        armTarget = SmartDashboard.getNumber("Change Arm Target", armTarget);
 
 
 
@@ -366,6 +374,9 @@ public class ArmWristSubsystem extends SubsystemBase{
 
     public void toggleWrist() {
         wristPIDRun = !wristPIDRun;
+    }
+    public void toggleArm() {
+        armPIDRun = !armPIDRun;
     }
 
 

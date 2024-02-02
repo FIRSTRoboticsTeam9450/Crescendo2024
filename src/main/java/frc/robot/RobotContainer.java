@@ -6,6 +6,7 @@ package frc.robot;
 
 
 import frc.robot.commands.ExtensionCommand;
+import frc.robot.commands.IntakingCommand;
 import frc.robot.subsystems.ArmWristSubsystem;
 import frc.robot.subsystems.ExtensionSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -42,14 +43,14 @@ public class RobotContainer {
     // controller.leftBumper().onFalse(new InstantCommand( () -> extSub.setExtensionVoltage(0)));
 
     /* intake */
-    // controller.rightBumper().onTrue(new InstantCommand( () -> wristIntake.intakeNote(0.5) ));
+    controller.leftTrigger().onTrue(new IntakingCommand(intakeSub, 7));
     // controller.rightBumper().onFalse(new InstantCommand( () -> wristIntake.stopIntake() ));
 
     /* toggle wrist idlemode */
-    controller.leftTrigger().onTrue(new InstantCommand( () -> armWristSub.toggleWristBrake() ));
+    controller.a().onTrue(new InstantCommand( () -> armWristSub.toggleWristBrake() ));
 
     /* right trigger run wrist pid */
-    controller.rightTrigger().onTrue(new InstantCommand( () -> armWristSub.toggleWrist() ));
+    controller.leftBumper().onTrue(new InstantCommand( () -> armWristSub.toggleWrist() ));
     
     // /* outtake */
     // controller.leftBumper().onTrue(new InstantCommand( () -> wristIntake.setIntakePower(-0.5) ));
@@ -60,10 +61,11 @@ public class RobotContainer {
     // controller.leftBumper().onFalse(new InstantCommand( () -> wristIntake.stopIntake() ));
 
     // /* arm */
-    // controller.b().onTrue(new ArmWristCommand(armWristSubsystem, 0, 0));
-    // controller.povDown().onTrue(new ArmWristCommand(armWristSubsystem, 0, 0));
+    controller.rightTrigger().onTrue(new InstantCommand( () -> armWristSub.toggleArm() ));
 
     // /* extension */
+
+
     
     configureBindings();
   }
