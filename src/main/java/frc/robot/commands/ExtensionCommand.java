@@ -20,6 +20,7 @@ public class ExtensionCommand extends Command {
   private double radiusX, radiusY, extensionLength, extensionTarget, totalextensionX, totalextensionY, theta;
   private ArmWristSubsystem armWristSub;
   private BooleanSupplier rightBumper;
+  private boolean enabled = false;
   public ExtensionCommand(ExtensionSubsystem extension, ArmWristSubsystem armWristSub, BooleanSupplier rightBumper, double extensionTarget){
     // Use addRequirements() here to declare subsystem dependencies.
     this.extension = extension;
@@ -34,6 +35,7 @@ public class ExtensionCommand extends Command {
   public void initialize() {
     if(rightBumper.getAsBoolean()){
       extension.toggleRun();
+      enabled = true;
     }
 
     theta = (((Constants.Arm.intakeArmAngle - Constants.Arm.ampArmAngle)/(Constants.Arm.intakeArmTics - Constants.Arm.ampArmTics)) * armWristSub.getAbsArmPos()) + (Constants.Arm.intakeArmAngle - (((Constants.Arm.intakeArmAngle - Constants.Arm.ampArmAngle)/(Constants.Arm.intakeArmTics - Constants.Arm.ampArmTics)) * Constants.Arm.intakeArmTics));
@@ -71,7 +73,7 @@ public class ExtensionCommand extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    extension.toggleRun();
+    if (enabled) { extension.toggleRun(); }
 
   }
 

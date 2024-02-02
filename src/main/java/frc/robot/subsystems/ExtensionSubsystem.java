@@ -19,7 +19,7 @@ public class ExtensionSubsystem extends SubsystemBase{
     private CANSparkMax extensionMotor = new CANSparkMax(Constants.extensionId, com.revrobotics.CANSparkLowLevel.MotorType.kBrushless);
     private SparkAbsoluteEncoder extEncoder = extensionMotor.getAbsoluteEncoder(Type.kDutyCycle);
 
-    private boolean runStuff = false;
+    private boolean runStuff;
 
     //Technically starting pos 14.5 INCHES DIFFERENCE  
     private double hardLowerLimit = 0.7; // all the way retracted 0.918
@@ -46,6 +46,7 @@ public class ExtensionSubsystem extends SubsystemBase{
 
 
         extensionMotor.burnFlash();
+        runStuff = false;
         setExtensionGoal(0.47);
 
         SmartDashboard.putNumber("Change Extension Target", 0.47);
