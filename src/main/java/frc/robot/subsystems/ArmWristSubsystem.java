@@ -46,41 +46,31 @@ public class ArmWristSubsystem extends SubsystemBase{
     boolean wristPIDRun;
     boolean armPIDRun;
 
-    //double p = 0;
-
-    //public CANSparkMax intake = new CANSparkMax(Constants.intakeId, MotorType.kBrushless);
-
-    // private CANSparkMax leftMotor = new CANSparkMax(Constants.rotationLeftId,MotorType.kBrushless);
+    /* Motors */
     private CANSparkMax armMotor = new CANSparkMax(Constants.armId, MotorType.kBrushless);
     private CANSparkFlex wrist = new CANSparkFlex(Constants.wristId, MotorType.kBrushless);
 
-    
+     /* Absolute Encoder */
+    SparkAbsoluteEncoder wristEncoder = wrist.getAbsoluteEncoder(Type.kDutyCycle);
+    SparkAbsoluteEncoder armEncoder = armMotor.getAbsoluteEncoder(Type.kDutyCycle);
     
     private boolean runStuff = true;
 
-    private final PIDController wristPIDController = new PIDController(50, 0, 0); 
-    public SimpleMotorFeedforward wristFeedForward = new SimpleMotorFeedforward(0.00001, 0.00003, 0.00001); 
-
-    /* Absolute Encoder */
-  // if absolute encoder plugged into cansparkmax:
-    //CANSparkMax wristmax = new CANSparkMax(Constants.wristId, MotorType.kBrushless);
-    SparkAbsoluteEncoder wristEncoder = wrist.getAbsoluteEncoder(Type.kDutyCycle);
-    SparkAbsoluteEncoder armEncoder = armMotor.getAbsoluteEncoder(Type.kDutyCycle);
-    private final ProfiledPIDController armPid = new ProfiledPIDController(40, 0, 0, new Constraints(1, 0.5));//maxVel = 3.5 and maxAccel = 2.5
-    // extension all the way in kg 0.12(0.89 for ext) 0.19 middle(0.47 for ext pos) and 0.24(0.145 for ext) full extended
+     // extension all the way in kg 0.12(0.89 for ext) 0.19 middle(0.47 for ext pos) and 0.24(0.145 for ext) full extended
     // Equation for this is ffVal = -0.16134 * ExtPos + 0.26427
     DoubleSupplier armFFkg = () -> 0.065;
     private ArmFeedforward armFF = new ArmFeedforward(0, 0.065,0); //0.027, 0.00001 => halfway is 0.013505
-    private final ArmFeedforward armExtendedFF = new ArmFeedforward(0, 0.03, 0.00001);
-    //Extension
+    public SimpleMotorFeedforward wristFeedForward = new SimpleMotorFeedforward(0.00001, 0.00003, 0.00001); 
 
-    private PIDController pid = new PIDController(0.1, 0, 0), downPID = new PIDController(0.0085, 0, 0);
     
-    Timer timer = new Timer();
+
+    private final ProfiledPIDController armPid = new ProfiledPIDController(40, 0, 0, new Constraints(1, 0.5));//maxVel = 3.5 and maxAccel = 2.5
+    private final PIDController wristPIDController = new PIDController(50, 0, 0); 
+
+
     private double ticsPerArmRevolution = 144, ticsPerWristRevolution = /*172.8*/ 120, lowTics = (50/360) * ticsPerArmRevolution, midTics = (100/360) * ticsPerArmRevolution, highTics = (135/360) * ticsPerArmRevolution, groundTics = (37.4/360) * ticsPerArmRevolution;
     private boolean intialization = true;
 
-    DutyCycleEncoder absEncoder = new DutyCycleEncoder(0);
 
 
     public ArmWristSubsystem(){
@@ -104,7 +94,6 @@ public class ArmWristSubsystem extends SubsystemBase{
         //wrist.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 50); //Duty Cycle Absolute Encoder Position and Abs angle
         //wrist.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 65535); //Duty Cycle Absolute Encoder Velocity + Frequency
     
-        armPid.reset(getArmPosition());
 
         wrist.setIdleMode(IdleMode.kBrake);
         wristPIDRun = false;
@@ -124,9 +113,7 @@ public class ArmWristSubsystem extends SubsystemBase{
 
     }
 
-    public double getArmPosition(){
-        return absEncoder.get();
-    }
+ 
     public double getAbsArmPos(){
         return armEncoder.getPosition();
     }
