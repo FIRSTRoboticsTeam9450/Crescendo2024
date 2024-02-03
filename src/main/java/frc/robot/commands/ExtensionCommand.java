@@ -54,8 +54,6 @@ public class ExtensionCommand extends Command {
   @Override
   public void execute() {
     
-    armWristSub.currentExtPos(extension.getExtensionAbsPosition());
-
 
     //Updating all the values
     theta = (((Constants.Arm.intakeArmAngle - Constants.Arm.ampArmAngle)/(Constants.Arm.intakeArmTics - Constants.Arm.ampArmTics)) * armWristSub.getAbsArmPos()) + (Constants.Arm.intakeArmAngle - (((Constants.Arm.intakeArmAngle - Constants.Arm.ampArmAngle)/(Constants.Arm.intakeArmTics - Constants.Arm.ampArmTics)) * Constants.Arm.intakeArmTics));

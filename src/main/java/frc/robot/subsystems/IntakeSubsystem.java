@@ -79,7 +79,7 @@ public class IntakeSubsystem extends SubsystemBase {
     return intake.getMotorTemperature();
   }
 
-
+  
 
   
   /* Intake Methods [Small] */

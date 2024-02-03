@@ -50,6 +50,7 @@ public class ExtensionSubsystem extends SubsystemBase{
         setExtensionGoal(0.47);
 
         SmartDashboard.putNumber("Change Extension Target", 0.47);
+        SmartDashboard.putNumber("Change Extension Is Brake", 1);
 
 
 
@@ -85,8 +86,12 @@ public class ExtensionSubsystem extends SubsystemBase{
 
         SmartDashboard.putNumber("Extension Voltage", voltage);
 
+         if (Math.abs(voltage) < 4) {
+            setExtensionVoltage(voltage);
+        } else {
+            setExtensionVoltage(4);
+        }
         
-        setExtensionVoltage(voltage);
         
         
     }
@@ -113,6 +118,11 @@ public class ExtensionSubsystem extends SubsystemBase{
         SmartDashboard.putNumber("Extension Position", getExtensionAbsPosition());
         SmartDashboard.putNumber("Extension Target", extensionTarget);
         extensionTarget = SmartDashboard.getNumber("Change Extension Target", 0.47);
+        if (SmartDashboard.getNumber("Change Wrist Is Brake", 1) == 1) {
+            extensionMotor.setIdleMode(IdleMode.kBrake);
+        } else {
+            extensionMotor.setIdleMode(IdleMode.kCoast);
+        }
         setExtensionGoal(extensionTarget);
     }
     

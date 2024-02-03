@@ -25,7 +25,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final IntakeSubsystem intakeSub = new IntakeSubsystem();
   private final ArmWristSubsystem armWristSub = new ArmWristSubsystem();
-  private final ExtensionSubsystem extSub = new ExtensionSubsystem();
+ // private final ExtensionSubsystem extSub = new ExtensionSubsystem();
   // private final DrivebaseSubsystem driveTest = new DrivebaseSubsystem(0);
   // private final DriveCommand driveCommand = new DriveCommand(driveSubsystem);
 
@@ -37,31 +37,35 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
-    extSub.setDefaultCommand(new ExtensionCommand(extSub, armWristSub, () -> controller.rightBumper().getAsBoolean(), 0));
+    //extSub.setDefaultCommand(new ExtensionCommand(extSub, armWristSub, () -> controller.rightBumper().getAsBoolean(), 0));
     
     // controller.leftBumper().onTrue(new InstantCommand( () -> extSub.setExtensionVoltage(1)));
     // controller.leftBumper().onFalse(new InstantCommand( () -> extSub.setExtensionVoltage(0)));
 
     /* intake */
-    controller.leftTrigger().onTrue(new IntakingCommand(intakeSub, 7));
-    // controller.rightBumper().onFalse(new InstantCommand( () -> wristIntake.stopIntake() ));
+    controller.leftTrigger().onTrue(new IntakingCommand(intakeSub, 5));
+    //controller.rightBumper().onFalse(new InstantCommand( () -> wristIntake.stopIntake() ));
 
     /* toggle wrist idlemode */
-    controller.a().onTrue(new InstantCommand( () -> armWristSub.toggleWristBrake() ));
+    //controller.a().onTrue(new InstantCommand( () -> armWristSub.toggleWristBrake() ));
 
-    /* right trigger run wrist pid */
-    controller.leftBumper().onTrue(new InstantCommand( () -> armWristSub.toggleWrist() ));
     
     // /* outtake */
-    // controller.leftBumper().onTrue(new InstantCommand( () -> wristIntake.setIntakePower(-0.5) ));
-    // controller.leftBumper().onFalse(new InstantCommand( () -> wristIntake.stopIntake() ));
+     controller.leftBumper().onTrue(new InstantCommand( () -> intakeSub.setIntakePower(-0.5) ));
+     controller.leftBumper().onFalse(new InstantCommand( () -> intakeSub.stopIntake() ));
     
-    // /* outtake */
-    // controller.leftBumper().onTrue(new InstantCommand( () -> wristIntake.setIntakePower(-0.5) ));
-    // controller.leftBumper().onFalse(new InstantCommand( () -> wristIntake.stopIntake() ));
-
-    // /* arm */
-    controller.rightTrigger().onTrue(new InstantCommand( () -> armWristSub.toggleArm() ));
+ 
+    // /* arm *//* right trigger run wrist pid */
+    controller.x().onTrue(new InstantCommand( () -> armWristSub.toggleWrist()));
+    controller.a().onTrue(new InstantCommand(() -> armWristSub.toggleArm()));
+    // Source
+    controller.rightTrigger().onTrue(new InstantCommand(() -> armWristSub.setArmWristExtGoal(0.37, 0.387, 0.5346)));
+    // Amp
+    controller.rightBumper().onTrue(new InstantCommand(() -> armWristSub.setArmWristExtGoal(0.511, 0.0487, 0.387)));
+    
+    // Ground
+    controller.y().onTrue(new InstantCommand(() -> armWristSub.setArmWristExtGoal(0.1716, 0.5, 0.387)));
+        
 
     // /* extension */
 
