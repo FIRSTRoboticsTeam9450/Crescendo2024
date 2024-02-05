@@ -69,7 +69,7 @@ public class RobotContainer {
     controller.y().onTrue(new InstantCommand(() -> armWristSub.setArmWristExtGoal(0.1716, 0.5, 0.387)));
         
     // Holding Position
-    controller.b().onTrue(new InstantCommand(() -> armWristSub.setArmWristExtGoal(0.108, 0.04, 0.7)));
+    controller.b().onTrue(new InstantCommand(() -> armWristSub.setArmWristExtGoal(0.108, 0.02, 0.66)));
 
     // /* extension */
 
