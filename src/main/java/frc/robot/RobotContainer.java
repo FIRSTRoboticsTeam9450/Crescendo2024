@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.IntakingCommand;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDrive;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteFieldDrive;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDriveAdv;
@@ -116,16 +117,18 @@ public class RobotContainer
   {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
 
-    new JoystickButton(driverXbox, 1).onTrue((new InstantCommand(drivebase::zeroGyro)));
+    
+    driverController.rightStick().onTrue(new InstantCommand(drivebase::zeroGyro));
+    //new JoystickButton(driverXbox, 1).onTrue((new InstantCommand(drivebase::zeroGyro)));
     new JoystickButton(driverXbox, 3).onTrue(new InstantCommand(drivebase::addFakeVisionReading));
 //    new JoystickButton(driverXbox, 3).whileTrue(new RepeatCommand(new InstantCommand(drivebase::lock, drivebase)));
 
 
 
     /* intake */
-    //driverController.leftTrigger().onTrue(new IntakingCommand(intakeSub, 5));
+    // driverController.leftTrigger().onTrue(new IntakingCommand(intakeSub, 5));
     driverController.leftTrigger().onTrue(new InstantCommand(() -> intakeSub.intakeNote(5)));
-    driverController.leftBumper().onTrue(new InstantCommand(() -> intakeSub.setIntakeVoltage(-3)));
+    driverController.leftBumper().onTrue(new InstantCommand(() -> intakeSub.setIntakePower(0.4)));
     //driverController.rightBumper().onFalse(new InstantCommand( () -> wristIntake.stopIntake() ));
 
     /* toggle wrist idlemode */
@@ -133,8 +136,7 @@ public class RobotContainer
 
     
     // /* outtake */
-     driverController.leftBumper().onTrue(new InstantCommand( () -> intakeSub.setIntakePower(-0.5) ));
-     driverController.leftBumper().onFalse(new InstantCommand( () -> intakeSub.stopIntake() ));
+    //  driverController.leftBumper().onFalse(new InstantCommand( () -> intakeSub.stopIntake() ));
     
  
     // /* arm *//* right trigger run wrist pid */
