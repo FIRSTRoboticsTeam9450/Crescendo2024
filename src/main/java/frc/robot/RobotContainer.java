@@ -29,47 +29,47 @@ public class RobotContainer {
   // private final DrivebaseSubsystem driveTest = new DrivebaseSubsystem(0);
   // private final DriveCommand driveCommand = new DriveCommand(driveSubsystem);
 
-// can't terminate on vortex, can't have more than 10 vortexs, and a sparkflex motorcontroller randomly stopped working
-  // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandXboxController controller =
+// can't terminate on vortex, can't have more than 10 vortexs, and a sparkflex motordriverController randomly stopped working
+  // Replace with CommandPS4driverController or CommandJoystick if needed
+  private final CommandXboxController driverController =
       new CommandXboxController(0);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
-    //extSub.setDefaultCommand(new ExtensionCommand(extSub, armWristSub, () -> controller.rightBumper().getAsBoolean(), 0));
+    //extSub.setDefaultCommand(new ExtensionCommand(extSub, armWristSub, () -> driverController.rightBumper().getAsBoolean(), 0));
     
-    // controller.leftBumper().onTrue(new InstantCommand( () -> extSub.setExtensionVoltage(1)));
-    // controller.leftBumper().onFalse(new InstantCommand( () -> extSub.setExtensionVoltage(0)));
+    // driverController.leftBumper().onTrue(new InstantCommand( () -> extSub.setExtensionVoltage(1)));
+    // driverController.leftBumper().onFalse(new InstantCommand( () -> extSub.setExtensionVoltage(0)));
 
     /* intake */
-    //controller.leftTrigger().onTrue(new IntakingCommand(intakeSub, 5));
-    controller.leftTrigger().onTrue(new InstantCommand(() -> intakeSub.intakeNote(5)));
-    controller.leftBumper().onTrue(new InstantCommand(() -> intakeSub.setIntakeVoltage(-3)));
-    //controller.rightBumper().onFalse(new InstantCommand( () -> wristIntake.stopIntake() ));
+    //driverController.leftTrigger().onTrue(new IntakingCommand(intakeSub, 5));
+    driverController.leftTrigger().onTrue(new InstantCommand(() -> intakeSub.intakeNote(5)));
+    driverController.leftBumper().onTrue(new InstantCommand(() -> intakeSub.setIntakeVoltage(-3)));
+    //driverController.rightBumper().onFalse(new InstantCommand( () -> wristIntake.stopIntake() ));
 
     /* toggle wrist idlemode */
-    //controller.a().onTrue(new InstantCommand( () -> armWristSub.toggleWristBrake() ));
+    //driverController.a().onTrue(new InstantCommand( () -> armWristSub.toggleWristBrake() ));
 
     
     // /* outtake */
-     controller.leftBumper().onTrue(new InstantCommand( () -> intakeSub.setIntakePower(-0.5) ));
-     controller.leftBumper().onFalse(new InstantCommand( () -> intakeSub.stopIntake() ));
+     driverController.leftBumper().onTrue(new InstantCommand( () -> intakeSub.setIntakePower(-0.5) ));
+     driverController.leftBumper().onFalse(new InstantCommand( () -> intakeSub.stopIntake() ));
     
  
     // /* arm *//* right trigger run wrist pid */
-    controller.x().onTrue(new InstantCommand( () -> armWristSub.toggleWrist()));
-    controller.a().onTrue(new InstantCommand(() -> armWristSub.toggleArm()));
+    driverController.x().onTrue(new InstantCommand( () -> armWristSub.toggleWrist()));
+    driverController.a().onTrue(new InstantCommand(() -> armWristSub.toggleArm()));
     // Source
-    controller.rightTrigger().onTrue(new InstantCommand(() -> armWristSub.setArmWristExtGoal(0.37, 0.387, 0.5346)));
+    driverController.rightTrigger().onTrue(new InstantCommand(() -> armWristSub.setArmWristExtGoal(0.37, 0.387, 0.5346)));
     // Amp
-    controller.rightBumper().onTrue(new InstantCommand(() -> armWristSub.setArmWristExtGoal(0.511, 0.0487, 0.387)));
+    driverController.rightBumper().onTrue(new InstantCommand(() -> armWristSub.setArmWristExtGoal(0.511, 0.0487, 0.387)));
     
     // Ground
-    controller.y().onTrue(new InstantCommand(() -> armWristSub.setArmWristExtGoal(0.1716, 0.5, 0.387)));
+    driverController.y().onTrue(new InstantCommand(() -> armWristSub.setArmWristExtGoal(0.1716, 0.5, 0.387)));
         
     // Holding Position
-    controller.b().onTrue(new InstantCommand(() -> armWristSub.setArmWristExtGoal(0.108, 0.02, 0.66)));
+    driverController.b().onTrue(new InstantCommand(() -> armWristSub.setArmWristExtGoal(0.108, 0.02, 0.66)));
 
     // /* extension */
 
@@ -83,8 +83,8 @@ public class RobotContainer {
    * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
    * predicate, or via the named factories in {@link
    * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for {@link
-   * CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
-   * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
+   * CommandXboxdriverController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4driverController
+   * PS4} driverControllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
    * joysticks}.
    */
   private void configureBindings() {
