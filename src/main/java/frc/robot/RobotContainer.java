@@ -34,6 +34,12 @@ public class RobotContainer
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                          "swerve/vortex"));
+                                                                         
+  private final IntakeSubsystem intakeSub = new IntakeSubsystem();
+  private final ArmWristSubsystem armWristSub = new ArmWristSubsystem();
+ // private final ExtensionSubsystem extSub = new ExtensionSubsystem();
+
+
   // CommandJoystick rotationController = new CommandJoystick(1);
   // Replace with CommandPS4Controller or CommandJoystick if needed
   CommandXboxController driverController = new CommandXboxController(0);
@@ -111,6 +117,38 @@ public class RobotContainer
     new JoystickButton(driverXbox, 1).onTrue((new InstantCommand(drivebase::zeroGyro)));
     new JoystickButton(driverXbox, 3).onTrue(new InstantCommand(drivebase::addFakeVisionReading));
 //    new JoystickButton(driverXbox, 3).whileTrue(new RepeatCommand(new InstantCommand(drivebase::lock, drivebase)));
+
+
+
+    /* intake */
+    //driverController.leftTrigger().onTrue(new IntakingCommand(intakeSub, 5));
+    driverController.leftTrigger().onTrue(new InstantCommand(() -> intakeSub.intakeNote(5)));
+    driverController.leftBumper().onTrue(new InstantCommand(() -> intakeSub.setIntakeVoltage(-3)));
+    //driverController.rightBumper().onFalse(new InstantCommand( () -> wristIntake.stopIntake() ));
+
+    /* toggle wrist idlemode */
+    //driverController.a().onTrue(new InstantCommand( () -> armWristSub.toggleWristBrake() ));
+
+    
+    // /* outtake */
+     driverController.leftBumper().onTrue(new InstantCommand( () -> intakeSub.setIntakePower(-0.5) ));
+     driverController.leftBumper().onFalse(new InstantCommand( () -> intakeSub.stopIntake() ));
+    
+ 
+    // /* arm *//* right trigger run wrist pid */
+    driverController.x().onTrue(new InstantCommand( () -> armWristSub.toggleWrist()));
+    driverController.a().onTrue(new InstantCommand(() -> armWristSub.toggleArm()));
+    // Source
+    driverController.rightTrigger().onTrue(new InstantCommand(() -> armWristSub.setArmWristExtGoal(0.37, 0.387, 0.5346)));
+    // Amp
+    driverController.rightBumper().onTrue(new InstantCommand(() -> armWristSub.setArmWristExtGoal(0.511, 0.0487, 0.387)));
+    
+    // Ground
+    driverController.y().onTrue(new InstantCommand(() -> armWristSub.setArmWristExtGoal(0.1716, 0.5, 0.387)));
+        
+    // Holding Position
+    driverController.b().onTrue(new InstantCommand(() -> armWristSub.setArmWristExtGoal(0.108, 0.02, 0.66)));
+
   }
 
   /**

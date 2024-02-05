@@ -1,0 +1,129 @@
+package frc.robot.subsystems;
+
+import com.revrobotics.CANSparkBase.IdleMode;
+import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.SparkAbsoluteEncoder;
+import com.revrobotics.SparkAbsoluteEncoder.Type;
+
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+
+public class ExtensionSubsystem extends SubsystemBase{
+
+    private double extensionTarget = 0.47;
+
+    private CANSparkMax extensionMotor = new CANSparkMax(Constants.extensionId, com.revrobotics.CANSparkLowLevel.MotorType.kBrushless);
+    private SparkAbsoluteEncoder extEncoder = extensionMotor.getAbsoluteEncoder(Type.kDutyCycle);
+
+    private boolean runStuff;
+
+    //Technically starting pos 14.5 INCHES DIFFERENCE  
+    private double hardLowerLimit = 0.7; // all the way retracted 0.918
+    private double hardUpperLimit = 0.1; // all the way extended 0.15
+    // the actual hardUpperLimit is like negative if it could be
+    
+    private final PIDController extensionPid = new PIDController(35, 0,0);
+
+
+
+
+    public ExtensionSubsystem(){
+        extensionMotor.restoreFactoryDefaults();
+        extensionMotor.setSmartCurrentLimit(40);
+
+        extensionMotor.setIdleMode(IdleMode.kCoast);
+        //If we use data port on extesnion, make sure to comment  the lines kstauts3-6
+        extensionMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 300);   //For follower motors
+        extensionMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 65535); // For Motor Position
+        // extensionMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 65535); //Analog Sensor Voltage + Velocity + position
+        // extensionMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 65535); //Duty cycler velocity + pos
+        // extensionMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 65535); //Duty Cycle Absolute Encoder Position and Abs angle
+        // extensionMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 65535); //Duty Cycle Absolute Encoder Velocity + Frequency
+
+
+        extensionMotor.burnFlash();
+        runStuff = false;
+        setExtensionGoal(0.47);
+
+        SmartDashboard.putNumber("Change Extension Target", 0.47);
+        SmartDashboard.putNumber("Change Extension Is Brake", 1);
+
+
+
+    }
+
+    public void setExtensionVoltage(double voltage){
+        extensionMotor.setVoltage(voltage);
+    }
+
+    public double getExtensionAbsPosition(){  
+        return extEncoder.getPosition();
+    }
+
+    public void setExtensionGoal(double target){
+        extensionTarget = target;
+    }
+
+
+    public double calculateExtensionPID(){
+        return extensionPid.calculate(getExtensionAbsPosition(), extensionTarget);
+    }
+
+    
+    public void updateExtensionOutput(){
+        double ffValue = calculateExtensionFF();
+        SmartDashboard.putNumber("Extension FF", ffValue);
+        double voltage = MathUtil.clamp(calculateExtensionPID(), -12.0, 12.0);
+        // SmartDashboard.putNumber("Extension Percent", percentOutput);
+
+        // double voltage = 12 * percentOutput;
+
+        // voltage = MathUtil.clamp(voltage /*+ ffValue*/, -6, 6);
+
+        SmartDashboard.putNumber("Extension Voltage", voltage);
+
+         if (Math.abs(voltage) < 4) {
+            setExtensionVoltage(voltage);
+        } else {
+            setExtensionVoltage(4);
+        }
+        
+        
+        
+    }
+
+    public double calculateExtensionFF() {
+        //return (-1 * Math.Abs((1.44 * getArmPosition()) - 0.7632)) + 0.135;
+        return 0;
+    }
+
+    public void toggleRun() {
+        runStuff = !runStuff;
+    }
+
+
+    @Override
+    public void periodic(){
+        if(runStuff){
+            updateExtensionOutput();
+
+        }else{
+            setExtensionVoltage(0);
+        }
+        
+        SmartDashboard.putNumber("Extension Position", getExtensionAbsPosition());
+        SmartDashboard.putNumber("Extension Target", extensionTarget);
+        extensionTarget = SmartDashboard.getNumber("Change Extension Target", 0.47);
+        if (SmartDashboard.getNumber("Change Wrist Is Brake", 1) == 1) {
+            extensionMotor.setIdleMode(IdleMode.kBrake);
+        } else {
+            extensionMotor.setIdleMode(IdleMode.kCoast);
+        }
+        setExtensionGoal(extensionTarget);
+    }
+    
+}
