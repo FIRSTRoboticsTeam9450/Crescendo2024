@@ -43,7 +43,9 @@ public class RobotContainer {
     // controller.leftBumper().onFalse(new InstantCommand( () -> extSub.setExtensionVoltage(0)));
 
     /* intake */
-    controller.leftTrigger().onTrue(new IntakingCommand(intakeSub, 5));
+    //controller.leftTrigger().onTrue(new IntakingCommand(intakeSub, 5));
+    controller.leftTrigger().onTrue(new InstantCommand(() -> intakeSub.intakeNote(5)));
+    controller.leftBumper().onTrue(new InstantCommand(() -> intakeSub.setIntakeVoltage(-3)));
     //controller.rightBumper().onFalse(new InstantCommand( () -> wristIntake.stopIntake() ));
 
     /* toggle wrist idlemode */
