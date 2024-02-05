@@ -343,7 +343,7 @@ public class ArmWristSubsystem extends SubsystemBase{
     
 
     private double convertToVolts(double percentOutput){
-        return percentOutput * Robot.getInstance().getVoltage();
+        return percentOutput * /*Robot.getInstance().getVoltage()*/ 12;
     }
 
 
