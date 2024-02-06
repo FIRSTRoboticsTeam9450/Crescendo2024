@@ -25,12 +25,12 @@ import frc.robot.Robot;
 
 public class ArmWristSubsystem extends SubsystemBase{
     public enum Height{
-        LOW,
-        MID,
-        HIGH,
         GROUND,
+        HOLD,
+        SOURCE,
+        AMP,
     }
-    private Height currentHeight = Height.GROUND;
+    private Height lastHeight = Height.HOLD;
 
     
 
@@ -548,42 +548,34 @@ public class ArmWristSubsystem extends SubsystemBase{
     // --------------------------------------------------------------
 
     public void changeHeight(Height height){
-        currentHeight = height;
+        lastHeight = height;
     }
 
     public Height getHeight(){
-        return currentHeight;
+        return lastHeight;
     }
 
-    public void goToHeight() {
-        if(currentHeight == Height.HIGH){
-            setArmGoal(0.5); //Need to change
-        }else if(currentHeight == Height.MID){
-            setArmGoal(0.5); //Need to change
-        }else if(currentHeight == Height.LOW){
-            setArmGoal(0); //Need to change
-        }else{
-            setArmGoal(0.285);
+    public void goToPosition(Height pos) {
+
+        if(lastHeight == Height.GROUND && pos == Height.AMP){
+            // don't want to update lastHeight for amp
+            setArmWristExtGoal(0.511, 0.2, 0.4);
+        }else if(lastHeight == Height.SOURCE && pos == Height.AMP){
+            setArmWristExtGoal(0.511, 0.0487, 0.387);
+        }else if(pos == Height.GROUND){
+            lastHeight = Height.GROUND;
+            setArmWristExtGoal(0.1716, 0.5, 0.387);
+        }else if(pos == Height.HOLD){
+            lastHeight = Height.HOLD;
+            setArmWristExtGoal(0.108, 0.02, 0.66);
+        }else if(pos == Height.SOURCE){
+            lastHeight = Height.SOURCE;
+            setArmWristExtGoal(0.37, 0.387, 0.5346);
         }
+       
     }
 
-    public double convertHeightToTics(){
-        if(currentHeight == Height.HIGH){
-            return highTics; //37.071
-
-        }else if(currentHeight == Height.MID){
-            return midTics; //27.118
-
-        }else if(currentHeight == Height.LOW){
-            return lowTics; //14.452
-
-        }else{
-            return groundTics; //0
-
-        }
-    }
-
-
+    
     public void setPower(double power){
         // leftMotor.set(power);
         armMotor.set(power);

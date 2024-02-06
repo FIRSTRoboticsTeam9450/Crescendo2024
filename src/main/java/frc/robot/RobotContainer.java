@@ -23,6 +23,7 @@ import frc.robot.commands.swervedrive.drivebase.AbsoluteDriveAdv;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
 import frc.robot.subsystems.ArmWristSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.ArmWristSubsystem.Height;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import java.io.File;
 
@@ -143,15 +144,15 @@ public class RobotContainer
     driverController.x().onTrue(new InstantCommand( () -> armWristSub.toggleWrist()));
     driverController.a().onTrue(new InstantCommand(() -> armWristSub.toggleArm()));
     // Source
-    driverController.rightTrigger().onTrue(new InstantCommand(() -> armWristSub.setArmWristExtGoal(0.37, 0.387, 0.5346)));
+    driverController.rightTrigger().onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.SOURCE)));
     // Amp
-    driverController.rightBumper().onTrue(new InstantCommand(() -> armWristSub.setArmWristExtGoal(0.511, 0.0487, 0.387)));
+    driverController.rightBumper().onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.AMP)));
     
     // Ground
-    driverController.y().onTrue(new InstantCommand(() -> armWristSub.setArmWristExtGoal(0.1716, 0.5, 0.387)));
+    driverController.y().onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.GROUND)));
         
     // Holding Position
-    driverController.b().onTrue(new InstantCommand(() -> armWristSub.setArmWristExtGoal(0.108, 0.02, 0.66)));
+    driverController.b().onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.HOLD)));
 
   }
 
