@@ -136,7 +136,7 @@ public final class Constants
 
   public static final int wristId = 24;
 
-  public static final int intakeId = 25;
+  public static final int intakeId = 26;
   
 
   public static final double baseWidth = 0.4953;
