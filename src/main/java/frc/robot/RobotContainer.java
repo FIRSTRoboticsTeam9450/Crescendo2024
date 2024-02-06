@@ -7,6 +7,7 @@ package frc.robot;
 
 import frc.robot.commands.ClimbCommand;
 import frc.robot.commands.MotorCommand;
+import frc.robot.commands.ResetClimbCommand;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.MotorSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -40,7 +41,10 @@ public class RobotContainer {
    //driveTest.setDefaultCommand(new MotorCommand(driveTest));
     //Command climbCommand = new ClimbCommand(ClimbSubsystem);
 
-   // ClimbSubsystem.setDefaultCommand(climbCommand);
+    //ClimbSubsystem.setDefaultCommand(climbCommand);
+    m_driverController.a().onTrue(new ClimbCommand(ClimbSubsystem, 10));
+    m_driverController.y().onTrue(new ClimbCommand(ClimbSubsystem, 65));
+    m_driverController.x().onTrue(new ResetClimbCommand(ClimbSubsystem));
     configureBindings();
   }
 

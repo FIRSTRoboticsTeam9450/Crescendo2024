@@ -7,31 +7,40 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.ClimbSubsystem;
-import frc.robot.subsystems.MotorSubsystem;
 
-public class ClimbCommand extends Command {
-  double target;
+public class ResetClimbCommand extends Command {
+  CommandXboxController controller;
   /** Creates a new MotorCommand. */
-  ClimbSubsystem subsystem;
-  public ClimbCommand(ClimbSubsystem subsystem, double target) {
+  ClimbSubsystem climb;
+  public ResetClimbCommand(ClimbSubsystem climb) {
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(subsystem);
-    this.subsystem = subsystem;
-    this.target = target;
+    addRequirements(climb);
+    this.climb = climb;
   }
 
   @Override
   public void initialize() {
-      subsystem.setPid(true);
+    climb.setPid(false);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    climb.setLeftVoltage(-1);
+    climb.setRightVoltage(-1);
     /*
     Run Vortex motors at 0.2.
     */
-    subsystem.setTargetPosition(target);
+    
+  }
+
+  @Override
+  public boolean isFinished() {
+    if (climb.getLeftVoltage() == 0) {
+      climb.setPid(true);
+      return true;
+    }
+    return false;
   }
 
   

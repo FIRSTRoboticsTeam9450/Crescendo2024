@@ -7,28 +7,14 @@ package frc.robot.subsystems;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.CounterBase.EncodingType;
-import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
-import frc.robot.util.motorcontroller.BrushlessSparkFlexController;
 
-import com.ctre.phoenix.sensors.Pigeon2;
-import com.ctre.phoenix.sensors.PigeonIMU;
-import com.ctre.phoenix.sensors.WPI_Pigeon2;
-import com.ctre.phoenix.sensors.WPI_PigeonIMU;
-import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.SparkMaxAlternateEncoder.Type;
-import com.revrobotics.MotorFeedbackSensor;
-import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkAbsoluteEncoder;
-import com.revrobotics.SparkFlexExternalEncoder;
-import com.revrobotics.SparkPIDController;
 
 
 public class ClimbSubsystem extends SubsystemBase {
@@ -37,63 +23,130 @@ public class ClimbSubsystem extends SubsystemBase {
   /*
   Initalize each SparkFlex with specific IDs
   */
-  CANSparkFlex wrist;
-  SparkAbsoluteEncoder wristEncoder;
-  CANSparkMax climb;
-  RelativeEncoder encoder;
-  PIDController climbController;
-  DigitalInput limitSwitch;
-
-  /* <!---- IMPORTANT ----!>
-  Without the two line of code below, the vortexs run perfectly fine.
-  However, with the CTRE CANcoder initialized or the CTRE PigeonIMU, 
-  the issue of the vortexes switching between brake mode and 
-  coast mode occurs.
-  */
+  CANSparkMax leftClimb;
+  CANSparkMax rightClimb;
+  RelativeEncoder leftEncoder;
+  RelativeEncoder rightEncoder;
+  PIDController leftClimbController;
+  PIDController rightClimbController;
+  DigitalInput leftLimitSwitch;
+  DigitalInput rightLimitSwitch;
+  private double leftMotorVoltage;
+  private double rightMotorVoltage;
+  private boolean runPid;
   
   // 0 -> 97
   public ClimbSubsystem() {
-    climb = new CANSparkMax(25, MotorType.kBrushless);
-    encoder = climb.getEncoder();
-    encoder.setPosition(0);
-    climbController = new PIDController(0.5, 0, 0);
-    climbController.setSetpoint(90);
+    runPid = true;
 
-    wrist = new CANSparkFlex(30, MotorType.kBrushless);
-    wristEncoder = wrist.getAbsoluteEncoder(com.revrobotics.SparkAbsoluteEncoder.Type.kDutyCycle);
+    leftMotorVoltage = 0;
+    rightMotorVoltage = 0;
 
-    limitSwitch = new DigitalInput(0);
+    leftClimb = new CANSparkMax(30, MotorType.kBrushless);
+    rightClimb = new CANSparkMax(29, MotorType.kBrushless);
+
+    rightClimb.setInverted(false);
+
+    leftClimb.setSmartCurrentLimit(40);
+    rightClimb.setSmartCurrentLimit(40);
+
+    leftEncoder = leftClimb.getEncoder();
+    rightEncoder = rightClimb.getEncoder();
+
+    leftClimbController = new PIDController(0.5, 0, 0);
+    rightClimbController = new PIDController(0.5, 0, 0);
+
+    leftClimbController.setSetpoint(10);
+    rightClimbController.setSetpoint(10);
+
+    leftLimitSwitch = new DigitalInput(0);
+    rightLimitSwitch = new DigitalInput(1);
+
+    rightClimb.burnFlash();
   } 
 
   
-  public void runMotor(double power) {
-    climb.setVoltage(power);
+  public void setLeftVoltage(double volts) {
+    leftMotorVoltage = volts;
   }
 
-  public double getPosition() {
-    return encoder.getPosition();
+  public void setRightVoltage(double volts) {
+    rightMotorVoltage = volts;
+  }
+
+  public double getLeftPosition() {
+    return leftEncoder.getPosition();
+  }
+
+  public double getRightPosition() {
+    return rightEncoder.getPosition();
   }
 
   public void setTargetPosition(double position) {
-    climbController.setSetpoint(position);
+    leftClimbController.setSetpoint(position);
+    rightClimbController.setSetpoint(position);
   }
 
   public void updatePID() {
-    System.out.println("Running!");
-    double power = climbController.calculate(getPosition());
-    power = MathUtil.clamp(power, -12, 12);
-    SmartDashboard.putNumber("Climb power", power);
-    //power = -1;
-    runMotor(power);
+    double leftPower = leftClimbController.calculate(getLeftPosition());
+    leftPower = MathUtil.clamp(leftPower, -2, 2);
+    SmartDashboard.putNumber("Left Climb power", leftPower);
+    setLeftVoltage(leftPower);
+
+    double rightPower = rightClimbController.calculate(getRightPosition());
+    rightPower = MathUtil.clamp(rightPower, -2, 2);
+    SmartDashboard.putNumber("Right Climb power", rightPower);
+    setRightVoltage(rightPower);
+  }
+
+  public void setPid(boolean runPid) {
+    this.runPid = runPid;
+    setLeftVoltage(0);
+    setRightVoltage(0);
+  }
+
+  public boolean getLeftLimitSwitch() {
+    return !leftLimitSwitch.get();
+  }
+
+  public boolean getRightLimitSwitch() {
+    return !rightLimitSwitch.get();
+  }
+
+  public double getLeftVoltage() {
+    return leftMotorVoltage;
+  }
+
+  public double getRightVoltage() {
+    return rightMotorVoltage;
   }
 
   @Override
   public void periodic() {
+    if (runPid) {
+      updatePID();
+    }
+    if (getLeftLimitSwitch() && leftMotorVoltage < 0) {
+      leftMotorVoltage = 0;
+      leftEncoder.setPosition(0);
+    }
+    if (getRightLimitSwitch() && rightMotorVoltage < 0) {
+      rightMotorVoltage = 0;
+      rightEncoder.setPosition(0);
+    }
+    leftClimb.setVoltage(leftMotorVoltage);
+    rightClimb.setVoltage(rightMotorVoltage);
+
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("Climb pos", getPosition());
-    SmartDashboard.putNumber("Wrist Encoder", wristEncoder.getPosition());
-    SmartDashboard.putNumber("Target", climbController.getSetpoint());
-    SmartDashboard.putNumber("Error", climbController.getPositionError());
-    SmartDashboard.putBoolean("Switch", limitSwitch.get());
+    SmartDashboard.putNumber("Left Climb pos", getLeftPosition());
+        SmartDashboard.putNumber("Right Climb pos", getRightPosition());
+    SmartDashboard.putNumber("Left Climb Voltage", leftMotorVoltage);
+        SmartDashboard.putNumber("Right Climb Voltage", rightMotorVoltage);
+    SmartDashboard.putNumber("Left Target", leftClimbController.getSetpoint());
+        SmartDashboard.putNumber("Right Target", rightClimbController.getSetpoint());
+    SmartDashboard.putNumber("Error", leftClimbController.getPositionError());
+    SmartDashboard.putBoolean("Left Switch", getLeftLimitSwitch());
+        SmartDashboard.putBoolean("Right Switch", getRightLimitSwitch());
+    SmartDashboard.putBoolean("PID", runPid);
   }
 }
