@@ -76,14 +76,14 @@ public class IntakeSubsystem extends SubsystemBase {
     }
   }
   public void intakeNote(double voltage){
-    if(getTemp() < 60){
+    
       if (getIntakeVelocity() > -2500 && !isIntaking) {
         setIntakeVoltage(voltage);
         isIntaking = !isIntaking;
       } else {
         setIntakeVoltage(0);
       }
-    }
+    
   }
 
   public double getTemp(){
