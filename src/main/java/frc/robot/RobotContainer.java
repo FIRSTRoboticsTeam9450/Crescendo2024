@@ -9,6 +9,7 @@ import frc.robot.commands.ClimbCommand;
 import frc.robot.commands.MotorCommand;
 import frc.robot.commands.ResetClimbCommand;
 import frc.robot.subsystems.ClimbSubsystem;
+import frc.robot.subsystems.IntakeTestingSubsystem;
 import frc.robot.subsystems.MotorSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -29,7 +30,7 @@ public class RobotContainer {
 
   private final ClimbSubsystem ClimbSubsystem = new ClimbSubsystem();
   // private final MotorSubsystem driveTest = new MotorSubsystem();
-
+  // private final IntakeTestingSubsystem intake = new IntakeTestingSubsystem();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
