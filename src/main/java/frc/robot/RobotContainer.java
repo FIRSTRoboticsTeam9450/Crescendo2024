@@ -128,7 +128,7 @@ public class RobotContainer
     /* intake */
     // driverController.leftTrigger().onTrue(new IntakingCommand(intakeSub, 5));
     driverController.leftTrigger().onTrue(new InstantCommand(() -> intakeSub.intakeNote(5)));
-    driverController.leftBumper().onTrue(new InstantCommand(() -> intakeSub.setIntakePower(0.4)));
+    driverController.leftBumper().onTrue(new InstantCommand(() -> intakeSub.setIntakeVoltage(5)));
     //driverController.rightBumper().onFalse(new InstantCommand( () -> wristIntake.stopIntake() ));
 
     /* toggle wrist idlemode */
