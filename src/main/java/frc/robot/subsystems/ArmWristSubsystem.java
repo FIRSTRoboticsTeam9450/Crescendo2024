@@ -36,14 +36,14 @@ public class ArmWristSubsystem extends SubsystemBase{
 
     private double armTarget = 0.37;//0.485;  //.453
     private double wristTarget = 0.387;
-    private double extensionTarget = 0.68;
+    private double extensionTarget = 0.72;
 
     private double armHardLowerLimit = 0.105;//0.08;
     private double armHardUpperLimit = 0.7;//0.51;
     private double wristHardLowerLimit = 0.033; 
-    private double wristHardUpperLimit = 0.632; 
-    private double extHardLowerLimit = 0.7; 
-    private double extHardUpperLimit = 0.1;
+    private double wristHardUpperLimit = 0.632;
+    private double extHardLowerLimit = 0.75; 
+    private double extHardUpperLimit = 0.06;
 
     private double armStraightUp = 0.46;
     private double armBalanced = 0.36;
@@ -76,7 +76,7 @@ public class ArmWristSubsystem extends SubsystemBase{
 
     
 
-    private final ProfiledPIDController armPid = new ProfiledPIDController(40, 0, 0, new Constraints(1, 0.5));//maxVel = 3.5 and maxAccel = 2.5
+    private final ProfiledPIDController armPid = new ProfiledPIDController(40, 0, 0, new Constraints(4, 3));//maxVel = 3.5 and maxAccel = 2.5
     private final PIDController wristPIDController = new PIDController(40, 0, 0); 
     private final PIDController extensionPid = new PIDController(45, 0,0);
 
@@ -132,7 +132,7 @@ public class ArmWristSubsystem extends SubsystemBase{
         wrist.burnFlash();
         extensionMotor.burnFlash();
 
-        goToPosition(Height.HOLD);
+        goToPosition(Height.SOURCE);
 
 
         SmartDashboard.putNumber("Change Arm Target", armTarget);
@@ -298,12 +298,17 @@ public class ArmWristSubsystem extends SubsystemBase{
         updateArmFFkg();
         double ffValue = getFFEquationVoltage()/*calculateRotationFF()*/;
         double pidValue = calculateRotationPID();
-        double voltage = MathUtil.clamp(pidValue + ffValue, -4, 4);
+
+        double voltage = pidValue + ffValue;
+        SmartDashboard.putNumber("Rotation Voltage", voltage);
+
+        //voltage = MathUtil.clamp(voltage, -4, 4);
+
         // double voltage = convertToVolts(percentOutput);
         // SmartDashboard.putNumber("percentOutput", percentOutput);
         SmartDashboard.putNumber("Rotation FF", ffValue);
         SmartDashboard.putNumber("PIDRotate", pidValue);
-        SmartDashboard.putNumber("Rotation Voltage", voltage);
+        
         
        // boolean limit = (getAbsArmPos() >= armHardUpperLimit && Math.signum(voltage) == 1.0) || (getAbsArmPos() <=  && Math.signum(voltage) == -1.0);
        // if(limit){
@@ -564,17 +569,17 @@ public class ArmWristSubsystem extends SubsystemBase{
             // don't want to update lastHeight for amp
             setArmWristExtGoal(0.531, 0.15, 0.25);
         }else if((lastHeight == Height.SOURCE || lastHeight == Height.HOLD) && pos == Height.AMP){
-            setArmWristExtGoal(0.511, 0.0487, 0.387);
+            setArmWristExtGoal(0.511, 0.0487, 0.47); //extTarget = 0.387
         }else if(pos == Height.GROUND){
             lastHeight = Height.GROUND;
           
-            setArmWristExtGoal(0.1716, 0.5, 0.387);
+            setArmWristExtGoal(0.1716, 0.51, 0.463); //extTarget = 0.387
         }else if(pos == Height.HOLD){
             lastHeight = Height.HOLD;
           
-            setArmWristExtGoal(0.108, 0.05, 0.66);
+            setArmWristExtGoal(0.13, 0.05, 0.73); 
         }else if(pos == Height.SOURCE){
-            setArmWristExtGoal(0.37, 0.387, 0.5346);
+            setArmWristExtGoal(0.37, 0.387, 0.55); //extTarget = 0.5346
         }
        
     }
