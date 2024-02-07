@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -120,7 +121,7 @@ public class RobotContainer
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
 
     
-    driverController.rightStick().onTrue(new InstantCommand(drivebase::zeroGyro));
+    driverController.rightBumper().onTrue(new InstantCommand(drivebase::zeroGyro));
     //new JoystickButton(driverXbox, 1).onTrue((new InstantCommand(drivebase::zeroGyro)));
     new JoystickButton(driverXbox, 3).onTrue(new InstantCommand(drivebase::addFakeVisionReading));
 //    new JoystickButton(driverXbox, 3).whileTrue(new RepeatCommand(new InstantCommand(drivebase::lock, drivebase)));
@@ -130,8 +131,12 @@ public class RobotContainer
     /* intake */
     driverController.leftTrigger().onTrue(new IntakingCommand(intakeSub, 5));
     // driverController.leftTrigger().onTrue(new InstantCommand(() -> intakeSub.intakeNote(5)));
-    driverController.leftBumper().onTrue( new TimedIntakeSetPowerCommand(intakeSub, 10, 1.5));
+    
+    //driverController.leftBumper().onTrue( new TimedIntakeSetPowerCommand(intakeSub, 10, 1.5));
+    
     // /* outtake */
+    driverController.rightTrigger().onTrue(new TimedIntakeSetPowerCommand(intakeSub, 10, 1.5));
+
     //  driverController.leftBumper().onFalse(new InstantCommand( () -> intakeSub.stopIntake() ));
     
     //driverController.rightBumper().onFalse(new InstantCommand( () -> wristIntake.stopIntake() ));
@@ -140,18 +145,28 @@ public class RobotContainer
     //driverController.a().onTrue(new InstantCommand( () -> armWristSub.toggleWristBrake() ));
  
     // /* arm *//* right trigger run wrist pid */
-    driverController.x().onTrue(new InstantCommand( () -> armWristSub.toggleWrist()));
-    driverController.a().onTrue(new InstantCommand(() -> armWristSub.toggleArm()));
+    //driverController.x().onTrue(new InstantCommand( () -> armWristSub.toggleWrist()));
+    //driverController.a().onTrue(new InstantCommand(() -> armWristSub.toggleArm()));
+    
     // Source
-    driverController.rightTrigger().onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.SOURCE)));
+    driverController.y().onTrue(new SequentialCommandGroup(
+      new InstantCommand(() -> armWristSub.goToPosition(Height.SOURCE)),
+      new IntakingCommand(intakeSub, 5)
+      ));
+    //driverController.rightTrigger().onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.SOURCE)));
+    
     // Amp
-    driverController.rightBumper().onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.AMP)));
+    driverController.b().onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.AMP)));
+    //driverController.rightBumper().onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.AMP)));
     
     // Ground
-    driverController.y().onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.GROUND)));
+    driverController.a().onTrue(new SequentialCommandGroup(
+      new InstantCommand(() -> armWristSub.goToPosition(Height.GROUND)),
+      new IntakingCommand(intakeSub, 5)
+      ));
         
     // Holding Position
-    driverController.b().onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.HOLD)));
+    driverController.x().onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.HOLD)));
 
   }
 
