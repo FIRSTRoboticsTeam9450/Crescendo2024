@@ -53,6 +53,8 @@ public class ArmWristSubsystem extends SubsystemBase{
     boolean wristPIDRun;
     boolean armPIDRun;
 
+    
+
     /* Motors */
     private CANSparkMax armMotor = new CANSparkMax(Constants.armId, MotorType.kBrushless);
     private CANSparkFlex wrist = new CANSparkFlex(Constants.wristId, MotorType.kBrushless);
@@ -75,8 +77,8 @@ public class ArmWristSubsystem extends SubsystemBase{
     
 
     private final ProfiledPIDController armPid = new ProfiledPIDController(40, 0, 0, new Constraints(1, 0.5));//maxVel = 3.5 and maxAccel = 2.5
-    private final PIDController wristPIDController = new PIDController(50, 0, 0); 
-    private final PIDController extensionPid = new PIDController(35, 0,0);
+    private final PIDController wristPIDController = new PIDController(40, 0, 0); 
+    private final PIDController extensionPid = new PIDController(45, 0,0);
 
 
     private double ticsPerArmRevolution = 144, ticsPerWristRevolution = /*172.8*/ 120, lowTics = (50/360) * ticsPerArmRevolution, midTics = (100/360) * ticsPerArmRevolution, highTics = (135/360) * ticsPerArmRevolution, groundTics = (37.4/360) * ticsPerArmRevolution;
@@ -130,9 +132,7 @@ public class ArmWristSubsystem extends SubsystemBase{
         wrist.burnFlash();
         extensionMotor.burnFlash();
 
-        setArmGoal(armTarget);
-        setWristSetpoint(wristTarget);
-        setExtensionGoal(extensionTarget);
+        goToPosition(Height.HOLD);
 
 
         SmartDashboard.putNumber("Change Arm Target", armTarget);
@@ -163,6 +163,7 @@ public class ArmWristSubsystem extends SubsystemBase{
     }
 
     public void setExtensionGoal(double target){
+
         extensionTarget = target;
     }
 
@@ -184,10 +185,10 @@ public class ArmWristSubsystem extends SubsystemBase{
 
         SmartDashboard.putNumber("Extension Voltage", voltage);
 
-         if (Math.abs(voltage) < 4) {
+         if (Math.abs(voltage) < 8) {
             setExtensionVoltage(voltage);
         } else {
-            setExtensionVoltage(4 * Math.signum(voltage));
+            setExtensionVoltage(8 * Math.signum(voltage));
         }
         
         
@@ -279,7 +280,6 @@ public class ArmWristSubsystem extends SubsystemBase{
         setArmGoal(armTarget);
         setWristSetpoint(wristTarget);
         setExtensionGoal(extTarget);
-
     }
 
     
@@ -424,7 +424,7 @@ public class ArmWristSubsystem extends SubsystemBase{
 
 
 
-
+   
 
     @Override
     public void periodic(){
@@ -443,16 +443,19 @@ public class ArmWristSubsystem extends SubsystemBase{
                 armMotor.setVoltage(0);
             }
            
-            updateExtensionOutput();
+            
 
+          
 
-            if (wristPIDRun) {
-                updateWristPos();
-            } else {
-                wrist.setVoltage(0);
+            if(Math.abs(getAbsArmPos() - armTarget) < 0.2){
+                if (wristPIDRun) {
+                    updateWristPos();
+                } else {
+                    wrist.setVoltage(0);
+                }
+                updateExtensionOutput();
             }
-
-
+            
 
         
         }else{
@@ -559,17 +562,18 @@ public class ArmWristSubsystem extends SubsystemBase{
 
         if(lastHeight == Height.GROUND && pos == Height.AMP){
             // don't want to update lastHeight for amp
-            setArmWristExtGoal(0.511, 0.2, 0.4);
-        }else if(lastHeight == Height.SOURCE && pos == Height.AMP){
+            setArmWristExtGoal(0.531, 0.15, 0.25);
+        }else if((lastHeight == Height.SOURCE || lastHeight == Height.HOLD) && pos == Height.AMP){
             setArmWristExtGoal(0.511, 0.0487, 0.387);
         }else if(pos == Height.GROUND){
             lastHeight = Height.GROUND;
+          
             setArmWristExtGoal(0.1716, 0.5, 0.387);
         }else if(pos == Height.HOLD){
             lastHeight = Height.HOLD;
-            setArmWristExtGoal(0.108, 0.02, 0.66);
+          
+            setArmWristExtGoal(0.108, 0.05, 0.66);
         }else if(pos == Height.SOURCE){
-            lastHeight = Height.SOURCE;
             setArmWristExtGoal(0.37, 0.387, 0.5346);
         }
        

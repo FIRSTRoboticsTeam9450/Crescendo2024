@@ -20,6 +20,7 @@ public class TimedIntakeSetPowerCommand extends Command {
     // Use addRequirements() here to declare subsystem dependencies.
     this.intake = intake;
     this.voltage = voltage;
+    this.seconds = seconds;
     time = new Timer();
     addRequirements(intake);
   }
@@ -30,15 +31,13 @@ public class TimedIntakeSetPowerCommand extends Command {
     time.reset();
     time.start();
     finished = false;
+    intake.setIntakeVoltage(-Math.abs(voltage));
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(time.get() < seconds){
-        intake.setIntakeVoltage(voltage);
-    }else{
-        intake.setIntakeVoltage(0);
+    if(time.get() > seconds){
         finished = true;
     }
 
@@ -47,7 +46,7 @@ public class TimedIntakeSetPowerCommand extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-
+    intake.setIntakeVoltage(0);
   }
 
   // Returns true when the command should end.

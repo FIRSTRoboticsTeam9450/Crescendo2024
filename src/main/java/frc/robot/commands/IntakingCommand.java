@@ -39,13 +39,13 @@ public class IntakingCommand extends Command {
     if(intake.getTemp() > 60){
         intake.setIntakeVoltage(0);
     }else{
-        if(ramp && intake.getIntakeVelocity() > -2500){
-            intake.setIntakeVoltage(-1);
-        }else{
-            intake.setIntakeVoltage(intakeVoltage);
+        if (!ramp) {
+          intake.setIntakeVoltage(intakeVoltage);
             if(intake.getIntakeVelocity() < -2500 || timer.get() > 1){
                 ramp = true;
             }
+        } else if(ramp && intake.getIntakeVelocity() > -700){
+            intake.setIntakeVoltage(0.01);
         }
     }
   }

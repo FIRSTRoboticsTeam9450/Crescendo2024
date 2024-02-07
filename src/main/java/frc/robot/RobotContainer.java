@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.IntakingCommand;
+import frc.robot.commands.TimedIntakeSetPowerCommand;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDrive;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteFieldDrive;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDriveAdv;
@@ -127,18 +128,16 @@ public class RobotContainer
 
 
     /* intake */
-    // driverController.leftTrigger().onTrue(new IntakingCommand(intakeSub, 5));
-    driverController.leftTrigger().onTrue(new InstantCommand(() -> intakeSub.intakeNote(5)));
-    driverController.leftBumper().onTrue(new InstantCommand(() -> intakeSub.setIntakeVoltage(5)));
+    driverController.leftTrigger().onTrue(new IntakingCommand(intakeSub, 5));
+    // driverController.leftTrigger().onTrue(new InstantCommand(() -> intakeSub.intakeNote(5)));
+    driverController.leftBumper().onTrue( new TimedIntakeSetPowerCommand(intakeSub, 10, 1.5));
+    // /* outtake */
+    //  driverController.leftBumper().onFalse(new InstantCommand( () -> intakeSub.stopIntake() ));
+    
     //driverController.rightBumper().onFalse(new InstantCommand( () -> wristIntake.stopIntake() ));
 
     /* toggle wrist idlemode */
     //driverController.a().onTrue(new InstantCommand( () -> armWristSub.toggleWristBrake() ));
-
-    
-    // /* outtake */
-    //  driverController.leftBumper().onFalse(new InstantCommand( () -> intakeSub.stopIntake() ));
-    
  
     // /* arm *//* right trigger run wrist pid */
     driverController.x().onTrue(new InstantCommand( () -> armWristSub.toggleWrist()));

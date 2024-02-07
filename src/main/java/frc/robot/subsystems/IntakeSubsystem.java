@@ -29,7 +29,7 @@ public class IntakeSubsystem extends SubsystemBase {
   public IntakeSubsystem() {
     
     intake.setIdleMode(IdleMode.kCoast);
-    intake.setSmartCurrentLimit(10);
+    intake.setSmartCurrentLimit(20);
     intake.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 300);   //For follower motors
     intake.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 65535); // For Motor Position
     intake.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 65535); //Analog Sensor Voltage + Velocity + position
@@ -97,8 +97,8 @@ public class IntakeSubsystem extends SubsystemBase {
   public void setIntakePower(double power) { intake.set(-power); }
 
   //NEED TO CHECK IF THIS IS THE RIGHT DIRECTION
-  public void setIntakeVoltage(double voltage) { intake.setVoltage(-voltage); }
-
+  public void setIntakeVoltage(double voltage) { intake.setVoltage(-voltage); SmartDashboard.putNumber("Intake Voltage", -voltage);}
+  public void setOuttake(double voltageMagnitude) { stopIntake(); intake.setVoltage(Math.abs(voltageMagnitude)); }
 
   public double getIntakePos() { return intake.getEncoder().getPosition(); }
   public void stopIntake() { intake.stopMotor(); isIntaking = !isIntaking;}
