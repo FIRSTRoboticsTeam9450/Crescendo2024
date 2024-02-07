@@ -46,7 +46,7 @@ public class TimedIntakeSetPowerCommand extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    intake.setIntakeVoltage(0);
+    intake.rampDownVoltage(-Math.abs(voltage), 0, 0.5);
   }
 
   // Returns true when the command should end.

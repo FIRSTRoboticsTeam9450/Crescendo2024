@@ -220,16 +220,16 @@ public class ArmWristSubsystem extends SubsystemBase{
 
    
     
-    // for equation, see https://www.desmos.com/calculator/pqkdjoydzd
+    // for equation, see https://www.desmos.com/calculator/ygpschqwqe
     public double updateArmFF(){
         //return (-0.16134 * extPosition + armFFkg.getAsDouble());
-        return -0.56966* getExtensionAbsPosition() + 1.39876302083; // old b value was 1.52295
+        // return -0.56966 * getExtensionAbsPosition() + 1.39876302083; // old b value was 1.52295
+        double slope = (1 - 1.4375) / (extHardLowerLimit - extHardUpperLimit);
+        return slope * getExtensionAbsPosition() + (1 - slope * extHardLowerLimit);
     }
-    public void updateArmFFkg() {
-        armFF = new ArmFeedforward(0, armFFkg.getAsDouble(), 0);
-    }
+    
 
-    // cosine equation FF, see https://www.desmos.com/calculator/f6nfrvq9hk
+    // cosine equation FF, see https://www.desmos.com/calculator/ygpschqwqe
     public double getFFEquationVoltage() {
         
         return  0.42 * updateArmFF() * Math.cos((2*Math.PI/((armBalanced - armPurpenGround)*4)) * (getAbsArmPos() - armPurpenGround)); 
@@ -295,7 +295,7 @@ public class ArmWristSubsystem extends SubsystemBase{
     
 
     public void updateRotationOutput(){
-        updateArmFFkg();
+        
         double ffValue = getFFEquationVoltage()/*calculateRotationFF()*/;
         double pidValue = calculateRotationPID();
 

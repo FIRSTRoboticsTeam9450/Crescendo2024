@@ -10,6 +10,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -24,11 +25,18 @@ public class IntakeSubsystem extends SubsystemBase {
 
   /* Other Values */
   boolean isIntaking;
+  boolean rampDownBool;
+  double currentVoltage;
+  double voltageTo;
+  double rampTime;
+
+
+  Timer rampDownTimer;
 
   /* Constructor -> creates new WristIntakeSubsystem */
   public IntakeSubsystem() {
     
-    intake.setIdleMode(IdleMode.kCoast);
+    intake.setIdleMode(IdleMode.kBrake);
     intake.setSmartCurrentLimit(20);
     intake.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 300);   //For follower motors
     intake.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 65535); // For Motor Position
@@ -37,6 +45,8 @@ public class IntakeSubsystem extends SubsystemBase {
     intake.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 50); //Duty Cycle Absolute Encoder Position and Abs angle
     intake.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 65535); //Duty Cycle Absolute Encoder Velocity + Frequency
     intake.burnFlash();
+    rampDownBool = false;
+    rampDownTimer = new Timer();
     isIntaking = false;
   }
 
@@ -52,6 +62,15 @@ public class IntakeSubsystem extends SubsystemBase {
     
     //System.out.println(getIntakeVelocity());
     
+    if (rampDownBool) {
+      if (rampDownTimer.get() < rampTime) {
+        setIntakeVoltage(-(currentVoltage - voltageTo) * rampDownTimer.get() / rampTime + currentVoltage);
+      } else {
+        stopIntake();
+        rampDownBool = false;
+        rampDownTimer.stop();
+      }
+    }
   }
 
   /* Wrist Methods */
@@ -89,6 +108,15 @@ public class IntakeSubsystem extends SubsystemBase {
   public double getTemp(){
     return intake.getMotorTemperature();
   }
+  
+  // linear ramp here https://www.desmos.com/calculator/ygpschqwqe
+  public void rampDownVoltage(double currentVoltage, double voltageTo, double rampTime) {
+    this.currentVoltage = currentVoltage;
+    this.voltageTo = voltageTo;
+    this.rampTime = rampTime;
+    rampDownTimer.restart();
+    rampDownBool = true;
+  }
 
   
 
@@ -101,7 +129,7 @@ public class IntakeSubsystem extends SubsystemBase {
   public void setOuttake(double voltageMagnitude) { stopIntake(); intake.setVoltage(Math.abs(voltageMagnitude)); }
 
   public double getIntakePos() { return intake.getEncoder().getPosition(); }
-  public void stopIntake() { intake.stopMotor(); isIntaking = !isIntaking;}
+  public void stopIntake() { intake.stopMotor(); isIntaking = false;}
   public double getIntakeVelocity() { return intake.getEncoder().getVelocity(); }
   /* Wrist Methods [Small] */  /* Range: (0, -16.27) [0 = side w/ wire management] */
                               // abs encoder (0.97, 0.399)
