@@ -210,6 +210,13 @@ public final class Constants
   public static double minWristPos = 0.421 + 0.02;//0.68
   public static double midWristPos = 0.68;
 
+  public static double maxWristPOS = 0.632;
+  public static double minWristPOS = 0.033;
+  public static double maxExtPos = 0.06;
+  public static double minExtPos = 0.75;
+  public static double maxArmPos = 0.7;
+  public static double minArmPos = 0.105;
+  
   public static boolean intakeIsOut = false;
 
   //Width:  19.5in 0.4953m
