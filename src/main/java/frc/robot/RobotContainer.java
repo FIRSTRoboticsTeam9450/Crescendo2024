@@ -49,9 +49,10 @@ public class RobotContainer
   // CommandJoystick rotationController = new CommandJoystick(1);
   // Replace with CommandPS4Controller or CommandJoystick if needed
   CommandXboxController driverController = new CommandXboxController(0);
+  CommandXboxController armController = new CommandXboxController(1);
   //CommandXboxController driverController = new CommandXboxController(0);
   // CommandJoystick driverController   = new CommandJoystick(3);//(OperatorConstants.DRIVER_CONTROLLER_PORT);
-  XboxController driverXbox = new XboxController(0);
+  //XboxController driverXbox = new XboxController(0);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -61,50 +62,20 @@ public class RobotContainer
     // Configure the trigger bindings
     configureBindings();
 
-    AbsoluteDrive closedAbsoluteDrive = new AbsoluteDrive(drivebase,
-                                                          // Applies deadbands and inverts controls because joysticks
-                                                          // are back-right positive while robot
-                                                          // controls are front-left positive
-                                                          () -> MathUtil.applyDeadband(driverXbox.getLeftY(),
-                                                                                       OperatorConstants.LEFT_Y_DEADBAND),
-                                                          () -> MathUtil.applyDeadband(driverXbox.getLeftX(),
-                                                                                       OperatorConstants.LEFT_X_DEADBAND),
-                                                          () -> -driverXbox.getRightX(),
-                                                          () -> -driverXbox.getRightY());
-
-    AbsoluteFieldDrive closedFieldAbsoluteDrive = new AbsoluteFieldDrive(drivebase,
-                                                                         () ->
-                                                                             MathUtil.applyDeadband(driverXbox.getLeftY(),
-                                                                                                    OperatorConstants.LEFT_Y_DEADBAND),
-                                                                         () -> MathUtil.applyDeadband(driverXbox.getLeftX(),
-                                                                                                      OperatorConstants.LEFT_X_DEADBAND),
-                                                                         () -> driverXbox.getRawAxis(4));
-
-    AbsoluteDriveAdv closedAbsoluteDriveAdv = new AbsoluteDriveAdv(drivebase,
-                                                                      () -> MathUtil.applyDeadband(driverXbox.getLeftY(),
-                                                                                                OperatorConstants.LEFT_Y_DEADBAND),
-                                                                      () -> MathUtil.applyDeadband(driverXbox.getLeftX(),
-                                                                                                  OperatorConstants.LEFT_X_DEADBAND),
-                                                                      () -> MathUtil.applyDeadband(driverXbox.getRightX(),
-                                                                                                  OperatorConstants.RIGHT_X_DEADBAND), 
-                                                                      driverXbox::getYButtonPressed, 
-                                                                      driverXbox::getAButtonPressed, 
-                                                                      driverXbox::getXButtonPressed, 
-                                                                      driverXbox::getBButtonPressed);
-
-    TeleopDrive simClosedFieldRel = new TeleopDrive(drivebase,
-                                                    () -> MathUtil.applyDeadband(driverXbox.getLeftY(),
-                                                                                 OperatorConstants.LEFT_Y_DEADBAND),
-                                                    () -> MathUtil.applyDeadband(driverXbox.getLeftX(),
-                                                                                 OperatorConstants.LEFT_X_DEADBAND),
-                                                    () -> driverXbox.getRawAxis(4), () -> true);
+    
+    // TeleopDrive simClosedFieldRel = new TeleopDrive(drivebase,
+    //                                                 () -> MathUtil.applyDeadband(driverXbox.getLeftY(),
+    //                                                                              OperatorConstants.LEFT_Y_DEADBAND),
+    //                                                 () -> MathUtil.applyDeadband(driverXbox.getLeftX(),
+    //                                                                              OperatorConstants.LEFT_X_DEADBAND),
+    //                                                 () -> driverXbox.getRawAxis(4), () -> true);
     TeleopDrive closedFieldRel = new TeleopDrive(
         drivebase,
         () -> MathUtil.applyDeadband(driverController.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
         () -> MathUtil.applyDeadband(driverController.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
         () -> driverController.getRawAxis(4), () -> true); // change the int in the parameter to the appropriate axis
 
-    drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simClosedFieldRel : closedFieldRel);
+    drivebase.setDefaultCommand(/*!RobotBase.isSimulation() ? simClosedFieldRel :*/ closedFieldRel);
     
   } // FR: 323.086, FL: 303.486
   // 
@@ -123,19 +94,19 @@ public class RobotContainer
     
     driverController.rightBumper().onTrue(new InstantCommand(drivebase::zeroGyro));
     //new JoystickButton(driverXbox, 1).onTrue((new InstantCommand(drivebase::zeroGyro)));
-    new JoystickButton(driverXbox, 3).onTrue(new InstantCommand(drivebase::addFakeVisionReading));
+    //new JoystickButton(driverXbox, 3).onTrue(new InstantCommand(drivebase::addFakeVisionReading));
 //    new JoystickButton(driverXbox, 3).whileTrue(new RepeatCommand(new InstantCommand(drivebase::lock, drivebase)));
 
 
 
     /* intake */
-    driverController.leftTrigger().onTrue(new IntakingCommand(intakeSub, 5));
+    armController.leftTrigger().onTrue(new IntakingCommand(intakeSub, 5));
     // driverController.leftTrigger().onTrue(new InstantCommand(() -> intakeSub.intakeNote(5)));
     
     //driverController.leftBumper().onTrue( new TimedIntakeSetPowerCommand(intakeSub, 10, 1.5));
     
     // /* outtake */
-    driverController.rightTrigger().onTrue(new TimedIntakeSetPowerCommand(intakeSub, 10, 1.5));
+    armController.rightTrigger().onTrue(new TimedIntakeSetPowerCommand(intakeSub, 10, 1.5));
 
     //  driverController.leftBumper().onFalse(new InstantCommand( () -> intakeSub.stopIntake() ));
     
@@ -149,24 +120,24 @@ public class RobotContainer
     //driverController.a().onTrue(new InstantCommand(() -> armWristSub.toggleArm()));
     
     // Source
-    driverController.y().onTrue(new SequentialCommandGroup(
+    armController.y().onTrue(new SequentialCommandGroup(
       new InstantCommand(() -> armWristSub.goToPosition(Height.SOURCE)),
       new IntakingCommand(intakeSub, 5)
       ));
     //driverController.rightTrigger().onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.SOURCE)));
     
     // Amp
-    driverController.b().onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.AMP)));
+    armController.b().onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.AMP)));
     //driverController.rightBumper().onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.AMP)));
     
     // Ground
-    driverController.a().onTrue(new SequentialCommandGroup(
+    armController.a().onTrue(new SequentialCommandGroup(
       new InstantCommand(() -> armWristSub.goToPosition(Height.GROUND)),
       new IntakingCommand(intakeSub, 5)
       ));
         
     // Holding Position
-    driverController.x().onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.HOLD)));
+    armController.x().onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.HOLD)));
 
   }
 

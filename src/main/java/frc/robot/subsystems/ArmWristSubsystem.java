@@ -33,7 +33,9 @@ public class ArmWristSubsystem extends SubsystemBase{
     private Height lastHeight = Height.HOLD;
 
     
-
+    //Extension Limiter ----
+    private double radiusX, radiusY, extensionLength, totalextensionX, totalextensionY, theta;
+    //----
     private double armTarget = 0.37;//0.485;  //.453
     private double wristTarget = 0.387;
     private double extensionTarget = 0.72;
@@ -433,13 +435,22 @@ public class ArmWristSubsystem extends SubsystemBase{
 
     @Override
     public void periodic(){
-        if(runStuff){
-            
+                
+        theta = (((Constants.Arm.intakeArmAngle - Constants.Arm.ampArmAngle)/(Constants.Arm.intakeArmTics - Constants.Arm.ampArmTics)) * getAbsArmPos()) + (Constants.Arm.intakeArmAngle - (((Constants.Arm.intakeArmAngle - Constants.Arm.ampArmAngle)/(Constants.Arm.intakeArmTics - Constants.Arm.ampArmTics)) * Constants.Arm.intakeArmTics));
+        radiusX = Constants.Arm.armLength - Math.abs((getWristAbsPos() - Constants.Wrist.straightWristTics) / ((Constants.Wrist.upWristTics-Constants.Wrist.straightWristTics)/(Constants.Wrist.straightWristInches-Constants.Wrist.upWristInches))) + Constants.Wrist.straightWristInches;
+        radiusY = radiusX + 1;
+        extensionLength = (Constants.Extension.maxExtensionInches / (Constants.Extension.maxExtensionTics - Constants.Extension.zeroTics)) * getExtensionAbsPosition() - (Constants.Extension.zeroTics * (Constants.Extension.maxExtensionInches/(Constants.Extension.maxExtensionTics - Constants.Extension.zeroTics)));
+        totalextensionX = ((radiusX + extensionLength) * Math.abs(Math.cos(theta))) - Constants.Chassis.pivotToFront;
+        totalextensionY = ((radiusY + extensionLength) * Math.sin(theta));
+        SmartDashboard.putNumber("totalExtensionX", totalextensionX);
+        SmartDashboard.putNumber("totalExtensionY", totalextensionY);
+        SmartDashboard.putNumber("extensionLength", extensionLength);
+        SmartDashboard.putNumber("radiusX", radiusX);
+        SmartDashboard.putNumber("theta", theta);
+        SmartDashboard.putNumber("Wrist Extension", (-Math.abs((getWristAbsPos() - Constants.Wrist.straightWristTics) / ((Constants.Wrist.upWristTics-Constants.Wrist.straightWristTics)/(Constants.Wrist.straightWristInches-Constants.Wrist.upWristInches))) + Constants.Wrist.straightWristInches));
 
-        }else{
-            setExtensionVoltage(0);
-        }
-        
+
+
         
         if(runStuff){
             if(armPIDRun){
@@ -448,16 +459,18 @@ public class ArmWristSubsystem extends SubsystemBase{
                 armMotor.setVoltage(0);
             }
            
-            
+            if (wristPIDRun) {
+                    updateWristPos();
+                } else {
+                    wrist.setVoltage(0);
+            }
 
           
 
             if(Math.abs(getAbsArmPos() - armTarget) < 0.2){
-                if (wristPIDRun) {
-                    updateWristPos();
-                } else {
-                    wrist.setVoltage(0);
-                }
+                
+
+                
                 updateExtensionOutput();
             }
             
@@ -569,7 +582,7 @@ public class ArmWristSubsystem extends SubsystemBase{
             // don't want to update lastHeight for amp
             setArmWristExtGoal(0.531, 0.15, 0.25);
         }else if((lastHeight == Height.SOURCE || lastHeight == Height.HOLD) && pos == Height.AMP){
-            setArmWristExtGoal(0.511, 0.0487, 0.47); //extTarget = 0.387
+            setArmWristExtGoal(0.511, 0.0487, 0.34); //extTarget = 0.387
         }else if(pos == Height.GROUND){
             lastHeight = Height.GROUND;
           
@@ -579,7 +592,7 @@ public class ArmWristSubsystem extends SubsystemBase{
           
             setArmWristExtGoal(0.13, 0.05, 0.73); 
         }else if(pos == Height.SOURCE){
-            setArmWristExtGoal(0.37, 0.387, 0.55); //extTarget = 0.5346
+            setArmWristExtGoal(0.39, 0.42, 0.55); //extTarget = 0.5346 wristTarget = 0.33
         }
        
     }
@@ -589,5 +602,8 @@ public class ArmWristSubsystem extends SubsystemBase{
         // leftMotor.set(power);
         armMotor.set(power);
     }
+
+
+    
 
 }
