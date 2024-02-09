@@ -106,7 +106,7 @@ public class RobotContainer
     //driverController.leftBumper().onTrue( new TimedIntakeSetPowerCommand(intakeSub, 10, 1.5));
     
     // /* outtake */
-    driverController.rightTrigger().onTrue(new TimedIntakeSetPowerCommand(intakeSub, 10, 0.75));
+    armController.rightTrigger().onTrue(new TimedIntakeSetPowerCommand(intakeSub, 10, 0.75));
 
     //driverController.leftBumper().onFalse(new InstantCommand( () -> intakeSub.stopIntake() ));
     

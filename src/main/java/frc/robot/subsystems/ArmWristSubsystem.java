@@ -456,16 +456,37 @@ public class ArmWristSubsystem extends SubsystemBase{
            
             if (wristPIDRun) {
                     updateWristPos();
-                } else {
-                    wrist.setVoltage(0);
+                
             }
 
           
-
-            if(Math.abs(getAbsArmPos() - armTarget) < 0.2){
+            /* <------- below is logic for hold to ground and ground to hold positions --------> */
+            
+            // during ground to hold pos, we want extension and wrist to move at the same time as arm when arm goes
+            // to straight pos, but not when we go from hold to ground, so this if statement is outside the 
+            // arm error limiter if statement beneath this if statement
+            if (lastHeight == Height.GROUND && !wristPIDRun) {
+                    updateExtensionOutput();
+                    updateWristPos();
+            }
+            // runs extension after arm error is certain amount... the wristPIDRun logic in the first
+            // if statment is to make a smaller error range for when going from hold to ground and vice versa
+            if(Math.abs(getAbsArmPos() - armTarget) < (wristPIDRun ? 0.2 : 0.03)){
+                if (lastHeight == Height.HOLD && !wristPIDRun) {
+                    // changes to actual arm goal after the first arm goal was reached sufficiently
+                    setArmGoal(armHardLowerLimit + Constants.Arm.offsetToGround);
+                    // toggles wristPIDRun so tht the other if statment will use old error range, and so 
+                    // that this if statement wont be entered again
+                    wristPIDRun = true;
+                } else if (lastHeight == Height.GROUND && !wristPIDRun) {
+                    // changes to actual arm goal after the first arm goal was reached sufficiently
+                    setArmGoal(armHardLowerLimit + Constants.Arm.offsetToHold);
+                    // toggles wristPIDRun so tht the other if statment will use old error range, and so 
+                    // that this if statement wont be entered again
+                    wristPIDRun = true;
+                }
                 
-
-                
+                // runs extension after error is certain range
                 updateExtensionOutput();
             }
             
@@ -567,18 +588,37 @@ public class ArmWristSubsystem extends SubsystemBase{
                             extHardLowerLimit + Constants.Extension.offsetToAmpFromGround); // wrist from smallest 0.117
 
         }else if((lastHeight == Height.SOURCE || lastHeight == Height.HOLD) && pos == Height.AMP){
-            setArmWristExtGoal(0.511, 0.0487, 0.34); //extTarget = 0.387
+            // setArmWristExtGoal(0.511, 0.0487, 0.34); //extTarget = 0.387
             // setArmWristExtGoal(0.511, 0.0487, 0.47); //extTarget = 0.387
             setArmWristExtGoal(armHardLowerLimit + Constants.Arm.offsetToAmpFromSource_Hold, 
                             wristHardLowerLimit + Constants.Wrist.offsetToAmpFromSource_Hold, 
                             extHardLowerLimit + Constants.Extension.offsetToAmpFromSource_Hold); //extTarget = 0.387
 
         }else if(lastHeight == Height.HOLD && pos == Height.GROUND){
+            lastHeight = Height.GROUND;
+
             // setArmWristExtGoal(0.511, 0.0487, 0.47); //extTarget = 0.387
             // move arm to purpendicular (0.21), then move extension and wrist simultaneously, and then move arm down
-            setArmWristExtGoal(armHardLowerLimit + Constants.Arm.offsetToGroundFromHold, 
+            // this boolean is a way to determine the "range" for when stuff starts moving after the arm, as well as some logic
+            wristPIDRun = false;
+            
+            // the below will make arm go to 90 degree pos (logic in periodic method)
+            setArmWristExtGoal(armHardLowerLimit + Constants.Arm.offsetToStraightOutPos, 
                             wristHardLowerLimit + Constants.Wrist.offsetToGround, 
                             extHardLowerLimit + Constants.Extension.offsetToGround); //extTarget = 0.387
+
+        }else if(lastHeight == Height.GROUND && pos == Height.HOLD){
+            lastHeight = Height.HOLD;
+
+            // setArmWristExtGoal(0.511, 0.0487, 0.47); //extTarget = 0.387
+            // move arm to purpendicular (0.21), then move extension and wrist simultaneously, and then move arm down
+            // this boolean is a way to determine the "range" for when stuff starts moving after the arm, as well as some logic
+            wristPIDRun = false;
+            
+            // the below will make arm go to 90 degree pos (logic in periodic method)
+            setArmWristExtGoal(armHardLowerLimit + Constants.Arm.offsetToStraightOutPos, 
+                            wristHardLowerLimit + Constants.Wrist.offsetToHold, 
+                            extHardLowerLimit + Constants.Extension.offsetToHold); //extTarget = 0.387
 
         }else if(pos == Height.GROUND){
             lastHeight = Height.GROUND;
@@ -597,11 +637,12 @@ public class ArmWristSubsystem extends SubsystemBase{
                             extHardLowerLimit + Constants.Extension.offsetToHold); 
 
         }else if(pos == Height.SOURCE){
-            setArmWristExtGoal(0.39, 0.42, 0.55); //extTarget = 0.5346 wristTarget = 0.33
+            lastHeight = Height.SOURCE;
+            // setArmWristExtGoal(0.39, 0.42, 0.55); //extTarget = 0.5346 wristTarget = 0.33
             // setArmWristExtGoal(0.37, 0.387, 0.55); //extTarget = 0.5346
             setArmWristExtGoal(armHardLowerLimit + Constants.Arm.offsetToSource, 
                             wristHardLowerLimit + Constants.Wrist.offsetToSource, 
-                            0.75/*extHardLowerLimit + Constants.Extension.offsetToSource*/ ); //extTarget = 0.5346
+                            extHardLowerLimit + Constants.Extension.offsetToSource); //extTarget = 0.5346
 
         }
        
