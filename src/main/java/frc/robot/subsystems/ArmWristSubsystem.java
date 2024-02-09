@@ -42,12 +42,13 @@ public class ArmWristSubsystem extends SubsystemBase{
     private double armHardUpperLimit = 0.7;//0.51;
     private double wristHardLowerLimit = 0.141; // 0.033
     private double wristHardUpperLimit = 0.7785; // 0.632
-    private double extHardLowerLimit = 0.75; 
-    private double extHardUpperLimit = 0.06;
+    private double extHardLowerLimit = 0.749; 
+    private double extHardUpperLimit = 0.059;
 
     private double armStraightUp = 0.46;
     private double armBalanced = 0.36;
     private double armPurpenGround = 0.206;
+    private double armFFWhenPurpen = 0.42;
     
     boolean wristBrakeToggle;
     boolean wristPIDRun;
@@ -225,10 +226,13 @@ public class ArmWristSubsystem extends SubsystemBase{
         return wristEncoder.getPosition();
     }
  
-    // for equation, see https://www.desmos.com/calculator/pqkdjoydzd
-
-    // for equation, see https://www.desmos.com/calculator/ygpschqwqe
-    public double updateArmFF(){
+    
+    
+    /**
+     * For equation derivation, see {@link https://www.desmos.com/calculator/ygpschqwqe}
+     * @return returns a linear modifier from 1 to 1.4375 to multiply the armFF equation by to account for extension
+     */
+    public double updateArmFF_extension(){
         //return (-0.16134 * extPosition + armFFkg.getAsDouble());
         // return -0.56966 * getExtensionAbsPosition() + 1.39876302083; // old b value was 1.52295
         double slope = (1 - 1.4375) / (extHardLowerLimit - extHardUpperLimit);
@@ -239,7 +243,7 @@ public class ArmWristSubsystem extends SubsystemBase{
     // cosine equation FF, see https://www.desmos.com/calculator/ygpschqwqe
     public double getFFEquationVoltage() {
         
-        return  0.42 * updateArmFF() * Math.cos((2*Math.PI/((armBalanced - armPurpenGround)*4)) * (getAbsArmPos() - armPurpenGround)); 
+        return  armFFWhenPurpen * updateArmFF_extension() * Math.cos((2*Math.PI/((armBalanced - armPurpenGround)*4)) * (getAbsArmPos() - armPurpenGround)); 
     } 
     public void setArmVoltage(double voltage){
         // leftMotor.setVoltage(-voltage);
@@ -423,13 +427,7 @@ public class ArmWristSubsystem extends SubsystemBase{
 
     @Override
     public void periodic(){
-        if(runStuff){
-            
-
-        }else{
-            setExtensionVoltage(0);
-        }
-        
+    
         
         if(runStuff){
             if(armPIDRun){
@@ -443,11 +441,7 @@ public class ArmWristSubsystem extends SubsystemBase{
           
 
             if(Math.abs(getAbsArmPos() - armTarget) < 0.2){
-                if (wristPIDRun) {
-                    updateWristPos();
-                } else {
-                    wrist.setVoltage(0);
-                }
+                updateWristPos();
                 updateExtensionOutput();
             }
             
@@ -544,27 +538,44 @@ public class ArmWristSubsystem extends SubsystemBase{
             // don't want to update lastHeight for amp
 
             // setArmWristExtGoal(0.531, 0.15, 0.25);
-            setArmWristExtGoal(0.531, wristHardLowerLimit + Constants.Wrist.offsetToAmpFromGround, 0.25); // wrist from smallest 0.117
+            setArmWristExtGoal(armHardLowerLimit + Constants.Arm.offsetToAmpFromGround, 
+                            wristHardLowerLimit + Constants.Wrist.offsetToAmpFromGround, 
+                            extHardLowerLimit + Constants.Extension.offsetToAmpFromGround); // wrist from smallest 0.117
 
         }else if((lastHeight == Height.SOURCE || lastHeight == Height.HOLD) && pos == Height.AMP){
             // setArmWristExtGoal(0.511, 0.0487, 0.47); //extTarget = 0.387
-            setArmWristExtGoal(0.511, wristHardLowerLimit + Constants.Wrist.offsetToAmpFromSource_Hold, 0.47); //extTarget = 0.387
+            setArmWristExtGoal(armHardLowerLimit + Constants.Arm.offsetToAmpFromSource_Hold, 
+                            wristHardLowerLimit + Constants.Wrist.offsetToAmpFromSource_Hold, 
+                            extHardLowerLimit + Constants.Extension.offsetToAmpFromSource_Hold); //extTarget = 0.387
+
+        }else if(lastHeight == Height.HOLD && pos == Height.GROUND){
+            // setArmWristExtGoal(0.511, 0.0487, 0.47); //extTarget = 0.387
+            // move arm to purpendicular (0.21), then move extension and wrist simultaneously, and then move arm down
+            setArmWristExtGoal(armHardLowerLimit + Constants.Arm.offsetToGroundFromHold, 
+                            wristHardLowerLimit + Constants.Wrist.offsetToGround, 
+                            extHardLowerLimit + Constants.Extension.offsetToGround); //extTarget = 0.387
 
         }else if(pos == Height.GROUND){
             lastHeight = Height.GROUND;
           
             // setArmWristExtGoal(0.1716, 0.51, 0.463); //extTarget = 0.387
-            setArmWristExtGoal(0.1716, wristHardLowerLimit + Constants.Wrist.offsetToGround, 0.463); //extTarget = 0.387
+            setArmWristExtGoal(armHardLowerLimit + Constants.Arm.offsetToGround, 
+                            wristHardLowerLimit + Constants.Wrist.offsetToGround, 
+                            extHardLowerLimit + Constants.Extension.offsetToGround); //extTarget = 0.387
 
         }else if(pos == Height.HOLD){
             lastHeight = Height.HOLD;
           
             // setArmWristExtGoal(0.13, 0.05, 0.73); 
-            setArmWristExtGoal(0.13, wristHardLowerLimit + Constants.Wrist.offsetToHold, 0.73); 
+            setArmWristExtGoal(armHardLowerLimit + Constants.Arm.offsetToHold, 
+                            wristHardLowerLimit + Constants.Wrist.offsetToHold, 
+                            extHardLowerLimit + Constants.Extension.offsetToHold); 
 
         }else if(pos == Height.SOURCE){
             // setArmWristExtGoal(0.37, 0.387, 0.55); //extTarget = 0.5346
-            setArmWristExtGoal(0.37, wristHardLowerLimit + Constants.Wrist.offsetToSource, 0.55); //extTarget = 0.5346
+            setArmWristExtGoal(armHardLowerLimit + Constants.Arm.offsetToSource, 
+                            wristHardLowerLimit + Constants.Wrist.offsetToSource, 
+                            0.75/*extHardLowerLimit + Constants.Extension.offsetToSource*/ ); //extTarget = 0.5346
 
         }
        
