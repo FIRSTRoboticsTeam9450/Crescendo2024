@@ -44,6 +44,7 @@ public class ExtensionCommand extends Command {
     extensionLength = (Constants.Extension.maxExtensionInches / (Constants.Extension.maxExtensionTics - Constants.Extension.zeroTics)) * extension.getExtensionAbsPosition() - (Constants.Extension.zeroTics * (Constants.Extension.maxExtensionInches/(Constants.Extension.maxExtensionTics - Constants.Extension.zeroTics)));
     totalextensionX = (radiusX * Math.abs(Math.cos(theta))) + extensionLength;
     totalextensionY = (radiusY * Math.sin(theta)) + extensionLength;
+    
 
 
     //Need to figure out how to pass arm value into this so that the FF works

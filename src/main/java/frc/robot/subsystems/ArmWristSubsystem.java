@@ -33,7 +33,9 @@ public class ArmWristSubsystem extends SubsystemBase{
     private Height lastHeight = Height.HOLD;
 
     
-
+    //Extension Limiter ----
+    private double radiusX, radiusY, extensionLength, totalextensionX, totalextensionY, theta;
+    //----
     private double armTarget = 0.37;//0.485;  //.453
     private double wristTarget = 0.387;
     private double extensionTarget = 0.72;
@@ -428,6 +430,22 @@ public class ArmWristSubsystem extends SubsystemBase{
     @Override
     public void periodic(){
     
+                
+        theta = (((Constants.Arm.intakeArmAngle - Constants.Arm.ampArmAngle)/(Constants.Arm.intakeArmTics - Constants.Arm.ampArmTics)) * getAbsArmPos()) + (Constants.Arm.intakeArmAngle - (((Constants.Arm.intakeArmAngle - Constants.Arm.ampArmAngle)/(Constants.Arm.intakeArmTics - Constants.Arm.ampArmTics)) * Constants.Arm.intakeArmTics));
+        radiusX = Constants.Arm.armLength - Math.abs((getWristAbsPos() - Constants.Wrist.straightWristTics) / ((Constants.Wrist.upWristTics-Constants.Wrist.straightWristTics)/(Constants.Wrist.straightWristInches-Constants.Wrist.upWristInches))) + Constants.Wrist.straightWristInches;
+        radiusY = radiusX + 1;
+        extensionLength = (Constants.Extension.maxExtensionInches / (Constants.Extension.maxExtensionTics - Constants.Extension.zeroTics)) * getExtensionAbsPosition() - (Constants.Extension.zeroTics * (Constants.Extension.maxExtensionInches/(Constants.Extension.maxExtensionTics - Constants.Extension.zeroTics)));
+        totalextensionX = ((radiusX + extensionLength) * Math.abs(Math.cos(theta))) - Constants.Chassis.pivotToFront;
+        totalextensionY = ((radiusY + extensionLength) * Math.sin(theta));
+        SmartDashboard.putNumber("totalExtensionX", totalextensionX);
+        SmartDashboard.putNumber("totalExtensionY", totalextensionY);
+        SmartDashboard.putNumber("extensionLength", extensionLength);
+        SmartDashboard.putNumber("radiusX", radiusX);
+        SmartDashboard.putNumber("theta", theta);
+        SmartDashboard.putNumber("Wrist Extension", (-Math.abs((getWristAbsPos() - Constants.Wrist.straightWristTics) / ((Constants.Wrist.upWristTics-Constants.Wrist.straightWristTics)/(Constants.Wrist.straightWristInches-Constants.Wrist.upWristInches))) + Constants.Wrist.straightWristInches));
+
+
+
         
         if(runStuff){
             if(armPIDRun){
@@ -436,12 +454,18 @@ public class ArmWristSubsystem extends SubsystemBase{
                 armMotor.setVoltage(0);
             }
            
-            
+            if (wristPIDRun) {
+                    updateWristPos();
+                } else {
+                    wrist.setVoltage(0);
+            }
 
           
 
             if(Math.abs(getAbsArmPos() - armTarget) < 0.2){
-                updateWristPos();
+                
+
+                
                 updateExtensionOutput();
             }
             
@@ -543,6 +567,7 @@ public class ArmWristSubsystem extends SubsystemBase{
                             extHardLowerLimit + Constants.Extension.offsetToAmpFromGround); // wrist from smallest 0.117
 
         }else if((lastHeight == Height.SOURCE || lastHeight == Height.HOLD) && pos == Height.AMP){
+            setArmWristExtGoal(0.511, 0.0487, 0.34); //extTarget = 0.387
             // setArmWristExtGoal(0.511, 0.0487, 0.47); //extTarget = 0.387
             setArmWristExtGoal(armHardLowerLimit + Constants.Arm.offsetToAmpFromSource_Hold, 
                             wristHardLowerLimit + Constants.Wrist.offsetToAmpFromSource_Hold, 
@@ -572,6 +597,7 @@ public class ArmWristSubsystem extends SubsystemBase{
                             extHardLowerLimit + Constants.Extension.offsetToHold); 
 
         }else if(pos == Height.SOURCE){
+            setArmWristExtGoal(0.39, 0.42, 0.55); //extTarget = 0.5346 wristTarget = 0.33
             // setArmWristExtGoal(0.37, 0.387, 0.55); //extTarget = 0.5346
             setArmWristExtGoal(armHardLowerLimit + Constants.Arm.offsetToSource, 
                             wristHardLowerLimit + Constants.Wrist.offsetToSource, 
