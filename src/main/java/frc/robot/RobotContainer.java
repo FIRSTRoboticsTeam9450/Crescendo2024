@@ -63,19 +63,19 @@ public class RobotContainer
     configureBindings();
 
     
-    // TeleopDrive simClosedFieldRel = new TeleopDrive(drivebase,
-    //                                                 () -> MathUtil.applyDeadband(driverXbox.getLeftY(),
-    //                                                                              OperatorConstants.LEFT_Y_DEADBAND),
-    //                                                 () -> MathUtil.applyDeadband(driverXbox.getLeftX(),
-    //                                                                              OperatorConstants.LEFT_X_DEADBAND),
-    //                                                 () -> driverXbox.getRawAxis(4), () -> true);
+    TeleopDrive simClosedFieldRel = new TeleopDrive(drivebase,
+                                                    () -> MathUtil.applyDeadband(driverController.getLeftY(),
+                                                                                 OperatorConstants.LEFT_Y_DEADBAND),
+                                                    () -> MathUtil.applyDeadband(driverController.getLeftX(),
+                                                                                 OperatorConstants.LEFT_X_DEADBAND),
+                                                    () -> driverController.getRawAxis(4), () -> true);
     TeleopDrive closedFieldRel = new TeleopDrive(
         drivebase,
         () -> MathUtil.applyDeadband(driverController.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
         () -> MathUtil.applyDeadband(driverController.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
         () -> driverController.getRawAxis(4), () -> true); // change the int in the parameter to the appropriate axis
 
-    drivebase.setDefaultCommand(/*!RobotBase.isSimulation() ? simClosedFieldRel :*/ closedFieldRel);
+    drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simClosedFieldRel : closedFieldRel);
     
   } // FR: 323.086, FL: 303.486
   // 
