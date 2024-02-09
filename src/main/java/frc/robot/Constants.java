@@ -92,15 +92,25 @@ public final class Constants
     public static final double ampArmTics = 0.518;
     public static final double ampArmAngle = 114.4;
 
-
-    
-
+    public static final double offsetToAmpFromGround = 0.426;
+    public static final double offsetToAmpFromSource_Hold = 0.406;
+    public static final double offsetToGroundFromHold = 0;
+    public static final double offsetToGround = 0.0666;
+    public static final double offsetToHold = 0.025;
+    public static final double offsetToSource = 0.265;
   }
 
   public static class Extension{
     public static final double maxExtensionInches = 12; //14.5
     public static final double maxExtensionTics = 0.075; 
     public static final double zeroTics = 0.72;
+
+    public static final double offsetToAmpFromGround = -0.5;
+    public static final double offsetToAmpFromSource_Hold = -0.28;
+    public static final double offsetToGroundFromHold = 0;
+    public static final double offsetToGround = -0.287;
+    public static final double offsetToHold = -0.02;
+    public static final double offsetToSource = -0.2;
   }
 
   public static class Wrist{
@@ -111,6 +121,7 @@ public final class Constants
 
     public static final double offsetToAmpFromGround = 0.117;
     public static final double offsetToAmpFromSource_Hold = 0.0157;
+    public static final double offsetToGroundFromHold = 0;
     public static final double offsetToGround = 0.477;
     public static final double offsetToHold = 0.017;
     public static final double offsetToSource = 0.354;
