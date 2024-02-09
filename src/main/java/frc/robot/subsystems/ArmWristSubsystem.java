@@ -151,30 +151,32 @@ public class ArmWristSubsystem extends SubsystemBase{
 
 
     
+
+
+
     /*
      * 
      * Extension Methods
      * 
      */
+
+
+
+
+
     public void setExtensionVoltage(double voltage){
         extensionMotor.setVoltage(voltage);
     }
-
     public double getExtensionAbsPosition(){  
         return extEncoder.getPosition();
     }
-
     public void setExtensionGoal(double target){
 
         extensionTarget = target;
     }
-
-
     public double calculateExtensionPID(){
         return extensionPid.calculate(getExtensionAbsPosition(), extensionTarget);
     }
-
-    
     public void updateExtensionOutput(){
         double ffValue = calculateExtensionFF();
         SmartDashboard.putNumber("Extension FF", ffValue);
@@ -192,15 +194,13 @@ public class ArmWristSubsystem extends SubsystemBase{
         } else {
             setExtensionVoltage(8 * Math.signum(voltage));
         }
-        
-        
-        
     }
-
     public double calculateExtensionFF() {
         //return (-1 * Math.Abs((1.44 * getArmPosition()) - 0.7632)) + 0.135;
         return 0;
     }
+
+
 
 
 
@@ -213,65 +213,51 @@ public class ArmWristSubsystem extends SubsystemBase{
      * 
      */
  
+
+
+
+
+
+
+
     public double getAbsArmPos(){
         return armEncoder.getPosition();
     }
     public double getAbsWristPos(){
         return wristEncoder.getPosition();
     }
-
-   
-    
+ 
     // for equation, see https://www.desmos.com/calculator/pqkdjoydzd
+
+    // for equation, see https://www.desmos.com/calculator/ygpschqwqe
     public double updateArmFF(){
         //return (-0.16134 * extPosition + armFFkg.getAsDouble());
-        return -0.56966* getExtensionAbsPosition() + 1.39876302083; // old b value was 1.52295
+        // return -0.56966 * getExtensionAbsPosition() + 1.39876302083; // old b value was 1.52295
+        double slope = (1 - 1.4375) / (extHardLowerLimit - extHardUpperLimit);
+        return slope * getExtensionAbsPosition() + (1 - slope * extHardLowerLimit);
     }
-    public void updateArmFFkg() {
-        armFF = new ArmFeedforward(0, armFFkg.getAsDouble(), 0);
-    }
+    
 
-    // cosine equation FF, see https://www.desmos.com/calculator/f6nfrvq9hk
+    // cosine equation FF, see https://www.desmos.com/calculator/ygpschqwqe
     public double getFFEquationVoltage() {
         
         return  0.42 * updateArmFF() * Math.cos((2*Math.PI/((armBalanced - armPurpenGround)*4)) * (getAbsArmPos() - armPurpenGround)); 
     } 
-
-    // private double getLeftPosition(){
-    //     return leftMotor.getEncoder().getPosition() * -2.5 * Math.PI / 180;
-    // }
-
-    // private double getPosition(){
-    //     return (getLeftPosition() + getRightPosition()) / 2;
-    // }
-
-
-    // public void setLeftVoltage(double voltage){
-    //     leftMotor.setVoltage(-voltage);
-    // }
-
     public void setArmVoltage(double voltage){
         // leftMotor.setVoltage(-voltage);
 
        armMotor.setVoltage(voltage);
-
     }
-
-    
-
     public void downManual(){
         armTarget -= 0.01;
 
         //wrist.setGoal(2.57 - armTarget);
     }
-
     public void upManual(){
         armTarget += 0.01;
 
         //wrist.setGoal(2.57 - armTarget);
     }
-
-    
 
     public void setArmGoal(double target) {
         //rotation.setGoal(target);
@@ -283,21 +269,15 @@ public class ArmWristSubsystem extends SubsystemBase{
         setWristSetpoint(wristTarget);
         setExtensionGoal(extTarget);
     }
-
-    
-
     public double getGoal(){
         return armPid.getGoal().position;
     }
-
     public double calculateRotationPID(){
         //return armPid.calculate(getArmPosition(), armTarget);
         return armPid.calculate(getAbsArmPos(), armTarget);
     }
-    
-
     public void updateRotationOutput(){
-        updateArmFFkg();
+        
         double ffValue = getFFEquationVoltage()/*calculateRotationFF()*/;
         double pidValue = calculateRotationPID();
 
@@ -311,7 +291,6 @@ public class ArmWristSubsystem extends SubsystemBase{
         SmartDashboard.putNumber("Rotation FF", ffValue);
         SmartDashboard.putNumber("PIDRotate", pidValue);
         
-        
        // boolean limit = (getAbsArmPos() >= armHardUpperLimit && Math.signum(voltage) == 1.0) || (getAbsArmPos() <=  && Math.signum(voltage) == -1.0);
        // if(limit){
             //Technically should set a ff constant negative 
@@ -324,16 +303,8 @@ public class ArmWristSubsystem extends SubsystemBase{
             setArmVoltage(4 * Math.signum(voltage));
         }
 
-        //}
-        
-        
+        //} 
     }
-    
-
-
-
-    
-
     public double calculateRotationFF(){
         // if(extensionTarget == 30){
         //     return armExtendedFF.calculate(getArmPosition(), armPid.getSetpoint().velocity);
@@ -348,10 +319,11 @@ public class ArmWristSubsystem extends SubsystemBase{
         }
     }
     
-
     private double convertToVolts(double percentOutput){
         return percentOutput * /*Robot.getInstance().getVoltage()*/ 12;
     }
+
+
 
 
 
@@ -360,6 +332,12 @@ public class ArmWristSubsystem extends SubsystemBase{
      * Wrist Methods
      * 
      */
+
+
+
+
+
+
 
     double oldVel = 0;
     double oldTime = 0;
@@ -431,7 +409,19 @@ public class ArmWristSubsystem extends SubsystemBase{
 
 
 
+
+
+/*
+ * 
+ *  Periodic
+ * 
+ */
+
+
+
    
+
+
 
     @Override
     public void periodic(){
@@ -511,8 +501,6 @@ public class ArmWristSubsystem extends SubsystemBase{
             wrist.setIdleMode(IdleMode.kCoast);
         }
         
-
-
        // wristTarget = SmartDashboard.getNumber("Change Wrist Target", 0.68);
         //armTarget = SmartDashboard.getNumber("Change Arm Target", armTarget);
 
@@ -523,9 +511,7 @@ public class ArmWristSubsystem extends SubsystemBase{
         
         //SmartDashboard.putNumber("Wrist Position", getWristPosition());
         //SmartDashboard.putNumber("Arm current", rightMotor.getOutputCurrent());
-        
-
-        
+         
     }
 
     
@@ -543,17 +529,6 @@ public class ArmWristSubsystem extends SubsystemBase{
         
     // }
     
-
-
-
-
-
-
-
-
-
-
-
 
     public void anEmptyMethod() {
         // for testing
@@ -596,14 +571,5 @@ public class ArmWristSubsystem extends SubsystemBase{
         }
        
     }
-
-    
-    public void setPower(double power){
-        // leftMotor.set(power);
-        armMotor.set(power);
-    }
-
-
-    
 
 }
