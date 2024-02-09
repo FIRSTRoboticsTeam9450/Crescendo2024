@@ -92,6 +92,9 @@ public final class Constants
     public static final double ampArmTics = 0.531;
     public static final double ampArmAngle = 115;
 
+
+    
+
   }
 
   public static class Extension{
@@ -105,6 +108,16 @@ public final class Constants
     public static final double upWristTics = 0.66;
     public static final double straightWristInches = 8;
     public static final double upWristInches = 2;
+
+    public static final double offsetToAmpFromGround = 0.117;
+    public static final double offsetToAmpFromSource_Hold = 0.0157;
+    public static final double offsetToGround = 0.477;
+    public static final double offsetToHold = 0.017;
+    public static final double offsetToSource = 0.354;
+
+
+
+    
 
   }
 

@@ -42,8 +42,8 @@ public class ArmWristSubsystem extends SubsystemBase{
 
     private double armHardLowerLimit = 0.105;//0.08;
     private double armHardUpperLimit = 0.7;//0.51;
-    private double wristHardLowerLimit = 0.033; 
-    private double wristHardUpperLimit = 0.632;
+    private double wristHardLowerLimit = 0.141; // 0.033
+    private double wristHardUpperLimit = 0.7785; // 0.632
     private double extHardLowerLimit = 0.75; 
     private double extHardUpperLimit = 0.06;
 
@@ -555,19 +555,32 @@ public class ArmWristSubsystem extends SubsystemBase{
 
         if(lastHeight == Height.GROUND && pos == Height.AMP){
             // don't want to update lastHeight for amp
-            setArmWristExtGoal(0.531, 0.15, 0.25);
+
+            // setArmWristExtGoal(0.531, 0.15, 0.25);
+            setArmWristExtGoal(0.531, wristHardLowerLimit + Constants.Wrist.offsetToAmpFromGround, 0.25); // wrist from smallest 0.117
+
         }else if((lastHeight == Height.SOURCE || lastHeight == Height.HOLD) && pos == Height.AMP){
             setArmWristExtGoal(0.511, 0.0487, 0.34); //extTarget = 0.387
+            // setArmWristExtGoal(0.511, 0.0487, 0.47); //extTarget = 0.387
+            setArmWristExtGoal(0.511, wristHardLowerLimit + Constants.Wrist.offsetToAmpFromSource_Hold, 0.47); //extTarget = 0.387
+
         }else if(pos == Height.GROUND){
             lastHeight = Height.GROUND;
           
-            setArmWristExtGoal(0.1716, 0.51, 0.463); //extTarget = 0.387
+            // setArmWristExtGoal(0.1716, 0.51, 0.463); //extTarget = 0.387
+            setArmWristExtGoal(0.1716, wristHardLowerLimit + Constants.Wrist.offsetToGround, 0.463); //extTarget = 0.387
+
         }else if(pos == Height.HOLD){
             lastHeight = Height.HOLD;
           
-            setArmWristExtGoal(0.13, 0.05, 0.73); 
+            // setArmWristExtGoal(0.13, 0.05, 0.73); 
+            setArmWristExtGoal(0.13, wristHardLowerLimit + Constants.Wrist.offsetToHold, 0.73); 
+
         }else if(pos == Height.SOURCE){
             setArmWristExtGoal(0.39, 0.42, 0.55); //extTarget = 0.5346 wristTarget = 0.33
+            // setArmWristExtGoal(0.37, 0.387, 0.55); //extTarget = 0.5346
+            setArmWristExtGoal(0.37, wristHardLowerLimit + Constants.Wrist.offsetToSource, 0.55); //extTarget = 0.5346
+
         }
        
     }
