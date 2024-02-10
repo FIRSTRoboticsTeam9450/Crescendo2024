@@ -28,6 +28,7 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ArmWristSubsystem.Height;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import java.io.File;
+import java.util.function.DoubleSupplier;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
@@ -36,7 +37,7 @@ import java.io.File;
  */
 public class RobotContainer
 {
-  //hello world testing 123 
+  private DoubleSupplier speedModifier = () -> 1.0;
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                          "swerve/vortex"));
@@ -64,15 +65,15 @@ public class RobotContainer
 
     
     TeleopDrive simClosedFieldRel = new TeleopDrive(drivebase,
-                                                    () -> MathUtil.applyDeadband(driverController.getLeftY(),
+                                                    () -> MathUtil.applyDeadband(driverController.getLeftY() * speedModifier.getAsDouble(),
                                                                                  OperatorConstants.LEFT_Y_DEADBAND),
-                                                    () -> MathUtil.applyDeadband(driverController.getLeftX(),
+                                                    () -> MathUtil.applyDeadband(driverController.getLeftX() * speedModifier.getAsDouble(),
                                                                                  OperatorConstants.LEFT_X_DEADBAND),
                                                     () -> driverController.getRawAxis(4), () -> true);
     TeleopDrive closedFieldRel = new TeleopDrive(
         drivebase,
-        () -> MathUtil.applyDeadband(driverController.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
-        () -> MathUtil.applyDeadband(driverController.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
+        () -> MathUtil.applyDeadband(driverController.getLeftX() * speedModifier.getAsDouble(), OperatorConstants.LEFT_X_DEADBAND),
+        () -> MathUtil.applyDeadband(driverController.getLeftY() * speedModifier.getAsDouble(), OperatorConstants.LEFT_Y_DEADBAND),
         () -> driverController.getRawAxis(4), () -> true); // change the int in the parameter to the appropriate axis
 
     drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simClosedFieldRel : closedFieldRel);
@@ -94,6 +95,7 @@ public class RobotContainer
 
     
     driverController.rightBumper().onTrue(new InstantCommand(drivebase::zeroGyro));
+    speedModifier = driverController.getHID().getRightTriggerAxis() > 0 ? () -> 0.5 : () -> 1.0;
     //new JoystickButton(driverXbox, 1).onTrue((new InstantCommand(drivebase::zeroGyro)));
     //new JoystickButton(driverXbox, 3).onTrue(new InstantCommand(drivebase::addFakeVisionReading));
 //    new JoystickButton(driverXbox, 3).whileTrue(new RepeatCommand(new InstantCommand(drivebase::lock, drivebase)));
