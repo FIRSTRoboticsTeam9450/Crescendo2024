@@ -619,6 +619,7 @@ public class ArmWristSubsystem extends SubsystemBase{
 
             }else if(lastHeight == Height.HOLD && pos == Height.GROUND){
                 // lastHeight gets updated for this in the periodic method
+                ampPos = false;
 
                 // setArmWristExtGoal(0.511, 0.0487, 0.47); //extTarget = 0.387
                 // move arm to purpendicular (0.21), then move extension and wrist simultaneously while moving arm down
