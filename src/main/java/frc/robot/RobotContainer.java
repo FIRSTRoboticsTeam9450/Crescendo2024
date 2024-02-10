@@ -87,6 +87,7 @@ public class RobotContainer
    * {@link CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller PS4}
    * controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight joysticks}.
    */
+
   private void configureBindings()
   {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
@@ -120,10 +121,12 @@ public class RobotContainer
     //driverController.a().onTrue(new InstantCommand(() -> armWristSub.toggleArm()));
     
     // Source
-    armController.y().onTrue(new SequentialCommandGroup(
+    
+       armController.y().onTrue(new SequentialCommandGroup(
       new InstantCommand(() -> armWristSub.goToPosition(Height.SOURCE)),
       new IntakingCommand(intakeSub, 5)
       ));
+   
     //driverController.rightTrigger().onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.SOURCE)));
     
     // Amp

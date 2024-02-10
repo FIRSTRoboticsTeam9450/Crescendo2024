@@ -55,6 +55,8 @@ public class ArmWristSubsystem extends SubsystemBase{
     boolean wristBrakeToggle;
     boolean wristPIDRun;
     boolean armPIDRun;
+    boolean pause = false;
+    boolean reachPos;
 
     
 
@@ -269,9 +271,10 @@ public class ArmWristSubsystem extends SubsystemBase{
     }
 
     public void setArmWristExtGoal(double armTarget, double wristTarget, double extTarget){
-        setArmGoal(armTarget);
-        setWristSetpoint(wristTarget);
-        setExtensionGoal(extTarget);
+        
+            setArmGoal(armTarget);
+            setWristSetpoint(wristTarget);
+            setExtensionGoal(extTarget);     
     }
     public double getGoal(){
         return armPid.getGoal().position;
@@ -446,8 +449,12 @@ public class ArmWristSubsystem extends SubsystemBase{
         SmartDashboard.putNumber("Wrist Extension", (-Math.abs((getWristAbsPos() - Constants.Wrist.straightWristTics) / ((Constants.Wrist.upWristTics-Constants.Wrist.straightWristTics)/(Constants.Wrist.straightWristInches-Constants.Wrist.upWristInches))) + Constants.Wrist.straightWristInches));
 
 
+        // used for gotoPositio nmethod
+        reachPos = Math.abs(getAbsArmPos() - this.armTarget) > 0.08  
+        && Math.abs(getExtensionAbsPosition() - this.extensionTarget) > 0.08
+        && Math.abs(getAbsWristPos() - this.wristTarget) > 0.08;
 
-        
+
         if(runStuff){
             if(armPIDRun){
                 updateRotationOutput();
@@ -590,76 +597,84 @@ public class ArmWristSubsystem extends SubsystemBase{
     // true is source, false is ground
     private boolean ampPos;
     public void goToPosition(Height pos) {
+      
+        if(pause && reachPos){
+            //do nothing
+        }else{             
 
-        if(!ampPos && pos == Height.AMP){
-            // don't want to update lastHeight for amp
+            if(!ampPos && pos == Height.AMP){
+                // don't want to update lastHeight for amp
 
-            // setArmWristExtGoal(0.531, 0.15, 0.25);
-            setArmWristExtGoal(armHardLowerLimit + Constants.Arm.offsetToAmpFromGround, 
-                            wristHardLowerLimit + Constants.Wrist.offsetToAmpFromGround, 
-                            extHardLowerLimit + Constants.Extension.offsetToAmpFromGround); // wrist from smallest 0.117
+                // setArmWristExtGoal(0.531, 0.15, 0.25);
+                setArmWristExtGoal(armHardLowerLimit + Constants.Arm.offsetToAmpFromGround, 
+                                wristHardLowerLimit + Constants.Wrist.offsetToAmpFromGround, 
+                                extHardLowerLimit + Constants.Extension.offsetToAmpFromGround); // wrist from smallest 0.117
 
-        }else if((ampPos || lastHeight == Height.HOLD) && pos == Height.AMP){
-            // setArmWristExtGoal(0.511, 0.0487, 0.34); //extTarget = 0.387
-            // setArmWristExtGoal(0.511, 0.0487, 0.47); //extTarget = 0.387
-            setArmWristExtGoal(armHardLowerLimit + Constants.Arm.offsetToAmpFromSource_Hold, 
-                            wristHardLowerLimit + Constants.Wrist.offsetToAmpFromSource_Hold, 
-                            extHardLowerLimit + Constants.Extension.offsetToAmpFromSource_Hold); //extTarget = 0.387
+            }else if((ampPos || lastHeight == Height.HOLD) && pos == Height.AMP){
+                // setArmWristExtGoal(0.511, 0.0487, 0.34); //extTarget = 0.387
+                // setArmWristExtGoal(0.511, 0.0487, 0.47); //extTarget = 0.387
+                setArmWristExtGoal(armHardLowerLimit + Constants.Arm.offsetToAmpFromSource_Hold, 
+                                wristHardLowerLimit + Constants.Wrist.offsetToAmpFromSource_Hold, 
+                                extHardLowerLimit + Constants.Extension.offsetToAmpFromSource_Hold); //extTarget = 0.387
 
-        }else if(lastHeight == Height.HOLD && pos == Height.GROUND){
-            // lastHeight gets updated for this in the periodic method
+            }else if(lastHeight == Height.HOLD && pos == Height.GROUND){
+                // lastHeight gets updated for this in the periodic method
 
-            // setArmWristExtGoal(0.511, 0.0487, 0.47); //extTarget = 0.387
-            // move arm to purpendicular (0.21), then move extension and wrist simultaneously while moving arm down
-            // this boolean is a way to determine the "range" for when stuff starts moving after the arm, as well as some logic
-            wristPIDRun = false;
+                // setArmWristExtGoal(0.511, 0.0487, 0.47); //extTarget = 0.387
+                // move arm to purpendicular (0.21), then move extension and wrist simultaneously while moving arm down
+                // this boolean is a way to determine the "range" for when stuff starts moving after the arm, as well as some logic
+                wristPIDRun = false;
+                
+                // the below will make arm go to 90 degree pos (logic in periodic method)
+                setArmWristExtGoal(armHardLowerLimit + Constants.Arm.offsetToStraightOutPos, 
+                                wristHardLowerLimit + Constants.Wrist.offsetToGround, 
+                                extHardLowerLimit + Constants.Extension.offsetToGround); //extTarget = 0.387
+
+            }else if(lastHeight == Height.GROUND && pos == Height.HOLD){
+                // lastHeight gets updated for this in the periodic method
+
+                // setArmWristExtGoal(0.511, 0.0487, 0.47); //extTarget = 0.387
+                // move arm to purpendicular (0.21) while moving extension and wrist simultaneously, and then move arm down
+                // this boolean is a way to determine the "range" for when stuff starts moving after the arm, as well as some logic
+                wristPIDRun = false;
+                
+                // the below will make arm go to 90 degree pos (logic in periodic method)
+                setArmWristExtGoal(armHardLowerLimit + Constants.Arm.offsetToStraightOutPos, 
+                                wristHardLowerLimit + Constants.Wrist.offsetToHold, 
+                                extHardLowerLimit + Constants.Extension.offsetToHold); //extTarget = 0.387
+
+            }else if(pos == Height.GROUND){
+                lastHeight = Height.GROUND;
+                ampPos = false;
             
-            // the below will make arm go to 90 degree pos (logic in periodic method)
-            setArmWristExtGoal(armHardLowerLimit + Constants.Arm.offsetToStraightOutPos, 
-                            wristHardLowerLimit + Constants.Wrist.offsetToGround, 
-                            extHardLowerLimit + Constants.Extension.offsetToGround); //extTarget = 0.387
+                // setArmWristExtGoal(0.1716, 0.51, 0.463); //extTarget = 0.387
+                setArmWristExtGoal(armHardLowerLimit + Constants.Arm.offsetToGround, 
+                                wristHardLowerLimit + Constants.Wrist.offsetToGround, 
+                                extHardLowerLimit + Constants.Extension.offsetToGround); //extTarget = 0.387
 
-        }else if(lastHeight == Height.GROUND && pos == Height.HOLD){
-            // lastHeight gets updated for this in the periodic method
-
-            // setArmWristExtGoal(0.511, 0.0487, 0.47); //extTarget = 0.387
-            // move arm to purpendicular (0.21) while moving extension and wrist simultaneously, and then move arm down
-            // this boolean is a way to determine the "range" for when stuff starts moving after the arm, as well as some logic
-            wristPIDRun = false;
+            }else if(pos == Height.HOLD){
+                lastHeight = Height.HOLD;
             
-            // the below will make arm go to 90 degree pos (logic in periodic method)
-            setArmWristExtGoal(armHardLowerLimit + Constants.Arm.offsetToStraightOutPos, 
-                            wristHardLowerLimit + Constants.Wrist.offsetToHold, 
-                            extHardLowerLimit + Constants.Extension.offsetToHold); //extTarget = 0.387
+                // setArmWristExtGoal(0.13, 0.05, 0.73); 
+                setArmWristExtGoal(armHardLowerLimit + Constants.Arm.offsetToHold, 
+                                wristHardLowerLimit + Constants.Wrist.offsetToHold, 
+                                extHardLowerLimit + Constants.Extension.offsetToHold); 
 
-        }else if(pos == Height.GROUND){
-            lastHeight = Height.GROUND;
-            ampPos = false;
-          
-            // setArmWristExtGoal(0.1716, 0.51, 0.463); //extTarget = 0.387
-            setArmWristExtGoal(armHardLowerLimit + Constants.Arm.offsetToGround, 
-                            wristHardLowerLimit + Constants.Wrist.offsetToGround, 
-                            extHardLowerLimit + Constants.Extension.offsetToGround); //extTarget = 0.387
+            }else if(pos == Height.SOURCE){
+                lastHeight = Height.SOURCE;
+                ampPos = true;
+                // setArmWristExtGoal(0.39, 0.42, 0.55); //extTarget = 0.5346 wristTarget = 0.33
+                // setArmWristExtGoal(0.37, 0.387, 0.55); //extTarget = 0.5346
+                setArmWristExtGoal(armHardLowerLimit + Constants.Arm.offsetToSource, 
+                                wristHardLowerLimit + Constants.Wrist.offsetToSource, 
+                                extHardLowerLimit + Constants.Extension.offsetToSource); //extTarget = 0.5346
 
-        }else if(pos == Height.HOLD){
-            lastHeight = Height.HOLD;
-          
-            // setArmWristExtGoal(0.13, 0.05, 0.73); 
-            setArmWristExtGoal(armHardLowerLimit + Constants.Arm.offsetToHold, 
-                            wristHardLowerLimit + Constants.Wrist.offsetToHold, 
-                            extHardLowerLimit + Constants.Extension.offsetToHold); 
-
-        }else if(pos == Height.SOURCE){
-            lastHeight = Height.SOURCE;
-            ampPos = true;
-            // setArmWristExtGoal(0.39, 0.42, 0.55); //extTarget = 0.5346 wristTarget = 0.33
-            // setArmWristExtGoal(0.37, 0.387, 0.55); //extTarget = 0.5346
-            setArmWristExtGoal(armHardLowerLimit + Constants.Arm.offsetToSource, 
-                            wristHardLowerLimit + Constants.Wrist.offsetToSource, 
-                            extHardLowerLimit + Constants.Extension.offsetToSource); //extTarget = 0.5346
+            }
+            
+            
+            pause = !pause;
 
         }
-       
     }
 
 }
