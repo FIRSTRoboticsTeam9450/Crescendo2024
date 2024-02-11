@@ -98,7 +98,7 @@ public class ClimbSubsystem extends SubsystemBase {
    */
   public void setTargetPosition(double position) {
     leftClimbController.setSetpoint(position);
-    rightClimbController.setSetpoint(position);
+    rightClimbController.setSetpoint(position + 1);
   }
 
   /**

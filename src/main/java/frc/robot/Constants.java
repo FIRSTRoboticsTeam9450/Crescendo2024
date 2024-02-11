@@ -165,7 +165,7 @@ public final class Constants
 
   public static final int intakeId = 26;
 
-  public static final int lClimberId = 30;
+  public static final int lClimberId = 31;
   public static final int rClimberId = 29;
   
 

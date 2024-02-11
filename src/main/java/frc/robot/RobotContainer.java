@@ -17,17 +17,22 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.ClimbCommand;
 import frc.robot.commands.IntakingCommand;
+import frc.robot.commands.ResetClimbCommand;
 import frc.robot.commands.TimedIntakeSetPowerCommand;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDrive;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteFieldDrive;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDriveAdv;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
 import frc.robot.subsystems.ArmWristSubsystem;
+import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ArmWristSubsystem.Height;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import java.io.File;
+
+import com.pathplanner.lib.auto.NamedCommands;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
@@ -43,6 +48,7 @@ public class RobotContainer
                                                                          
   private final IntakeSubsystem intakeSub = new IntakeSubsystem();
   private final ArmWristSubsystem armWristSub = new ArmWristSubsystem();
+  private final ClimbSubsystem climbSub = new ClimbSubsystem();
  // private final ExtensionSubsystem extSub = new ExtensionSubsystem();
 
 
@@ -59,6 +65,8 @@ public class RobotContainer
    */
   public RobotContainer()
   {
+    Command armStore = new InstantCommand(() -> armWristSub.goToPosition(Height.HOLD));
+    NamedCommands.registerCommand("ArmStore", armStore);
     // Configure the trigger bindings
     configureBindings();
 
@@ -139,6 +147,10 @@ public class RobotContainer
     // Holding Position
     armController.x().onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.HOLD)));
 
+    armController.pov(0).onTrue(new ClimbCommand(climbSub, 10));
+    armController.pov(180).onTrue(new ClimbCommand(climbSub, 70));
+    armController.pov(90).onTrue(new ResetClimbCommand(climbSub));
+
   }
 
   /**
@@ -149,7 +161,7 @@ public class RobotContainer
   public Command getAutonomousCommand()
   {
     // An example command will be run in autonomous
-    return drivebase.getAutonomousCommand("New Path", true);
+    return drivebase.getAutonomousCommand("BlueLeftOneNote", true, true);
   }
 
   public void setDriveMode()
