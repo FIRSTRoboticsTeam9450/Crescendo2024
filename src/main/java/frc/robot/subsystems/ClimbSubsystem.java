@@ -135,7 +135,7 @@ public class ClimbSubsystem extends SubsystemBase {
   }
 
   /**
-   * Returns true if the magnet is in range of the left limit switch
+   * Returns true if the magnet is in range of the right limit switch
    * @return the state of the limit switch
    */
   public boolean getRightLimitSwitch() {

@@ -168,6 +168,7 @@ public final class Constants
   public static final int lClimberId = 31;
   public static final int rClimberId = 29;
   
+  public static final int laserId = 31;
 
   public static final double baseWidth = 0.4953;
   public static final double baseLength = 0.6477;
