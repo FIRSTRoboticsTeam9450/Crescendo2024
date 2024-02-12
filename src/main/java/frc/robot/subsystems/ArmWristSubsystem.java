@@ -304,10 +304,10 @@ public class ArmWristSubsystem extends SubsystemBase{
             //Mainly b/c of the limit on the chain rn(if gone can remove this if statment)
         //    setArmVoltage(0);
         //}else{
-        if (Math.abs(voltage) < 4) {
+        if (Math.abs(voltage) < 10) {
             setArmVoltage(voltage);
         } else {
-            setArmVoltage(4 * Math.signum(voltage));
+            setArmVoltage(10 * Math.signum(voltage));
         }
 
         //} 

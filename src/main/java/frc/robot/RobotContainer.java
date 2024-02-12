@@ -10,7 +10,9 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -42,7 +44,6 @@ import com.pathplanner.lib.auto.NamedCommands;
  */
 public class RobotContainer
 {
-  private DoubleSupplier speedModifier = () -> 1.0;
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                          "swerve/vortex"));
@@ -61,6 +62,7 @@ public class RobotContainer
   // CommandJoystick driverController   = new CommandJoystick(3);//(OperatorConstants.DRIVER_CONTROLLER_PORT);
   //XboxController driverXbox = new XboxController(0);
 
+  private double speedModifier = 0.5;
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -68,24 +70,43 @@ public class RobotContainer
   {
     Command armStore = new InstantCommand(() -> armWristSub.goToPosition(Height.HOLD));
     NamedCommands.registerCommand("ArmStore", armStore);
-    // Configure the trigger bindings
-    configureBindings();
+    
 
     
     TeleopDrive simClosedFieldRel = new TeleopDrive(drivebase,
-                                                    () -> MathUtil.applyDeadband(driverController.getLeftY() * speedModifier.getAsDouble(),
+                                                    () -> MathUtil.applyDeadband(driverController.getLeftY() ,
                                                                                  OperatorConstants.LEFT_Y_DEADBAND),
-                                                    () -> MathUtil.applyDeadband(driverController.getLeftX() * speedModifier.getAsDouble(),
+                                                    () -> MathUtil.applyDeadband(driverController.getLeftX() ,
                                                                                  OperatorConstants.LEFT_X_DEADBAND),
                                                     () -> driverController.getRawAxis(4), () -> true);
     TeleopDrive closedFieldRel = new TeleopDrive(
         drivebase,
-        () -> MathUtil.applyDeadband(driverController.getLeftX() * speedModifier.getAsDouble(), OperatorConstants.LEFT_X_DEADBAND),
-        () -> MathUtil.applyDeadband(driverController.getLeftY() * speedModifier.getAsDouble(), OperatorConstants.LEFT_Y_DEADBAND),
+        () -> MathUtil.applyDeadband(driverController.getLeftX() , OperatorConstants.LEFT_X_DEADBAND),
+        () -> MathUtil.applyDeadband(driverController.getLeftY() , OperatorConstants.LEFT_Y_DEADBAND),
         () -> driverController.getRawAxis(4), () -> true); // change the int in the parameter to the appropriate axis
 
+    TeleopDrive simClosedFieldRelSlow = new TeleopDrive(drivebase,
+                                                () -> MathUtil.applyDeadband(driverController.getLeftY() * speedModifier,
+                                                                              OperatorConstants.LEFT_Y_DEADBAND),
+                                                () -> MathUtil.applyDeadband(driverController.getLeftX() * speedModifier,
+                                                                              OperatorConstants.LEFT_X_DEADBAND),
+                                                () -> driverController.getRawAxis(4) * speedModifier, () -> true);
+    TeleopDrive closedFieldRelSlow = new TeleopDrive(
+        drivebase,
+        () -> MathUtil.applyDeadband(driverController.getLeftX() * speedModifier, OperatorConstants.LEFT_X_DEADBAND),
+        () -> MathUtil.applyDeadband(driverController.getLeftY() * speedModifier, OperatorConstants.LEFT_Y_DEADBAND),
+        () -> driverController.getRawAxis(4) * speedModifier, () -> true);
+
+    
     drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simClosedFieldRel : closedFieldRel);
     
+    
+    // driverController.rightTrigger().whileFalse();
+    // driverController.rightTrigger().whileTrue(closedFieldRelSlow);
+    
+
+    // Configure the trigger bindings
+    configureBindings(simClosedFieldRel, closedFieldRel, simClosedFieldRelSlow, closedFieldRelSlow);
   } // FR: 323.086, FL: 303.486
   // 
 
@@ -97,13 +118,22 @@ public class RobotContainer
    * controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight joysticks}.
    */
 
-  private void configureBindings()
+  private void configureBindings(TeleopDrive simDrv, TeleopDrive drv, TeleopDrive simDrvSlow, TeleopDrive drvSlow)
   {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-
+    final RepeatCommand slowDrvCmd = new RepeatCommand(!RobotBase.isSimulation() ? simDrvSlow : drvSlow);
     
     driverController.rightBumper().onTrue(new InstantCommand(drivebase::zeroGyro));
-    speedModifier = driverController.getHID().getRightTriggerAxis() > 0 ? () -> 0.5 : () -> 1.0;
+    // speed modifier by half
+    
+    // driverController.rightTrigger().onTrue(new SequentialCommandGroup( new InstantCommand( () -> drivebase.removeDefaultCommand()),
+    //                                        new InstantCommand( () -> drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simDrv : drv))));
+    // driverController.rightTrigger().onFalse(new SequentialCommandGroup( new InstantCommand( () -> drivebase.removeDefaultCommand()),
+    //                                        new InstantCommand( () -> drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simDrvSlow : drvSlow))));
+    driverController.rightTrigger().onTrue(slowDrvCmd);
+    driverController.rightTrigger().onFalse(new InstantCommand( () -> CommandScheduler.getInstance().cancel(slowDrvCmd)));
+    
+
     //new JoystickButton(driverXbox, 1).onTrue((new InstantCommand(drivebase::zeroGyro)));
     //new JoystickButton(driverXbox, 3).onTrue(new InstantCommand(drivebase::addFakeVisionReading));
 //    new JoystickButton(driverXbox, 3).whileTrue(new RepeatCommand(new InstantCommand(drivebase::lock, drivebase)));
