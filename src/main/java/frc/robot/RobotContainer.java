@@ -152,6 +152,8 @@ public class RobotContainer
     // Holding Position
     armController.x().onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.HOLD)));
 
+
+    // Climber
     armController.pov(0).onTrue(new ClimbCommand(climbSub, 10));
     armController.pov(180).onTrue(new ClimbCommand(climbSub, 70));
     armController.pov(90).onTrue(new ResetClimbCommand(climbSub));
