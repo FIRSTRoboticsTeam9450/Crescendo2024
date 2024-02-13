@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDrive;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteFieldDrive;
+import frc.robot.commands.swervedrive.drivebase.AlignSource;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDriveAdv;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
@@ -118,6 +119,9 @@ public class RobotContainer
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
     new JoystickButton(driverXbox, 1).onTrue((new InstantCommand(drivebase::zeroGyro)));
     new JoystickButton(driverXbox, 3).onTrue(new InstantCommand(drivebase::addFakeVisionReading));
+
+    driverController.pov(0).onTrue(new AlignSource(drivebase));
+    
 //    new JoystickButton(driverXbox, 3).whileTrue(new RepeatCommand(new InstantCommand(drivebase::lock, drivebase)));
   }
 

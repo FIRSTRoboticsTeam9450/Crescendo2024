@@ -17,8 +17,11 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.io.File;
@@ -33,6 +36,7 @@ import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
 public class SwerveSubsystem extends SubsystemBase
 {
+  NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
 
   /**
    * Swerve drive object.
@@ -50,6 +54,7 @@ public class SwerveSubsystem extends SubsystemBase
    */
   public SwerveSubsystem(File directory)
   {
+  
     // Angle conversion factor is 360 / (GEAR RATIO * ENCODER RESOLUTION)
     //  In this case the gear ratio is 12.8 motor revolutions per wheel rotation.
     //  The encoder resolution per motor revolution is 1 per motor revolution.
@@ -197,7 +202,18 @@ public class SwerveSubsystem extends SubsystemBase
   @Override
   public void periodic()
   {
-    
+    double[] visionPose = table.getEntry("botpose").getDoubleArray(new double[6]); // Robot transform in field-space. Translation (X,Y,Z) Rotation(Roll,Pitch,Yaw), total latency (cl+tl) 
+    SmartDashboard.putNumber("Pose x", visionPose[0]);
+    SmartDashboard.putNumber("Pose y", visionPose[1]);
+    SmartDashboard.putNumber("Pose z", visionPose[2]);
+    SmartDashboard.putNumber("Roll", visionPose[3]);
+    SmartDashboard.putNumber("Pitch", visionPose[4]);
+    SmartDashboard.putNumber("Yaw", visionPose[5]);
+
+  }
+
+  public double[] getVisionPose() {
+    return table.getEntry("botpose").getDoubleArray(new double[6]);
   }
 
   @Override
