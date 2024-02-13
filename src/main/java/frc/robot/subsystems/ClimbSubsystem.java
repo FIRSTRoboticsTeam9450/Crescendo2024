@@ -158,6 +158,10 @@ public class ClimbSubsystem extends SubsystemBase {
     return rightMotorVoltage;
   }
 
+  public boolean isFinishedMoving() {
+    return leftClimbController.getPositionError() < 2 && rightClimbController.getPositionError() < 2;
+  }
+
   @Override
   public void periodic() {
     if (runPid) {

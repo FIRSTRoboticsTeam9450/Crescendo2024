@@ -17,7 +17,7 @@ public class ClimbCommand extends Command {
   /**
    * Creates a new climb command
    * @param subsystem the ClimbSubsystem to be used
-   * @param target the desired setpoint (should be between 10 and 80)
+   * @param target the desired setpoint (should be between 10 and 80 for safety)
    */
   public ClimbCommand(ClimbSubsystem subsystem, double target) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -35,6 +35,12 @@ public class ClimbCommand extends Command {
   @Override
   public void execute() {
     subsystem.setTargetPosition(MathUtil.clamp(target, 0, 90));
+  }
+
+  // Exit command when climber reaches target
+  @Override
+  public boolean isFinished() {
+    return subsystem.isFinishedMoving();
   }
 
   
