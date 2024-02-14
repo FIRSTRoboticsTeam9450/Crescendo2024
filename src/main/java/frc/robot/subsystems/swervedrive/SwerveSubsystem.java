@@ -202,7 +202,8 @@ public class SwerveSubsystem extends SubsystemBase
   @Override
   public void periodic()
   {
-    double[] visionPose = table.getEntry("botpose").getDoubleArray(new double[6]); // Robot transform in field-space. Translation (X,Y,Z) Rotation(Roll,Pitch,Yaw), total latency (cl+tl) 
+    //double[] visionPose = table.getEntry("botpose").getDoubleArray(new double[6]); // Robot transform in field-space. Translation (X,Y,Z) Rotation(Roll,Pitch,Yaw), total latency (cl+tl) 
+    double[] visionPose = getVisionPose();
     SmartDashboard.putNumber("Pose x", visionPose[0]);
     SmartDashboard.putNumber("Pose y", visionPose[1]);
     SmartDashboard.putNumber("Pose z", visionPose[2]);
@@ -213,7 +214,7 @@ public class SwerveSubsystem extends SubsystemBase
   }
 
   public double[] getVisionPose() {
-    return table.getEntry("botpose").getDoubleArray(new double[6]);
+    return table.getEntry("botpose_targetspace").getDoubleArray(new double[6]);
   }
 
   @Override

@@ -134,7 +134,8 @@ public class RobotContainer
   {
     // An example command will be run in autonomous
     //return autoChooser.getSelected();
-    return drivebase.getAutonomousCommand("Trash", false, true);
+    return new AlignSource(drivebase);
+    //drivebase.getAutonomousCommand("Trash", false, true);
   }
 
   public void setDriveMode()
