@@ -646,6 +646,8 @@ public class ArmWristSubsystem extends SubsystemBase{
         }else{             
 
             if(!ampPos && pos == Height.AMP){
+                lastHeight = Height.AMP;
+
                 // don't want to update lastHeight for amp
 
                 // setArmWristExtGoal(0.531, 0.15, 0.25);
@@ -654,6 +656,7 @@ public class ArmWristSubsystem extends SubsystemBase{
                                 extHardLowerLimit + Constants.Extension.offsetToAmpFromGround); // wrist from smallest 0.117
 
             }else if((ampPos || lastHeight == Height.HOLD) && pos == Height.AMP){
+                lastHeight = Height.AMP;
                 // setArmWristExtGoal(0.511, 0.0487, 0.34); //extTarget = 0.387
                 // setArmWristExtGoal(0.511, 0.0487, 0.47); //extTarget = 0.387
                 setArmWristExtGoal(armHardLowerLimit + Constants.Arm.offsetToAmpFromSource_Hold, 
@@ -661,7 +664,7 @@ public class ArmWristSubsystem extends SubsystemBase{
                                 extHardLowerLimit + Constants.Extension.offsetToAmpFromSource_Hold); //extTarget = 0.387
 
             }else if(lastHeight == Height.HOLD && pos == Height.GROUND){
-                // lastHeight gets updated for this in the periodic method
+                /*  lastHeight gets updated for this in the periodic method */
                 ampPos = false;
 
                 // setArmWristExtGoal(0.511, 0.0487, 0.47); //extTarget = 0.387
@@ -675,7 +678,7 @@ public class ArmWristSubsystem extends SubsystemBase{
                                 extHardLowerLimit + Constants.Extension.offsetToGround); //extTarget = 0.387
 
             }else if(lastHeight == Height.GROUND && pos == Height.HOLD){
-                // lastHeight gets updated for this in the periodic method
+                /*  lastHeight gets updated for this in the periodic method */
 
                 // setArmWristExtGoal(0.511, 0.0487, 0.47); //extTarget = 0.387
                 // move arm to purpendicular (0.21) while moving extension and wrist simultaneously, and then move arm down
