@@ -57,6 +57,7 @@ public class ArmWristSubsystem extends SubsystemBase{
     boolean armPIDRun;
     boolean pause = false;
     boolean reachPos;
+    boolean isClimbing;
 
     
 
@@ -82,6 +83,8 @@ public class ArmWristSubsystem extends SubsystemBase{
     
 
     private final ProfiledPIDController armPid = new ProfiledPIDController(40, 0, 0, new Constraints(4, 3));//maxVel = 3.5 and maxAccel = 2.5
+    private final PIDController armClimbPid = new PIDController(30, 0, 0);
+    
     private final PIDController wristPIDController = new PIDController(40, 0, 0); 
     private final PIDController extensionPid = new PIDController(45, 0,0);
 
@@ -132,6 +135,7 @@ public class ArmWristSubsystem extends SubsystemBase{
         wristPIDRun = true;
         armPIDRun = true;
         wristBrakeToggle = false;
+        isClimbing = false;
         
         armMotor.burnFlash();
         wrist.burnFlash();
@@ -279,6 +283,40 @@ public class ArmWristSubsystem extends SubsystemBase{
     public double getGoal(){
         return armPid.getGoal().position;
     }
+
+    public double calculateArmClimbPID() {
+        return armClimbPid.calculate(getAbsArmPos(), armTarget);
+    }
+    public void updateArmClimbPID(){
+        
+        double ffValue = 0;
+        double pidValue = calculateArmClimbPID();
+
+        double voltage = pidValue + ffValue;
+        SmartDashboard.putNumber("Rot Climb Voltage", voltage);
+
+        //voltage = MathUtil.clamp(voltage, -4, 4);
+
+        // double voltage = convertToVolts(percentOutput);
+        // SmartDashboard.putNumber("percentOutput", percentOutput);
+        // SmartDashboard.putNumber("Rot Climb FF", ffValue);
+        SmartDashboard.putNumber("PIDRotate Climb", pidValue);
+        
+       // boolean limit = (getAbsArmPos() >= armHardUpperLimit && Math.signum(voltage) == 1.0) || (getAbsArmPos() <=  && Math.signum(voltage) == -1.0);
+       // if(limit){
+            //Technically should set a ff constant negative 
+            //Mainly b/c of the limit on the chain rn(if gone can remove this if statment)
+        //    setArmVoltage(0);
+        //}else{
+        if (Math.abs(voltage) < 12) {
+            setArmVoltage(voltage);
+        } else {
+            setArmVoltage(12 * Math.signum(voltage));
+        }
+
+        //} 
+    }
+
     public double calculateRotationPID(){
         //return armPid.calculate(getArmPosition(), armTarget);
         return armPid.calculate(getAbsArmPos(), armTarget);
@@ -457,7 +495,12 @@ public class ArmWristSubsystem extends SubsystemBase{
 
         if(runStuff){
             if(armPIDRun){
-                updateRotationOutput();
+                if (isClimbing) {
+                    updateArmClimbPID();
+                } else {
+                    updateRotationOutput();
+
+                }
             }else{
                 armMotor.setVoltage(0);
             }

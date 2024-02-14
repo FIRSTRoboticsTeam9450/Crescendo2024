@@ -25,6 +25,7 @@ import frc.robot.commands.ResetClimbCommand;
 import frc.robot.commands.TimedIntakeSetPowerCommand;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDrive;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteFieldDrive;
+import frc.robot.commands.swervedrive.drivebase.HeadingCorTeleopDrive;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDriveAdv;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
 import frc.robot.subsystems.ArmWristSubsystem;
@@ -72,15 +73,15 @@ public class RobotContainer
     NamedCommands.registerCommand("ArmStore", armStore);
     
 
-    // AbsoluteDrive drvHeadingCorr = new AbsoluteDrive(drivebase, 
-    //                                             () -> MathUtil.applyDeadband(driverController.getLeftX() * 0.7, OperatorConstants.LEFT_X_DEADBAND),
-    //                                             () -> MathUtil.applyDeadband(driverController.getLeftY() * 0.7, OperatorConstants.LEFT_Y_DEADBAND),
-    //                                             () -> driverController.getRightY(), () -> driverController.getRightX());
+    HeadingCorTeleopDrive drvHeadingCorr = new HeadingCorTeleopDrive(drivebase, 
+                                                () -> MathUtil.applyDeadband(driverController.getLeftY() * 0.5, OperatorConstants.LEFT_Y_DEADBAND),
+                                                () -> MathUtil.applyDeadband(driverController.getLeftX() * 0.7, OperatorConstants.LEFT_X_DEADBAND),
+                                                () -> driverController.getRightY() * 0.5, () -> driverController.getRightX() * 0.5);
 
-    // AbsoluteDrive simDrvHeadingCorr = new AbsoluteDrive(drivebase, 
-    //                                             () -> MathUtil.applyDeadband(driverController.getLeftX() * 0.7, OperatorConstants.LEFT_X_DEADBAND),
-    //                                             () -> MathUtil.applyDeadband(driverController.getLeftY() * 0.7, OperatorConstants.LEFT_Y_DEADBAND),
-    //                                             () -> driverController.getRightX(), () -> driverController.getRightY());
+    HeadingCorTeleopDrive simDrvHeadingCorr = new HeadingCorTeleopDrive(drivebase, 
+                                                () -> MathUtil.applyDeadband(driverController.getLeftY() * 0.5, OperatorConstants.LEFT_Y_DEADBAND),
+                                                () -> MathUtil.applyDeadband(driverController.getLeftX() * 0.5, OperatorConstants.LEFT_X_DEADBAND),
+                                                () -> driverController.getRightY() * 0.5, () -> driverController.getRightX() * 0.5);
 
 
 
@@ -114,8 +115,8 @@ public class RobotContainer
         () -> driverController.getRawAxis(4) * speedModifier, () -> true);
 
     
-    drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simClosedFieldRel : closedFieldRel);
-    // drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simDrvHeadingCorr : drvHeadingCorr);
+    // drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simClosedFieldRel : closedFieldRel);
+    drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simDrvHeadingCorr : drvHeadingCorr);
     
     
     // driverController.rightTrigger().whileFalse();
@@ -227,4 +228,4 @@ public class RobotContainer
   {
     drivebase.setMotorBrake(brake);
   }
-}
+} 
