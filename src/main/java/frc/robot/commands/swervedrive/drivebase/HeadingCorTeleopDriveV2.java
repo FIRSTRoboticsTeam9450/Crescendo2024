@@ -20,7 +20,7 @@ import swervelib.math.SwerveMath;
 /**
  * An example command that uses an example subsystem.
  */
-public class HeadingCorTeleopDrive extends Command
+public class HeadingCorTeleopDriveV2 extends Command
 {
 
   private final SwerveSubsystem swerve;
@@ -29,7 +29,6 @@ public class HeadingCorTeleopDrive extends Command
   private final BooleanSupplier zeroGyro;
   private double xGoal, yGoal;
   private boolean initRotation = false;
-  private boolean isDrifting = false;
   private boolean noRotation;
 
   ChassisSpeeds desiredSpeeds;
@@ -55,7 +54,7 @@ public class HeadingCorTeleopDrive extends Command
    *                          robot coordinate system, this is along the same axis as vX.  Should range from -1 to 1
    *                          with no deadband. Positive is away from the alliance wall.
    */
-  public HeadingCorTeleopDrive(SwerveSubsystem swerve, DoubleSupplier vX, DoubleSupplier vY, DoubleSupplier headingHorizontal,
+  public HeadingCorTeleopDriveV2(SwerveSubsystem swerve, DoubleSupplier vX, DoubleSupplier vY, DoubleSupplier headingHorizontal,
                        DoubleSupplier headingVertical, BooleanSupplier zeroGyro)
   {
     this.swerve = swerve;
@@ -73,7 +72,6 @@ public class HeadingCorTeleopDrive extends Command
   {
     initRotation = true;
     noRotation = true;
-    isDrifting = false;
 
     xGoal = 0;
     yGoal = 0;
@@ -140,8 +138,8 @@ public class HeadingCorTeleopDrive extends Command
     //              true);
 
     // for horizontal rotation
-    if (!isDrifting && Math.abs(headingHorizontal.getAsDouble()) <= Constants.OperatorConstants.LEFT_X_DEADBAND && Math.abs(headingVertical.getAsDouble()) <= Constants.OperatorConstants.LEFT_Y_DEADBAND) {
-      swerve.drive(new Translation2d(xVelocity * swerve.maximumSpeed, yVelocity * swerve.maximumSpeed), desiredSpeeds.omegaRadiansPerSecond, true);
+    if (Math.abs(headingHorizontal.getAsDouble()) <= Constants.OperatorConstants.LEFT_X_DEADBAND && Math.abs(headingVertical.getAsDouble()) <= Constants.OperatorConstants.LEFT_Y_DEADBAND) {
+      swerve.drive(translation, desiredSpeeds.omegaRadiansPerSecond, true);
       
       System.out.println("HEADING Corr rot");
 
@@ -152,19 +150,11 @@ public class HeadingCorTeleopDrive extends Command
                  true);
       System.out.println("REGULAR rot");
 
-      // updates the drifting bool to determien when to update goalRot speed
-      isDrifting = true;
+      // updates the goal angle (polar)
+      xGoal = swerve.getHeading().getSin();
+      yGoal = swerve.getHeading().getCos();
       
 
-    }
-
-    if (isDrifting) {
-      if (Math.abs(swerve.getRobotVelocity().omegaRadiansPerSecond) < 0.5) {
-        // updates the goal angle (polar)
-        xGoal = swerve.getHeading().getSin();
-        yGoal = swerve.getHeading().getCos();
-        isDrifting = false; 
-      }
     }
 
     // if (((Math.abs(headingVertical.getAsDouble()) > Math.abs(headingHorizontal.getAsDouble()))   

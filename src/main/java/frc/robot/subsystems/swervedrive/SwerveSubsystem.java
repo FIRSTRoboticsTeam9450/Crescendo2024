@@ -4,12 +4,15 @@
 
 package frc.robot.subsystems.swervedrive;
 
+import java.io.File;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -24,7 +27,6 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import java.io.File;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
 import swervelib.math.SwerveMath;
@@ -199,6 +201,26 @@ public class SwerveSubsystem extends SubsystemBase
     swerveDrive.drive(velocity);
   }
 
+/**
+   * The primary method for controlling the drivebase. Takes a {@link ChassisSpeeds}, and calculates
+   * and commands module states accordingly. Can use either open-loop or closed-loop velocity
+   * control for the wheel velocities. Also has field- and robot-relative modes, which affect how
+   * the translation vector is used.
+   *
+   * @param velocity The chassis speeds to set the robot to achieve.
+   * @param isOpenLoop Whether to use closed-loop velocity control. Set to true to disable
+   *     closed-loop.
+   * @param centerOfRotationMeters The center of rotation in meters, 0 is the center of the robot.
+   */
+  public void drive(
+      ChassisSpeeds velocity, boolean isOpenLoop, Translation2d centerOfRotationMeters) {
+
+        swerveDrive.drive(velocity, isOpenLoop, centerOfRotationMeters);
+
+  }
+
+  
+
   @Override
   public void periodic()
   {
@@ -279,7 +301,7 @@ public class SwerveSubsystem extends SubsystemBase
   public void zeroGyro()
   {
     swerveDrive.zeroGyro();
-    
+
   }
 
   /**

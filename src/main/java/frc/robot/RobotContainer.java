@@ -66,15 +66,15 @@ public class RobotContainer
     NamedCommands.registerCommand("wait", new WaitCommand(3));
 
     HeadingCorTeleopDrive drvHeadingCorr = new HeadingCorTeleopDrive(drivebase, 
-                                                () -> MathUtil.applyDeadband(driverController.getLeftY() * 0.5, OperatorConstants.LEFT_Y_DEADBAND),
-                                                () -> MathUtil.applyDeadband(driverController.getLeftX() * 0.7, OperatorConstants.LEFT_X_DEADBAND),
-                                                () -> driverController.getRightX() * 0.5, () -> driverController.getRightY() * 0.5,
+                                                () -> MathUtil.applyDeadband(driverController.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
+                                                () -> MathUtil.applyDeadband(driverController.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
+                                                () -> driverController.getRightX(), () -> driverController.getRightY(),
                                                 () -> driverController.rightBumper().getAsBoolean());
 
     HeadingCorTeleopDrive simDrvHeadingCorr = new HeadingCorTeleopDrive(drivebase, 
-                                                () -> MathUtil.applyDeadband(driverController.getLeftY() * 0.5, OperatorConstants.LEFT_Y_DEADBAND),
-                                                () -> MathUtil.applyDeadband(driverController.getLeftX() * 0.5, OperatorConstants.LEFT_X_DEADBAND),
-                                                () -> driverController.getRightX() * 0.5, () -> driverController.getRightY() * 0.5, 
+                                                () -> MathUtil.applyDeadband(driverController.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
+                                                () -> MathUtil.applyDeadband(driverController.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
+                                                () -> driverController.getRightX(), () -> driverController.getRightY(), 
                                                 () -> driverController.rightBumper().getAsBoolean());
 
     TeleopDrive simClosedFieldRel = new TeleopDrive(drivebase,
