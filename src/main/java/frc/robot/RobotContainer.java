@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -26,6 +27,7 @@ import frc.robot.commands.swervedrive.drivebase.AbsoluteDriveAdv;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import java.io.File;
+import java.util.function.BooleanSupplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -37,6 +39,8 @@ import com.pathplanner.lib.auto.NamedCommands;
  */
 public class RobotContainer
 {
+  private BooleanSupplier zeroGyroPressed = () -> false;
+  
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                          "swerve/neo"));
@@ -64,12 +68,14 @@ public class RobotContainer
     HeadingCorTeleopDrive drvHeadingCorr = new HeadingCorTeleopDrive(drivebase, 
                                                 () -> MathUtil.applyDeadband(driverController.getLeftY() * 0.5, OperatorConstants.LEFT_Y_DEADBAND),
                                                 () -> MathUtil.applyDeadband(driverController.getLeftX() * 0.7, OperatorConstants.LEFT_X_DEADBAND),
-                                                () -> driverController.getRightX() * 0.5, () -> driverController.getRightY() * 0.5);
+                                                () -> driverController.getRightX() * 0.5, () -> driverController.getRightY() * 0.5,
+                                                () -> driverController.rightBumper().getAsBoolean());
 
     HeadingCorTeleopDrive simDrvHeadingCorr = new HeadingCorTeleopDrive(drivebase, 
                                                 () -> MathUtil.applyDeadband(driverController.getLeftY() * 0.5, OperatorConstants.LEFT_Y_DEADBAND),
                                                 () -> MathUtil.applyDeadband(driverController.getLeftX() * 0.5, OperatorConstants.LEFT_X_DEADBAND),
-                                                () -> driverController.getRightX() * 0.5, () -> driverController.getRightY() * 0.5);
+                                                () -> driverController.getRightX() * 0.5, () -> driverController.getRightY() * 0.5, 
+                                                () -> driverController.rightBumper().getAsBoolean());
 
     TeleopDrive simClosedFieldRel = new TeleopDrive(drivebase,
                                                     () -> MathUtil.applyDeadband(driverXbox.getLeftY(),
@@ -98,7 +104,9 @@ public class RobotContainer
   private void configureBindings()
   {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-    driverController.rightBumper().onTrue((new InstantCommand(drivebase::zeroGyro)));
+    /* ----->> IMPORTANT: reset gyro is the last parameter of the drive command! */
+    // driverController.rightBumper().onTrue((new ParallelCommandGroup(new InstantCommand(drivebase::zeroGyro), new InstantCommand(() -> {zeroGyroPressed = () -> true;}))));
+    // driverController.rightBumper().onFalse(new InstantCommand(() -> {zeroGyroPressed = () -> false;}));
     // new JoystickButton(driverXbox, 3).onTrue(new InstantCommand(drivebase::addFakeVisionReading));
 
     driverController.pov(0).onTrue(new AlignSource(drivebase));

@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import java.util.List;
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import swervelib.SwerveController;
 import swervelib.math.SwerveMath;
@@ -25,8 +26,12 @@ public class HeadingCorTeleopDrive extends Command
   private final SwerveSubsystem swerve;
   private final DoubleSupplier  vX, vY;
   private final DoubleSupplier headingHorizontal, headingVertical;
+  private final BooleanSupplier zeroGyro;
+  private double xGoal, yGoal;
   private boolean initRotation = false;
   private boolean noRotation;
+
+  ChassisSpeeds desiredSpeeds;
 
 
   /**
@@ -50,13 +55,14 @@ public class HeadingCorTeleopDrive extends Command
    *                          with no deadband. Positive is away from the alliance wall.
    */
   public HeadingCorTeleopDrive(SwerveSubsystem swerve, DoubleSupplier vX, DoubleSupplier vY, DoubleSupplier headingHorizontal,
-                       DoubleSupplier headingVertical)
+                       DoubleSupplier headingVertical, BooleanSupplier zeroGyro)
   {
     this.swerve = swerve;
     this.vX = vX;
     this.vY = vY;
     this.headingHorizontal = headingHorizontal;
     this.headingVertical = headingVertical;
+    this.zeroGyro = zeroGyro;
 
     addRequirements(swerve);
   }
@@ -66,6 +72,13 @@ public class HeadingCorTeleopDrive extends Command
   {
     initRotation = true;
     noRotation = true;
+
+    xGoal = 0;
+    yGoal = 0;
+
+    desiredSpeeds = swerve.getTargetSpeeds(-vX.getAsDouble(), -vY.getAsDouble(),
+                                                         0,
+                                                         0);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -73,10 +86,15 @@ public class HeadingCorTeleopDrive extends Command
   public void execute()
   {
 
+    if (zeroGyro.getAsBoolean()) {
+      swerve.zeroGyro();
+      xGoal = 0;
+      yGoal = 0;
+    }
     // Get the desired chassis speeds based on a 2 joystick module.
-    ChassisSpeeds desiredSpeeds = swerve.getTargetSpeeds(-vX.getAsDouble(), -vY.getAsDouble(),
-                                                         -headingHorizontal.getAsDouble(),
-                                                         -headingVertical.getAsDouble());
+    desiredSpeeds = swerve.getTargetSpeeds(-vX.getAsDouble(), -vY.getAsDouble(),
+                                                         xGoal,
+                                                         yGoal);
 
     
     if (initRotation) {
@@ -130,6 +148,10 @@ public class HeadingCorTeleopDrive extends Command
                  angVelocity * swerve.getSwerveController().config.maxAngularVelocity,
                  true);
       System.out.println("REGULAR rot");
+
+      // updates the goal angle (polar)
+      xGoal = swerve.getHeading().getSin();
+      yGoal = swerve.getHeading().getCos();
       
 
     }
