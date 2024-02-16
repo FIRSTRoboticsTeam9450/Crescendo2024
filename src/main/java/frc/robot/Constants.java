@@ -134,6 +134,14 @@ public final class Constants
     
 
   }
+  public static enum Height{
+    GROUND,
+    HOLD,
+    SOURCE,
+    AMP,
+    GROUNDTOHOLD, //for ground to hold first arm position reached to prevent extension or wrist hitting robot
+    HOLDTOGROUND 
+  }
 
   //-----------------------------------------------------------------
   
