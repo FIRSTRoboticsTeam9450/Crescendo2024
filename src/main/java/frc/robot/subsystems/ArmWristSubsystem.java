@@ -9,6 +9,7 @@ import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkAbsoluteEncoder;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
+import com.revrobotics.SparkLimitSwitch;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
@@ -304,10 +305,10 @@ public class ArmWristSubsystem extends SubsystemBase{
             //Mainly b/c of the limit on the chain rn(if gone can remove this if statment)
         //    setArmVoltage(0);
         //}else{
-        if (Math.abs(voltage) < 10) {
+        if (Math.abs(voltage) < 6) { //10 volts good for tele
             setArmVoltage(voltage);
         } else {
-            setArmVoltage(10 * Math.signum(voltage));
+            setArmVoltage(6 * Math.signum(voltage));
         }
 
         //} 
@@ -448,6 +449,7 @@ public class ArmWristSubsystem extends SubsystemBase{
         SmartDashboard.putNumber("theta", theta);
         SmartDashboard.putNumber("Wrist Extension", (-Math.abs((getWristAbsPos() - Constants.Wrist.straightWristTics) / ((Constants.Wrist.upWristTics-Constants.Wrist.straightWristTics)/(Constants.Wrist.straightWristInches-Constants.Wrist.upWristInches))) + Constants.Wrist.straightWristInches));
 
+        SmartDashboard.putBoolean("extension switch", extensionMotor.getForwardLimitSwitch(SparkLimitSwitch.Type.kNormallyClosed).isPressed());
 
         // used for gotoPositio nmethod
         reachPos = Math.abs(getAbsArmPos() - this.armTarget) > 0.08  

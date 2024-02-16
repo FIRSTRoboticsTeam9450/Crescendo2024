@@ -38,6 +38,7 @@ import java.util.function.DoubleSupplier;
 import com.pathplanner.lib.auto.NamedCommands;
 
 /**
+ * 
  * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
  * little robot logic should actually be handled in the {@link Robot} periodic methods (other than the scheduler calls).
  * Instead, the structure of the robot (including subsystems, commands, and trigger mappings) should be declared here.
@@ -201,9 +202,17 @@ public class RobotContainer
 
 
     // Climber
-    armController.pov(0).onTrue(new ClimbCommand(climbSub, 10));
-    armController.pov(180).onTrue(new ClimbCommand(climbSub, 70));
-    armController.pov(90).onTrue(new ResetClimbCommand(climbSub));
+    armController.pov(180).onTrue(new ClimbCommand(climbSub, 3));
+    armController.pov(90).onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.HOLD)));
+    armController.pov(0).onTrue(new ClimbCommand(climbSub, 90));
+    armController.pov(270).onTrue(new ClimbCommand(climbSub, 25));
+
+    armController.leftBumper().onTrue(new ResetClimbCommand(climbSub));
+
+    //armController.pov(0).onTrue(new ClimbCommand(climbSub, 10));
+    //armController.pov(180).onTrue(new ClimbCommand(climbSub, 80));
+    //armController.pov(90).onTrue(new ResetClimbCommand(climbSub));
+    //armController.pov(270).onTrue(new ClimbCommand(climbSub, 25));
 
   }
 
