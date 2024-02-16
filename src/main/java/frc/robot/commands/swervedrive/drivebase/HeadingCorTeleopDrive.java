@@ -140,17 +140,33 @@ public class HeadingCorTeleopDrive extends Command
     //              true);
 
     // for horizontal rotation
-    if (!isDrifting && Math.abs(headingHorizontal.getAsDouble()) <= Constants.OperatorConstants.LEFT_X_DEADBAND && Math.abs(headingVertical.getAsDouble()) <= Constants.OperatorConstants.LEFT_Y_DEADBAND) {
-      swerve.drive(new Translation2d(xVelocity * swerve.maximumSpeed, yVelocity * swerve.maximumSpeed), desiredSpeeds.omegaRadiansPerSecond, true);
-      
-      System.out.println("HEADING Corr rot");
-
-
-    } else {
+    
+    if (Math.abs(headingHorizontal.getAsDouble()) <= Constants.OperatorConstants.RIGHT_X_DEADBAND && Math.abs(vX.getAsDouble()) <= Constants.OperatorConstants.LEFT_Y_DEADBAND && Math.abs(vY.getAsDouble()) <= Constants.OperatorConstants.LEFT_Y_DEADBAND) {
+      /* If Robot not moving */
       swerve.drive(new Translation2d(xVelocity * swerve.maximumSpeed, yVelocity * swerve.maximumSpeed),
                  angVelocity * swerve.getSwerveController().config.maxAngularVelocity,
                  true);
-      System.out.println("REGULAR rot");
+
+      swerve.setHeadingCorrection(false);
+
+      // System.out.println("No Drive");
+
+    } else  if (!isDrifting && Math.abs(headingHorizontal.getAsDouble()) <= Constants.OperatorConstants.LEFT_X_DEADBAND && Math.abs(headingVertical.getAsDouble()) <= Constants.OperatorConstants.LEFT_Y_DEADBAND) {
+      /* For drive without rotation */
+      swerve.drive(new Translation2d(xVelocity * swerve.maximumSpeed, yVelocity * swerve.maximumSpeed), desiredSpeeds.omegaRadiansPerSecond, true);
+      
+      swerve.setHeadingCorrection(true);
+      // System.out.println("Drive NO Rotation");
+
+
+    } else {
+      /* For rotation */
+      swerve.drive(new Translation2d(xVelocity * swerve.maximumSpeed, yVelocity * swerve.maximumSpeed),
+                 angVelocity * swerve.getSwerveController().config.maxAngularVelocity,
+                 true);
+
+      swerve.setHeadingCorrection(false);
+      // System.out.println("Drive + Rotation");
 
       // updates the drifting bool to determien when to update goalRot speed
       isDrifting = true;
@@ -159,7 +175,7 @@ public class HeadingCorTeleopDrive extends Command
     }
 
     if (isDrifting) {
-      if (Math.abs(swerve.getRobotVelocity().omegaRadiansPerSecond) < 0.5) {
+      if (Math.abs(swerve.getRobotVelocity().omegaRadiansPerSecond) < 0.1) {
         // updates the goal angle (polar)
         xGoal = swerve.getHeading().getSin();
         yGoal = swerve.getHeading().getCos();

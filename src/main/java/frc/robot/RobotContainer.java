@@ -27,6 +27,7 @@ import frc.robot.commands.swervedrive.drivebase.AbsoluteDriveAdv;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import java.io.File;
+import java.time.Instant;
 import java.util.function.BooleanSupplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -108,6 +109,11 @@ public class RobotContainer
     // driverController.rightBumper().onTrue((new ParallelCommandGroup(new InstantCommand(drivebase::zeroGyro), new InstantCommand(() -> {zeroGyroPressed = () -> true;}))));
     // driverController.rightBumper().onFalse(new InstantCommand(() -> {zeroGyroPressed = () -> false;}));
     // new JoystickButton(driverXbox, 3).onTrue(new InstantCommand(drivebase::addFakeVisionReading));
+    
+
+    driverController.leftBumper().whileTrue(new InstantCommand(() -> drivebase.lock()));
+
+
 
     driverController.pov(0).onTrue(new AlignSource(drivebase));
     
