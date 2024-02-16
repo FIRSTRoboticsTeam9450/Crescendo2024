@@ -19,7 +19,7 @@ import swervelib.math.SwerveMath;
 /**
  * An example command that uses an example subsystem.
  */
-public class AbsoluteDrive extends Command
+public class HeadingCorTeleopDrive extends Command
 {
 
   private final SwerveSubsystem swerve;
@@ -47,7 +47,7 @@ public class AbsoluteDrive extends Command
    *                          robot coordinate system, this is along the same axis as vX.  Should range from -1 to 1
    *                          with no deadband. Positive is away from the alliance wall.
    */
-  public AbsoluteDrive(SwerveSubsystem swerve, DoubleSupplier vX, DoubleSupplier vY, DoubleSupplier headingHorizontal,
+  public HeadingCorTeleopDrive(SwerveSubsystem swerve, DoubleSupplier vX, DoubleSupplier vY, DoubleSupplier headingHorizontal,
                        DoubleSupplier headingVertical)
   {
     this.swerve = swerve;
@@ -75,20 +75,17 @@ public class AbsoluteDrive extends Command
                                                          -headingHorizontal.getAsDouble(),
                                                          -headingVertical.getAsDouble());
 
-    // Prevent Movement After Auto
-    if(initRotation)
+    
+    if(headingHorizontal.getAsDouble() == 0 && headingVertical.getAsDouble() == 0)
     {
-      if(headingHorizontal.getAsDouble() == 0 && headingVertical.getAsDouble() == 0)
-      {
-        // Get the curretHeading
-        Rotation2d firstLoopHeading = swerve.getHeading();
-      
-        // Set the Current Heading to the desired Heading
-        desiredSpeeds = swerve.getTargetSpeeds(0, 0, firstLoopHeading.getSin(), firstLoopHeading.getCos());
-      }
-      //Dont Init Rotation Again
-      initRotation = false;
+      // Get the curretHeading
+      Rotation2d firstLoopHeading = swerve.getHeading();
+    
+      // Set the Current Heading to the desired Heading
+      desiredSpeeds = swerve.getTargetSpeeds(0, 0, -firstLoopHeading.getSin(), -firstLoopHeading.getCos());
     }
+    
+    
 
     // Limit velocity to prevent tippy
     Translation2d translation = SwerveController.getTranslation2d(desiredSpeeds);
@@ -97,6 +94,19 @@ public class AbsoluteDrive extends Command
                                            swerve.getSwerveDriveConfiguration());
     //SmartDashboard.putNumber("LimitedTranslation", translation.getX());
     //SmartDashboard.putString("Translation", translation.toString());
+
+
+    // double xVelocity   = -Math.pow(vX.getAsDouble(), 3);
+    // double yVelocity   = -Math.pow(vY.getAsDouble(), 3);
+    // double angVelocity = -Math.pow(headingHorizontal.getAsDouble(), 3);
+    // SmartDashboard.putNumber("vX", xVelocity);
+    // SmartDashboard.putNumber("vY", yVelocity);
+    // SmartDashboard.putNumber("omega", angVelocity);
+
+    // // Drive using raw values.
+    // swerve.drive(new Translation2d(xVelocity * swerve.maximumSpeed, yVelocity * swerve.maximumSpeed),
+    //              angVelocity * swerve.getSwerveController().config.maxAngularVelocity,
+    //              true);
 
     // Make the robot move
     swerve.drive(translation, desiredSpeeds.omegaRadiansPerSecond, true);
