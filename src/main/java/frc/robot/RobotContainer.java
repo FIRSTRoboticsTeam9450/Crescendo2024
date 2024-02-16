@@ -10,7 +10,9 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
@@ -18,29 +20,36 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.ClimbCommand;
 import frc.robot.commands.IntakingCommand;
+import frc.robot.commands.ResetClimbCommand;
 import frc.robot.commands.TimedIntakeSetPowerCommand;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDrive;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteFieldDrive;
+import frc.robot.commands.swervedrive.drivebase.HeadingCorTeleopDrive;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDriveAdv;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ArmWristSubsystem;
 import frc.robot.subsystems.ExtensionSubsystem;
+import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.WristSubsystem;
 import frc.robot.subsystems.ArmWristSubsystem.Height;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import java.io.File;
+import java.util.function.DoubleSupplier;
+
+import com.pathplanner.lib.auto.NamedCommands;
 
 /**
+ * 
  * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
  * little robot logic should actually be handled in the {@link Robot} periodic methods (other than the scheduler calls).
  * Instead, the structure of the robot (including subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer
 {
-  //hello world testing 123 
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                          "swerve/vortex"));
@@ -51,6 +60,7 @@ public class RobotContainer
   //private final WristSubsystem wristSub = new WristSubsystem();
   private final ArmWristSubsystem armWristSub = new ArmWristSubsystem();
 
+  private final ClimbSubsystem climbSub = new ClimbSubsystem();
  // private final ExtensionSubsystem extSub = new ExtensionSubsystem();
 
 
@@ -62,29 +72,68 @@ public class RobotContainer
   // CommandJoystick driverController   = new CommandJoystick(3);//(OperatorConstants.DRIVER_CONTROLLER_PORT);
   //XboxController driverXbox = new XboxController(0);
 
+  private double speedModifier = 0.5;
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer()
   {
-    // Configure the trigger bindings
-    configureBindings();
+    Command armStore = new InstantCommand(() -> armWristSub.goToPosition(Height.HOLD));
+    NamedCommands.registerCommand("ArmStore", armStore);
+    
+
+    HeadingCorTeleopDrive drvHeadingCorr = new HeadingCorTeleopDrive(drivebase, 
+                                                () -> MathUtil.applyDeadband(driverController.getLeftY() * 0.5, OperatorConstants.LEFT_Y_DEADBAND),
+                                                () -> MathUtil.applyDeadband(driverController.getLeftX() * 0.7, OperatorConstants.LEFT_X_DEADBAND),
+                                                () -> driverController.getRightY() * 0.5, () -> driverController.getRightX() * 0.5);
+
+    HeadingCorTeleopDrive simDrvHeadingCorr = new HeadingCorTeleopDrive(drivebase, 
+                                                () -> MathUtil.applyDeadband(driverController.getLeftY() * 0.5, OperatorConstants.LEFT_Y_DEADBAND),
+                                                () -> MathUtil.applyDeadband(driverController.getLeftX() * 0.5, OperatorConstants.LEFT_X_DEADBAND),
+                                                () -> driverController.getRightY() * 0.5, () -> driverController.getRightX() * 0.5);
+
+
+
+
+
+
 
     
     TeleopDrive simClosedFieldRel = new TeleopDrive(drivebase,
-                                                    () -> MathUtil.applyDeadband(driverController.getLeftY(),
+                                                    () -> MathUtil.applyDeadband(driverController.getLeftY() ,
                                                                                  OperatorConstants.LEFT_Y_DEADBAND),
-                                                    () -> MathUtil.applyDeadband(driverController.getLeftX(),
+                                                    () -> MathUtil.applyDeadband(driverController.getLeftX() ,
                                                                                  OperatorConstants.LEFT_X_DEADBAND),
                                                     () -> driverController.getRawAxis(4), () -> true);
     TeleopDrive closedFieldRel = new TeleopDrive(
         drivebase,
-        () -> MathUtil.applyDeadband(driverController.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
-        () -> MathUtil.applyDeadband(driverController.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
+        () -> MathUtil.applyDeadband(driverController.getLeftX() , OperatorConstants.LEFT_X_DEADBAND),
+        () -> MathUtil.applyDeadband(driverController.getLeftY() , OperatorConstants.LEFT_Y_DEADBAND),
         () -> driverController.getRawAxis(4), () -> true); // change the int in the parameter to the appropriate axis
 
-    drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simClosedFieldRel : closedFieldRel);
+    TeleopDrive simClosedFieldRelSlow = new TeleopDrive(drivebase,
+                                                () -> MathUtil.applyDeadband(driverController.getLeftY() * speedModifier,
+                                                                              OperatorConstants.LEFT_Y_DEADBAND),
+                                                () -> MathUtil.applyDeadband(driverController.getLeftX() * speedModifier,
+                                                                              OperatorConstants.LEFT_X_DEADBAND),
+                                                () -> driverController.getRawAxis(4) * speedModifier, () -> true);
+    TeleopDrive closedFieldRelSlow = new TeleopDrive(
+        drivebase,
+        () -> MathUtil.applyDeadband(driverController.getLeftX() * speedModifier, OperatorConstants.LEFT_X_DEADBAND),
+        () -> MathUtil.applyDeadband(driverController.getLeftY() * speedModifier, OperatorConstants.LEFT_Y_DEADBAND),
+        () -> driverController.getRawAxis(4) * speedModifier, () -> true);
+
     
+    // drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simClosedFieldRel : closedFieldRel);
+    drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simDrvHeadingCorr : drvHeadingCorr);
+    
+    
+    // driverController.rightTrigger().whileFalse();
+    // driverController.rightTrigger().whileTrue(closedFieldRelSlow);
+    
+
+    // Configure the trigger bindings
+    configureBindings(simClosedFieldRel, closedFieldRel, simClosedFieldRelSlow, closedFieldRelSlow);
   } // FR: 323.086, FL: 303.486
   // 
 
@@ -96,12 +145,22 @@ public class RobotContainer
    * controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight joysticks}.
    */
 
-  private void configureBindings()
+  private void configureBindings(TeleopDrive simDrv, TeleopDrive drv, TeleopDrive simDrvSlow, TeleopDrive drvSlow)
   {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-
+    final RepeatCommand slowDrvCmd = new RepeatCommand(!RobotBase.isSimulation() ? simDrvSlow : drvSlow);
     
     driverController.rightBumper().onTrue(new InstantCommand(drivebase::zeroGyro));
+    // speed modifier by half
+    
+    // driverController.rightTrigger().onTrue(new SequentialCommandGroup( new InstantCommand( () -> drivebase.removeDefaultCommand()),
+    //                                        new InstantCommand( () -> drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simDrv : drv))));
+    // driverController.rightTrigger().onFalse(new SequentialCommandGroup( new InstantCommand( () -> drivebase.removeDefaultCommand()),
+    //                                        new InstantCommand( () -> drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simDrvSlow : drvSlow))));
+    driverController.rightTrigger().onTrue(slowDrvCmd);
+    driverController.rightTrigger().onFalse(new InstantCommand( () -> CommandScheduler.getInstance().cancel(slowDrvCmd)));
+    
+
     //new JoystickButton(driverXbox, 1).onTrue((new InstantCommand(drivebase::zeroGyro)));
     //new JoystickButton(driverXbox, 3).onTrue(new InstantCommand(drivebase::addFakeVisionReading));
 //    new JoystickButton(driverXbox, 3).whileTrue(new RepeatCommand(new InstantCommand(drivebase::lock, drivebase)));
@@ -185,6 +244,20 @@ public class RobotContainer
     // Holding Position
     armController.x().onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.HOLD)));
 
+
+    // Climber
+    armController.pov(180).onTrue(new ClimbCommand(climbSub, 3));
+    armController.pov(90).onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.HOLD)));
+    armController.pov(0).onTrue(new ClimbCommand(climbSub, 90));
+    armController.pov(270).onTrue(new ClimbCommand(climbSub, 25));
+
+    armController.leftBumper().onTrue(new ResetClimbCommand(climbSub));
+
+    //armController.pov(0).onTrue(new ClimbCommand(climbSub, 10));
+    //armController.pov(180).onTrue(new ClimbCommand(climbSub, 80));
+    //armController.pov(90).onTrue(new ResetClimbCommand(climbSub));
+    //armController.pov(270).onTrue(new ClimbCommand(climbSub, 25));
+
   }
 
   /**
@@ -195,7 +268,7 @@ public class RobotContainer
   public Command getAutonomousCommand()
   {
     // An example command will be run in autonomous
-    return drivebase.getAutonomousCommand("New Path", true);
+    return drivebase.getAutonomousCommand("BlueLeftOneNote", true, true);
   }
 
   public void setDriveMode()
@@ -207,4 +280,4 @@ public class RobotContainer
   {
     drivebase.setMotorBrake(brake);
   }
-}
+} 

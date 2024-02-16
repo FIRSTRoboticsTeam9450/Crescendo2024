@@ -98,7 +98,7 @@ public class ClimbSubsystem extends SubsystemBase {
    */
   public void setTargetPosition(double position) {
     leftClimbController.setSetpoint(position);
-    rightClimbController.setSetpoint(position);
+    rightClimbController.setSetpoint(position + 1);
   }
 
   /**
@@ -135,7 +135,7 @@ public class ClimbSubsystem extends SubsystemBase {
   }
 
   /**
-   * Returns true if the magnet is in range of the left limit switch
+   * Returns true if the magnet is in range of the right limit switch
    * @return the state of the limit switch
    */
   public boolean getRightLimitSwitch() {
@@ -156,6 +156,10 @@ public class ClimbSubsystem extends SubsystemBase {
    */
   public double getRightVoltage() {
     return rightMotorVoltage;
+  }
+
+  public boolean isFinishedMoving() {
+    return leftClimbController.getPositionError() < 2 && rightClimbController.getPositionError() < 2;
   }
 
   @Override
