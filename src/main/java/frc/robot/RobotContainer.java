@@ -153,7 +153,7 @@ public class RobotContainer
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
     final RepeatCommand slowDrvCmd = new RepeatCommand(!RobotBase.isSimulation() ? simDrvSlow : drvSlow);
     
-    // driverController.rightBumper().onTrue(new InstantCommand(drivebase::zeroGyro));
+    driverController.rightBumper().onTrue(new InstantCommand(drivebase::zeroGyro));
     // speed modifier by half
     
     // driverController.rightTrigger().onTrue(new SequentialCommandGroup( new InstantCommand( () -> drivebase.removeDefaultCommand()),
