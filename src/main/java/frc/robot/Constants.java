@@ -105,13 +105,13 @@ public final class Constants
     public static final double maxExtensionTics = 0.06; 
     public static final double zeroTics = 0.73;
 
-    public static final double offsetToAmpFromGround = -0.5;
-    public static final double offsetToAmpFromSource_Hold = -0.409; 
+    public static final double offsetToAmpFromGround = 0.5/0.69 * -75; // -0.5
+    public static final double offsetToAmpFromSource_Hold = 0.409/0.69 * -75; // -0.409
     /**Not updated */
     public static final double offsetToGroundFromHold = 0;
-    public static final double offsetToGround = -0.287;
-    public static final double offsetToHold = -0.02;
-    public static final double offsetToSource = -0.2;
+    public static final double offsetToGround = 0.287/0.69 * -75; // -0.287
+    public static final double offsetToHold = 0.02/0.69 * -75; // -0.02
+    public static final double offsetToSource = 0.2/0.69 * -75; // -0.2
     
   }
 
@@ -165,10 +165,10 @@ public final class Constants
 
   public static final int intakeId = 26;
 
-  public static final int lClimberId = 31;
-  public static final int rClimberId = 29;
+  public static final int lClimberId = 29;
+  public static final int rClimberId = 31;
   
-  public static final int laserId = 31;
+  public static final int laserId = 32;
 
   public static final double baseWidth = 0.4953;
   public static final double baseLength = 0.6477;

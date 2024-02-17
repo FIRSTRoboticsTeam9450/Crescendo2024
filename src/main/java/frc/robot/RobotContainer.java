@@ -31,6 +31,7 @@ import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
 import frc.robot.subsystems.ArmWristSubsystem;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.LimitSwitchSubsystem;
 import frc.robot.subsystems.ArmWristSubsystem.Height;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import java.io.File;
@@ -53,6 +54,7 @@ public class RobotContainer
   private final IntakeSubsystem intakeSub = new IntakeSubsystem();
   private final ArmWristSubsystem armWristSub = new ArmWristSubsystem();
   private final ClimbSubsystem climbSub = new ClimbSubsystem();
+  // private final LimitSwitchSubsystem extLimitSub = new LimitSwitchSubsystem();
  // private final ExtensionSubsystem extSub = new ExtensionSubsystem();
 
 
@@ -116,8 +118,8 @@ public class RobotContainer
         () -> driverController.getRawAxis(4) * speedModifier, () -> true);
 
     
-    // drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simClosedFieldRel : closedFieldRel);
-    drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simDrvHeadingCorr : drvHeadingCorr);
+    drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simClosedFieldRel : closedFieldRel);
+    // drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simDrvHeadingCorr : drvHeadingCorr);
     
     
     // driverController.rightTrigger().whileFalse();
@@ -214,6 +216,7 @@ public class RobotContainer
     //armController.pov(180).onTrue(new ClimbCommand(climbSub, 80));
     //armController.pov(90).onTrue(new ResetClimbCommand(climbSub));
     //armController.pov(270).onTrue(new ClimbCommand(climbSub, 25));
+    armController.rightBumper().onTrue(new InstantCommand(() -> armWristSub.runAndResetExtEncoder()));
 
   }
 
