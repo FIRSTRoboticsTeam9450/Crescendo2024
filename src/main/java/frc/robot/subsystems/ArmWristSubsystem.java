@@ -99,11 +99,6 @@ public class ArmWristSubsystem extends SubsystemBase{
     private final PIDController extensionPid = new PIDController(1, 0,0);
 
 
-    private double ticsPerArmRevolution = 144, ticsPerWristRevolution = /*172.8*/ 120, lowTics = (50/360) * ticsPerArmRevolution, midTics = (100/360) * ticsPerArmRevolution, highTics = (135/360) * ticsPerArmRevolution, groundTics = (37.4/360) * ticsPerArmRevolution;
-    private boolean intialization = true;
-
-
-
     public ArmWristSubsystem(){
         delayExt = new Timer();
         
@@ -429,9 +424,9 @@ public class ArmWristSubsystem extends SubsystemBase{
 
     public void updateWristPos() {
         double goalPos = wristPIDController.getSetpoint();
-        double pidValue = wristPIDController.calculate(getWristAbsPos(), goalPos); //change back to goalPos after testing
+        double pidValue = wristPIDController.calculate(getAbsWristPos(), goalPos); //change back to goalPos after testing
         double changeInTime = Timer.getFPGATimestamp() - oldTime;
-        double velSetpoint = (getWristAbsPos() - oldPos) / changeInTime;
+        double velSetpoint = (getAbsWristPos() - oldPos) / changeInTime;
         double accel = (velSetpoint - oldVel) / (changeInTime); 
         double ffVal = wristFeedForward.calculate(velSetpoint, accel); //takes velocity, and acceleration
         
@@ -466,7 +461,7 @@ public class ArmWristSubsystem extends SubsystemBase{
         // update vars for determining acceleration later
         oldVel =  velSetpoint; 
         oldTime = Timer.getFPGATimestamp(); 
-        oldPos = getWristAbsPos();
+        oldPos = getAbsWristPos();
     }
 
     public void setWristSetpoint(double goalPos) {
@@ -484,7 +479,6 @@ public class ArmWristSubsystem extends SubsystemBase{
 
 
     public double getWristPos() { return wrist.getEncoder().getPosition(); }
-    public double getWristAbsPos() { return wristEncoder.getPosition(); }
     public void stopWrist() { wrist.stopMotor(); }
     public void toggleWristBrake() { wrist.setIdleMode(wristBrakeToggle ? IdleMode.kBrake : IdleMode.kCoast); wristBrakeToggle = !wristBrakeToggle; }
     
@@ -512,7 +506,7 @@ public class ArmWristSubsystem extends SubsystemBase{
     
                 
         theta = (((Constants.Arm.intakeArmAngle - Constants.Arm.ampArmAngle)/(Constants.Arm.intakeArmTics - Constants.Arm.ampArmTics)) * getAbsArmPos()) + (Constants.Arm.intakeArmAngle - (((Constants.Arm.intakeArmAngle - Constants.Arm.ampArmAngle)/(Constants.Arm.intakeArmTics - Constants.Arm.ampArmTics)) * Constants.Arm.intakeArmTics));
-        radiusX = Constants.Arm.armLength - Math.abs((getWristAbsPos() - Constants.Wrist.straightWristTics) / ((Constants.Wrist.upWristTics-Constants.Wrist.straightWristTics)/(Constants.Wrist.straightWristInches-Constants.Wrist.upWristInches))) + Constants.Wrist.straightWristInches;
+        radiusX = Constants.Arm.armLength - Math.abs((getAbsWristPos() - Constants.Wrist.straightWristTics) / ((Constants.Wrist.upWristTics-Constants.Wrist.straightWristTics)/(Constants.Wrist.straightWristInches-Constants.Wrist.upWristInches))) + Constants.Wrist.straightWristInches;
         radiusY = radiusX + 1;
         extensionLength = (Constants.Extension.maxExtensionInches / (Constants.Extension.maxExtensionTics - Constants.Extension.zeroTics)) * getExtRelPos() - (Constants.Extension.zeroTics * (Constants.Extension.maxExtensionInches/(Constants.Extension.maxExtensionTics - Constants.Extension.zeroTics)));
         totalextensionX = ((radiusX + extensionLength) * Math.abs(Math.cos(theta))) - Constants.Chassis.pivotToFront;
@@ -522,7 +516,7 @@ public class ArmWristSubsystem extends SubsystemBase{
         SmartDashboard.putNumber("extensionLength", extensionLength);
         SmartDashboard.putNumber("radiusX", radiusX);
         SmartDashboard.putNumber("theta", theta);
-        SmartDashboard.putNumber("Wrist Extension", (-Math.abs((getWristAbsPos() - Constants.Wrist.straightWristTics) / ((Constants.Wrist.upWristTics-Constants.Wrist.straightWristTics)/(Constants.Wrist.straightWristInches-Constants.Wrist.upWristInches))) + Constants.Wrist.straightWristInches));
+        SmartDashboard.putNumber("Wrist Extension", (-Math.abs((getAbsWristPos() - Constants.Wrist.straightWristTics) / ((Constants.Wrist.upWristTics-Constants.Wrist.straightWristTics)/(Constants.Wrist.straightWristInches-Constants.Wrist.upWristInches))) + Constants.Wrist.straightWristInches));
 
         SmartDashboard.putBoolean("extension switch", extensionMotor.getForwardLimitSwitch(SparkLimitSwitch.Type.kNormallyClosed).isPressed());
 
@@ -572,7 +566,7 @@ public class ArmWristSubsystem extends SubsystemBase{
             // runs extension after arm error is certain amount... the wristPIDRun logic in the first
             // if statment is to make a smaller error range for when going from hold to ground and vice versa
             if(Math.abs(getAbsArmPos() - armTarget) < (wristPIDRun ? 0.2 : 0.01)){
-                if (lastHeight == Height.HOLD && !wristPIDRun && Math.abs(getWristAbsPos() - wristTarget) < 0.1) {
+                if (lastHeight == Height.HOLD && !wristPIDRun && Math.abs(getAbsWristPos() - wristTarget) < 0.1) {
                     // changes to actual arm goal after the first arm goal was reached sufficiently
                     setArmGoal(armHardLowerLimit + Constants.Arm.offsetToGround);
                     // toggles wristPIDRun so tht the other if statment will use old error range, and so 
@@ -613,7 +607,7 @@ public class ArmWristSubsystem extends SubsystemBase{
         SmartDashboard.putBoolean("Arm Enabled", armPIDRun);
         SmartDashboard.putNumber("Wrist Target", wristTarget);
         SmartDashboard.putNumber("Extension Target", extensionTarget);
-        if (SmartDashboard.getNumber("Change Wrist Is Brake", 1) == 1) {
+        if (SmartDashboard.getNumber("Change Extension Is Brake", 1) == 1) {
             extensionMotor.setIdleMode(IdleMode.kBrake);
         } else {
             extensionMotor.setIdleMode(IdleMode.kCoast);
