@@ -77,15 +77,16 @@ public class RobotContainer
     
 
     HeadingCorTeleopDrive drvHeadingCorr = new HeadingCorTeleopDrive(drivebase, 
-                                                () -> MathUtil.applyDeadband(driverController.getLeftY() * 0.5, OperatorConstants.LEFT_Y_DEADBAND),
-                                                () -> MathUtil.applyDeadband(driverController.getLeftX() * 0.7, OperatorConstants.LEFT_X_DEADBAND),
-                                                () -> driverController.getRightY() * 0.5, () -> driverController.getRightX() * 0.5);
+                                                () -> MathUtil.applyDeadband(driverController.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
+                                                () -> MathUtil.applyDeadband(driverController.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
+                                                () -> driverController.getRightX(), () -> driverController.getRightY(),
+                                                () -> driverController.rightBumper().getAsBoolean());
 
     HeadingCorTeleopDrive simDrvHeadingCorr = new HeadingCorTeleopDrive(drivebase, 
-                                                () -> MathUtil.applyDeadband(driverController.getLeftY() * 0.5, OperatorConstants.LEFT_Y_DEADBAND),
-                                                () -> MathUtil.applyDeadband(driverController.getLeftX() * 0.5, OperatorConstants.LEFT_X_DEADBAND),
-                                                () -> driverController.getRightY() * 0.5, () -> driverController.getRightX() * 0.5);
-
+                                                () -> MathUtil.applyDeadband(driverController.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
+                                                () -> MathUtil.applyDeadband(driverController.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
+                                                () -> driverController.getRightX(), () -> driverController.getRightY(), 
+                                                () -> driverController.rightBumper().getAsBoolean());
 
 
 
@@ -144,7 +145,7 @@ public class RobotContainer
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
     final RepeatCommand slowDrvCmd = new RepeatCommand(!RobotBase.isSimulation() ? simDrvSlow : drvSlow);
     
-    driverController.rightBumper().onTrue(new InstantCommand(drivebase::zeroGyro));
+    // driverController.rightBumper().onTrue(new InstantCommand(drivebase::zeroGyro));
     // speed modifier by half
     
     // driverController.rightTrigger().onTrue(new SequentialCommandGroup( new InstantCommand( () -> drivebase.removeDefaultCommand()),
