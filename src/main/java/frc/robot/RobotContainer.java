@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -28,9 +29,13 @@ import frc.robot.commands.swervedrive.drivebase.AbsoluteFieldDrive;
 import frc.robot.commands.swervedrive.drivebase.HeadingCorTeleopDrive;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDriveAdv;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
+import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ArmWristSubsystem;
+import frc.robot.subsystems.ExtensionSubsystem;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.LimitSwitchSubsystem;
+import frc.robot.subsystems.WristSubsystem;
 import frc.robot.subsystems.ArmWristSubsystem.Height;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import java.io.File;
@@ -51,8 +56,13 @@ public class RobotContainer
                                                                          "swerve/vortex"));
                                                                          
   private final IntakeSubsystem intakeSub = new IntakeSubsystem();
+  //private final ExtensionSubsystem extSub = new ExtensionSubsystem();
+  //private final ArmSubsystem armSub = new ArmSubsystem(extSub);
+  //private final WristSubsystem wristSub = new WristSubsystem();
   private final ArmWristSubsystem armWristSub = new ArmWristSubsystem();
+
   private final ClimbSubsystem climbSub = new ClimbSubsystem();
+  // private final LimitSwitchSubsystem extLimitSub = new LimitSwitchSubsystem();
  // private final ExtensionSubsystem extSub = new ExtensionSubsystem();
 
 
@@ -75,15 +85,16 @@ public class RobotContainer
     
 
     HeadingCorTeleopDrive drvHeadingCorr = new HeadingCorTeleopDrive(drivebase, 
-                                                () -> MathUtil.applyDeadband(driverController.getLeftY() * 0.5, OperatorConstants.LEFT_Y_DEADBAND),
-                                                () -> MathUtil.applyDeadband(driverController.getLeftX() * 0.7, OperatorConstants.LEFT_X_DEADBAND),
-                                                () -> driverController.getRightY() * 0.5, () -> driverController.getRightX() * 0.5);
+                                                () -> MathUtil.applyDeadband(driverController.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
+                                                () -> MathUtil.applyDeadband(driverController.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
+                                                () -> driverController.getRightX(), () -> driverController.getRightY(),
+                                                () -> driverController.rightBumper().getAsBoolean());
 
     HeadingCorTeleopDrive simDrvHeadingCorr = new HeadingCorTeleopDrive(drivebase, 
-                                                () -> MathUtil.applyDeadband(driverController.getLeftY() * 0.5, OperatorConstants.LEFT_Y_DEADBAND),
-                                                () -> MathUtil.applyDeadband(driverController.getLeftX() * 0.5, OperatorConstants.LEFT_X_DEADBAND),
-                                                () -> driverController.getRightY() * 0.5, () -> driverController.getRightX() * 0.5);
-
+                                                () -> MathUtil.applyDeadband(driverController.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
+                                                () -> MathUtil.applyDeadband(driverController.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
+                                                () -> driverController.getRightX(), () -> driverController.getRightY(), 
+                                                () -> driverController.rightBumper().getAsBoolean());
 
 
 
@@ -116,8 +127,8 @@ public class RobotContainer
         () -> driverController.getRawAxis(4) * speedModifier, () -> true);
 
     
-    // drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simClosedFieldRel : closedFieldRel);
-    drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simDrvHeadingCorr : drvHeadingCorr);
+    drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simClosedFieldRel : closedFieldRel);
+    // drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simDrvHeadingCorr : drvHeadingCorr);
     
     
     // driverController.rightTrigger().whileFalse();
@@ -172,32 +183,67 @@ public class RobotContainer
     
     //driverController.rightBumper().onFalse(new InstantCommand( () -> wristIntake.stopIntake() ));
 
-    /* toggle wrist idlemode */
-    //driverController.a().onTrue(new InstantCommand( () -> armWristSub.toggleWristBrake() ));
- 
-    // /* arm *//* right trigger run wrist pid */
-    //driverController.x().onTrue(new InstantCommand( () -> armWristSub.toggleWrist()));
-    //driverController.a().onTrue(new InstantCommand(() -> armWristSub.toggleArm()));
-    
+   
+    /*
+    // New Source
+
+    armController.y().onTrue(new SequentialCommandGroup(
+      new InstantCommand(() -> armSub.goToPosition(Constants.Height.SOURCE)),
+      new InstantCommand(() -> extSub.goToPosition(Constants.Height.SOURCE)),
+      new InstantCommand(() -> wristSub.goToPosition(Constants.Height.SOURCE)),
+      new IntakingCommand(intakeSub, 5)
+    ));
+
+    */
+
     // Source
     
-       armController.y().onTrue(new SequentialCommandGroup(
+    armController.y().onTrue(new SequentialCommandGroup(
       new InstantCommand(() -> armWristSub.goToPosition(Height.SOURCE)),
       new IntakingCommand(intakeSub, 5)
-      ));
+    ));
    
     //driverController.rightTrigger().onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.SOURCE)));
+
+    /*
+    // New Amp
+
+    armController.b().onTrue(new SequentialCommandGroup(
+      new InstantCommand(() -> armSub.goToPosition(Constants.Height.AMP)),
+      new InstantCommand(() -> extSub.goToPosition(Constants.Height.AMP)),
+      new InstantCommand(() -> wristSub.goToPosition(Constants.Height.AMP))
+    ));
+    */
     
     // Amp
     armController.b().onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.AMP)));
     //driverController.rightBumper().onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.AMP)));
-    
+   
+   /*
+    //New Ground
+    armController.a().onTrue(new SequentialCommandGroup(
+      new InstantCommand(() -> armSub.goToPosition(Constants.Height.GROUND)),
+      new InstantCommand(() -> extSub.goToPosition(Constants.Height.GROUND)),
+      new InstantCommand(() -> wristSub.goToPosition(Constants.Height.GROUND)),
+      new IntakingCommand(intakeSub, 5)
+    ));
+    */
+
     // Ground
     armController.a().onTrue(new SequentialCommandGroup(
       new InstantCommand(() -> armWristSub.goToPosition(Height.GROUND)),
       new IntakingCommand(intakeSub, 5)
       ));
         
+    /*
+    // New Holding
+    armController.x().onTrue(new SequentialCommandGroup(
+      new InstantCommand(() -> wristSub.goToPosition(Constants.Height.HOLD)),
+      new InstantCommand(() -> extSub.goToPosition(Constants.Height.HOLD)),
+      new InstantCommand(() -> armSub.goToPosition(Constants.Height.HOLD))
+    ));
+    */
+
     // Holding Position
     armController.x().onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.HOLD)));
 
@@ -214,6 +260,7 @@ public class RobotContainer
     //armController.pov(180).onTrue(new ClimbCommand(climbSub, 80));
     //armController.pov(90).onTrue(new ResetClimbCommand(climbSub));
     //armController.pov(270).onTrue(new ClimbCommand(climbSub, 25));
+    armController.rightBumper().onTrue(new InstantCommand(() -> armWristSub.runAndResetExtEncoder()));
 
   }
 
