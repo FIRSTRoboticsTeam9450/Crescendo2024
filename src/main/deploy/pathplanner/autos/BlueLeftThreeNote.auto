@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.57,
-      "y": 7.11
+      "x": 0.37,
+      "y": 7.1078702443630295
     },
     "rotation": 0
   },
@@ -14,13 +14,13 @@
         {
           "type": "named",
           "data": {
-            "name": "ArmStore"
+            "name": "ResetExt"
           }
         },
         {
-          "type": "wait",
+          "type": "named",
           "data": {
-            "waitTime": 2.0
+            "name": "ArmAmp"
           }
         },
         {
@@ -30,9 +30,9 @@
           }
         },
         {
-          "type": "wait",
+          "type": "named",
           "data": {
-            "waitTime": 1.0
+            "name": "Outtake"
           }
         },
         {
@@ -42,9 +42,9 @@
           }
         },
         {
-          "type": "wait",
+          "type": "named",
           "data": {
-            "waitTime": 1.0
+            "name": "ArmAmp"
           }
         },
         {
@@ -54,15 +54,39 @@
           }
         },
         {
-          "type": "wait",
+          "type": "named",
           "data": {
-            "waitTime": 1.0
+            "name": "Outtake"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "AmpToLeftPark"
+            "pathName": "AmpToLeftSecondNote"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ArmAmp"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "SecondNoteToAmp"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Outtake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ArmStore"
           }
         }
       ]

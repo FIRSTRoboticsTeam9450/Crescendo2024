@@ -92,12 +92,12 @@ public final class Constants
     public static final double ampArmTics = 0.531;
     public static final double ampArmAngle = 115;
 
-    public static final double offsetToAmpFromGround = 0.426;
+    public static final double offsetToAmpFromGround = 0.446;
     public static final double offsetToAmpFromSource_Hold = 0.406;
     public static final double offsetToStraightOutPos = 0.195;
     public static final double offsetToGround = 0.0666;
     public static final double offsetToHold = 0.025;
-    public static final double offsetToSource = 0.24;
+    public static final double offsetToSource = 0.255;
   }
 
   public static class Extension{
@@ -105,13 +105,13 @@ public final class Constants
     public static final double maxExtensionTics = 0.06; 
     public static final double zeroTics = 0.73;
 
-    public static final double offsetToAmpFromGround = 0.5/0.69 * -75; // -0.5
+    public static final double offsetToAmpFromGround = 0.5/0.69 * -75 + 5; // -0.5
     public static final double offsetToAmpFromSource_Hold = 0.409/0.69 * -75; // -0.409
     /**Not updated */
     public static final double offsetToGroundFromHold = 0;
     public static final double offsetToGround = 0.287/0.69 * -75; // -0.287
     public static final double offsetToHold = 0.02/0.69 * -75; // -0.02
-    public static final double offsetToSource = 0.2/0.69 * -75; // -0.2
+    public static final double offsetToSource = 0.2/0.69 * -75 + 5; // -0.2
     
   }
 

@@ -44,11 +44,11 @@ public class ArmWristSubsystem extends SubsystemBase{
     private double wristTarget = 0.387;
     private double extensionTarget = 0;
 
-    private double armHardLowerLimit = 0.105;//0.08;
+    public double armHardLowerLimit = 0.105;//0.08;
     private double armHardUpperLimit = 0.7;//0.51;
-    private double wristHardLowerLimit = 0.234; //      0.141
+    public double wristHardLowerLimit = 0.234; //      0.141
     private double wristHardUpperLimit = 0.8; //    0.7785
-    private double extHardLowerLimit = 0; // 0.749
+    public double extHardLowerLimit = 0; // 0.749
     private double extHardUpperLimit = -75; // 0.059
 
     private double armStraightUp = 0.46;
@@ -375,10 +375,10 @@ public class ArmWristSubsystem extends SubsystemBase{
             //Mainly b/c of the limit on the chain rn(if gone can remove this if statment)
         //    setArmVoltage(0);
         //}else{
-        if (Math.abs(voltage) < 6) { //10 volts good for tele
+        if (Math.abs(voltage) < 8) { //10 volts good for tele
             setArmVoltage(voltage);
         } else {
-            setArmVoltage(6 * Math.signum(voltage));
+            setArmVoltage(8 * Math.signum(voltage));
         }
 
         //} 
@@ -713,7 +713,7 @@ public class ArmWristSubsystem extends SubsystemBase{
                 lastHeight = Height.AMP;
                 // setArmWristExtGoal(0.511, 0.0487, 0.34); //extTarget = 0.387
                 // setArmWristExtGoal(0.511, 0.0487, 0.47); //extTarget = 0.387
-                setArmWristExtGoal(armHardLowerLimit + Constants.Arm.offsetToAmpFromSource_Hold, 
+                setArmWristExtGoal(armHardLowerLimit + Constants.Arm.offsetToAmpFromGround, 
                                 wristHardLowerLimit + Constants.Wrist.offsetToAmpFromSource_Hold, 
                                 extHardLowerLimit + Constants.Extension.offsetToAmpFromSource_Hold); //extTarget = 0.387
 

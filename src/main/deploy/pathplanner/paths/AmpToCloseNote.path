@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.8379276830110018,
-        "y": 7.57781207870108
+        "x": 1.69697649003839,
+        "y": 7.508146546542204
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.887927683011002,
-        "y": 7.491209538322636
+        "x": 1.74697649003839,
+        "y": 7.42154400616376
       },
       "isLocked": false,
       "linkedName": "AmpScore"
     },
     {
       "anchor": {
-        "x": 2.2319437782532714,
-        "y": 7.343982828010308
+        "x": 2.35,
+        "y": 7.25
       },
       "prevControl": {
-        "x": 2.1407516277357606,
-        "y": 7.385019295743188
+        "x": 2.2588078494824892,
+        "y": 7.29103646773288
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,7 +30,25 @@
   ],
   "rotationTargets": [],
   "constraintZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "ArmToGround",
+      "waypointRelativePos": 0,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "ArmGround"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 0.3,
     "maxAcceleration": 3.0,
@@ -40,7 +58,7 @@
   "goalEndState": {
     "velocity": 0,
     "rotation": -25.24052926478683,
-    "rotateFast": false
+    "rotateFast": true
   },
   "reversed": false,
   "folder": null,

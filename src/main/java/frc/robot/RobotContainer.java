@@ -27,6 +27,7 @@ import frc.robot.commands.TimedIntakeSetPowerCommand;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDrive;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteFieldDrive;
 import frc.robot.commands.swervedrive.drivebase.HeadingCorTeleopDrive;
+import frc.robot.commands.swervedrive.drivebase.SweepCommand;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDriveAdv;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
 import frc.robot.subsystems.ArmSubsystem;
@@ -71,9 +72,8 @@ public class RobotContainer
   CommandXboxController driverController = new CommandXboxController(0);
   CommandXboxController armController = new CommandXboxController(1);
   //CommandXboxController driverController = new CommandXboxController(0);
-  // CommandJoystick driverController   = new CommandJoystick(3);//(OperatorConstants.DRIVER_CONTROLLER_PORT);
+  // CommandJoystick driverController   = new CommandJoystick(3]\[]);//(OperatorConstants.DRIVER_CONTROLLER_PORT);
   //XboxController driverXbox = new XboxController(0);
-
   private double speedModifier = 0.5;
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -81,8 +81,26 @@ public class RobotContainer
   public RobotContainer()
   {
     Command armStore = new InstantCommand(() -> armWristSub.goToPosition(Height.HOLD));
+    Command armAmp = new InstantCommand(() -> armWristSub.goToPosition(Height.AMP));
+    Command armGround = new SequentialCommandGroup(
+      new InstantCommand(() -> armWristSub.goToPosition(Height.GROUND)),
+      new IntakingCommand(intakeSub, 8)
+      );
+    Command armStart = new InstantCommand(() -> armWristSub.setArmWristExtGoal(armWristSub.armHardLowerLimit + Constants.Arm.offsetToAmpFromGround - 0.05, 
+    armWristSub.wristHardLowerLimit + Constants.Wrist.offsetToSource, 
+    armWristSub.extHardLowerLimit - 5));
+
+    Command outtake = new TimedIntakeSetPowerCommand(intakeSub, 10, 0.75);
+    Command resetExt = new InstantCommand(() -> armWristSub.runAndResetExtEncoder());
+    Command sweep = new SweepCommand(drivebase);
+
+    NamedCommands.registerCommand("ArmStart", armStart);
     NamedCommands.registerCommand("ArmStore", armStore);
-    
+    NamedCommands.registerCommand("ArmGround", armGround);
+    NamedCommands.registerCommand("ArmAmp", armAmp);
+    NamedCommands.registerCommand("Outtake", outtake);  
+    NamedCommands.registerCommand("ResetExt", resetExt);  
+    NamedCommands.registerCommand("Sweep", sweep);
 
     HeadingCorTeleopDrive drvHeadingCorr = new HeadingCorTeleopDrive(drivebase, 
                                                 () -> MathUtil.applyDeadband(driverController.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
@@ -232,7 +250,7 @@ public class RobotContainer
     // Ground
     armController.a().onTrue(new SequentialCommandGroup(
       new InstantCommand(() -> armWristSub.goToPosition(Height.GROUND)),
-      new IntakingCommand(intakeSub, 5)
+      new IntakingCommand(intakeSub, 8)
       ));
         
     /*
@@ -272,7 +290,7 @@ public class RobotContainer
   public Command getAutonomousCommand()
   {
     // An example command will be run in autonomous
-    return drivebase.getAutonomousCommand("BlueLeftOneNote", true, true);
+    return drivebase.getAutonomousCommand("BlueLeftThreeNote", true, true);
   }
 
   public void setDriveMode()
