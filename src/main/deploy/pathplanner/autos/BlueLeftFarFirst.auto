@@ -18,9 +18,21 @@
           }
         },
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "AmpToCenterNote2"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
           }
         },
         {
@@ -30,15 +42,9 @@
           }
         },
         {
-          "type": "path",
+          "type": "wait",
           "data": {
-            "pathName": "AmpToCloseNote"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "CloseNoteToAmp"
+            "waitTime": 1.0
           }
         },
         {

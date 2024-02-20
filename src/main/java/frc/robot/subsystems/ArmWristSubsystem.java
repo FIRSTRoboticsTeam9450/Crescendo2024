@@ -33,6 +33,9 @@ public class ArmWristSubsystem extends SubsystemBase{
         HOLD,
         SOURCE,
         AMP,
+        CLIMB,
+        PRECLIMB,
+        TRAP
     }
     private Height lastHeight = Height.HOLD;
 
@@ -42,7 +45,7 @@ public class ArmWristSubsystem extends SubsystemBase{
     //----
     private double armTarget = 0.37;//0.485;  //.453
     private double wristTarget = 0.387;
-    private double extensionTarget = 0;
+    public double extensionTarget = 0;
 
     public double armHardLowerLimit = 0.105;//0.08;
     private double armHardUpperLimit = 0.7;//0.51;
@@ -55,6 +58,12 @@ public class ArmWristSubsystem extends SubsystemBase{
     private double armBalanced = 0.36;
     private double armPurpenGround = 0.206;
     private double armFFWhenPurpen = 0.42;
+
+    private double maxArmVoltage = 8;
+
+    private boolean ampToGround = false;
+    private boolean groundToAmp = false;
+    private boolean holdToSource = false;
     
     boolean wristBrakeToggle;
     boolean wristPIDRun;
@@ -232,10 +241,10 @@ public class ArmWristSubsystem extends SubsystemBase{
 
         // voltage = MathUtil.clamp(voltage /*+ ffValue*/, -6, 6);
 
-         if (Math.abs(voltage) < 8) {
+         if (Math.abs(voltage) < 10) {
             setExtVoltage(voltage);
         } else {
-            setExtVoltage(8 * Math.signum(voltage));
+            setExtVoltage(10 * Math.signum(voltage));
         }
     }
     
@@ -291,6 +300,11 @@ public class ArmWristSubsystem extends SubsystemBase{
 
        armMotor.setVoltage(voltage);
     }
+
+    public void setMaxArmVoltage(double voltage) {
+        maxArmVoltage = voltage;
+    }
+
     public void downManual(){
         armTarget -= 0.01;
 
@@ -375,10 +389,10 @@ public class ArmWristSubsystem extends SubsystemBase{
             //Mainly b/c of the limit on the chain rn(if gone can remove this if statment)
         //    setArmVoltage(0);
         //}else{
-        if (Math.abs(voltage) < 8) { //10 volts good for tele
+        if (Math.abs(voltage) < maxArmVoltage) { //10 volts good for tele
             setArmVoltage(voltage);
         } else {
-            setArmVoltage(8 * Math.signum(voltage));
+            setArmVoltage(maxArmVoltage * Math.signum(voltage));
         }
 
         //} 
@@ -535,7 +549,7 @@ public class ArmWristSubsystem extends SubsystemBase{
 
                 }
             }else{
-                armMotor.setVoltage(0);
+                //armMotor.setVoltage(0);
             }
            
             if (wristPIDRun) {
@@ -557,6 +571,27 @@ public class ArmWristSubsystem extends SubsystemBase{
                     updateWristPos();
             }
 
+            if (ampToGround) {
+                if (Math.abs(getAbsArmPos() - armTarget) < 0.2) {
+                    setExtensionGoal(extHardLowerLimit + Constants.Extension.offsetToGround);
+                    ampToGround = false;
+                }
+            }
+
+            if (groundToAmp) {
+                if (Math.abs(getAbsArmPos() - armTarget) < 0.2) {
+                    setExtensionGoal(extHardLowerLimit + Constants.Extension.offsetToAmpFromGround);
+                    groundToAmp = false;
+                }
+            }
+
+            if (holdToSource) {
+                if (Math.abs(getAbsArmPos() - armTarget) < 0.1) {
+                    setExtensionGoal(extHardLowerLimit + Constants.Extension.offsetToSource);
+                    holdToSource = false;
+                }
+            }
+
             // to start wrist movement after moving up a bit b/c wrist kinda slow lol (runs when going
             // from hold to ground pos and the arm is part way up from its first arm pos)
             if (lastHeight == Height.HOLD && !wristPIDRun && Math.abs(getAbsArmPos() - armTarget) < 0.75) {
@@ -565,7 +600,7 @@ public class ArmWristSubsystem extends SubsystemBase{
 
             // runs extension after arm error is certain amount... the wristPIDRun logic in the first
             // if statment is to make a smaller error range for when going from hold to ground and vice versa
-            if(Math.abs(getAbsArmPos() - armTarget) < (wristPIDRun ? 0.2 : 0.01)){
+            if(Math.abs(getAbsArmPos() - armTarget) < (wristPIDRun ? 0.4 : 0.01)){
                 if (lastHeight == Height.HOLD && !wristPIDRun && Math.abs(getAbsWristPos() - wristTarget) < 0.1) {
                     // changes to actual arm goal after the first arm goal was reached sufficiently
                     setArmGoal(armHardLowerLimit + Constants.Arm.offsetToGround);
@@ -577,7 +612,7 @@ public class ArmWristSubsystem extends SubsystemBase{
                     // changes to actual arm goal after the first arm goal was reached sufficiently
                     setArmGoal(armHardLowerLimit + Constants.Arm.offsetToHold);
                     // toggles wristPIDRun so tht the other if statment will use old error range, and so 
-                    // that this if statement wont be entered again
+                    // that this if statement wont be entered again]\[]
                     wristPIDRun = true;
                     lastHeight = Height.HOLD;
                 }
@@ -694,6 +729,14 @@ public class ArmWristSubsystem extends SubsystemBase{
     // true is source, false is ground
     private boolean ampPos;
     public void goToPosition(Height pos) {
+        if (pos == Height.CLIMB || pos == Height.TRAP) {
+            setMaxArmVoltage(4);
+            if (pos == Height.CLIMB) {
+                pos = Height.HOLD;
+            }
+        } else {
+            setMaxArmVoltage(8);
+        }
       
         if(pause && reachPos){
             //do nothing
@@ -701,13 +744,14 @@ public class ArmWristSubsystem extends SubsystemBase{
 
             if(!ampPos && pos == Height.AMP){
                 lastHeight = Height.AMP;
+                groundToAmp = true;
 
                 // don't want to update lastHeight for amp
-
+                
                 // setArmWristExtGoal(0.531, 0.15, 0.25);
                 setArmWristExtGoal(armHardLowerLimit + Constants.Arm.offsetToAmpFromGround, 
                                 wristHardLowerLimit + Constants.Wrist.offsetToAmpFromGround, 
-                                extHardLowerLimit + Constants.Extension.offsetToAmpFromGround); // wrist from smallest 0.117
+                                extHardLowerLimit - 5); // wrist from smallest 0.117
 
             }else if((ampPos || lastHeight == Height.HOLD) && pos == Height.AMP){
                 lastHeight = Height.AMP;
@@ -744,7 +788,17 @@ public class ArmWristSubsystem extends SubsystemBase{
                                 wristHardLowerLimit + Constants.Wrist.offsetToHold, 
                                 extHardLowerLimit + Constants.Extension.offsetToHold); //extTarget = 0.387
 
-            }else if(pos == Height.GROUND){
+            } else if (pos == Height.GROUND && lastHeight == Height.AMP) {
+
+                lastHeight = Height.GROUND;
+                ampPos = false;
+
+                ampToGround = true;
+
+                setArmWristExtGoal(armHardLowerLimit + Constants.Arm.offsetToGround, 
+                                wristHardLowerLimit + Constants.Wrist.offsetToGround, 
+                                extHardLowerLimit - 5);
+            } else if(pos == Height.GROUND){
                 lastHeight = Height.GROUND;
                 ampPos = false;
             
@@ -762,7 +816,6 @@ public class ArmWristSubsystem extends SubsystemBase{
                                 extHardLowerLimit + Constants.Extension.offsetToHold); 
 
             }else if(pos == Height.SOURCE){
-                lastHeight = Height.SOURCE;
                 ampPos = true;
                 // setArmWristExtGoal(0.39, 0.42, 0.55); //extTarget = 0.5346 wristTarget = 0.33
                 // setArmWristExtGoal(0.37, 0.387, 0.55); //extTarget = 0.5346
@@ -771,14 +824,33 @@ public class ArmWristSubsystem extends SubsystemBase{
                     setArmGoal(armHardLowerLimit + Constants.Arm.offsetToSource);
                     setWristSetpoint(wristHardLowerLimit + Constants.Wrist.offsetToSource);
                     firstStartingBot = false;
+                } else if (lastHeight == Height.HOLD) {
+                    holdToSource = true;
+                    setArmGoal(armHardLowerLimit + Constants.Arm.offsetToSource);
+                    setWristSetpoint(wristHardLowerLimit + Constants.Wrist.offsetToSource);
                 } else {
                     setArmWristExtGoal(armHardLowerLimit + Constants.Arm.offsetToSource, 
                                 wristHardLowerLimit + Constants.Wrist.offsetToSource, 
                                 extHardLowerLimit + Constants.Extension.offsetToSource); //extTarget = 0.5346
                 }
+            
+                lastHeight = Height.SOURCE;
+
                 
                 
 
+            } else if (pos == Height.PRECLIMB) {
+                lastHeight = Height.AMP;
+
+                setArmWristExtGoal(armHardLowerLimit + Constants.Arm.offsetToAmpFromGround - 0.05, 
+                                wristHardLowerLimit + Constants.Wrist.offsetToAmpFromGround + 0.25, 
+                                extHardLowerLimit - 5);
+
+            } else if (pos == Height.TRAP) {
+                lastHeight = Height.AMP;
+                setArmWristExtGoal(armHardLowerLimit + Constants.Arm.offsetToAmpFromGround - 0.05, 
+                                wristHardLowerLimit + Constants.Wrist.offsetToAmpFromGround, 
+                                extHardLowerLimit + Constants.Extension.offsetToAmpFromGround);
             }
             
             

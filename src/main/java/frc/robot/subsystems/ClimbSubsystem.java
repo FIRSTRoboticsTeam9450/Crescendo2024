@@ -30,6 +30,7 @@ public class ClimbSubsystem extends SubsystemBase {
   private double leftMotorVoltage;
   private double rightMotorVoltage;
   private boolean runPid;
+  private boolean stopped;
   
   /**
    * Creates a new Climb subsystem
@@ -101,17 +102,21 @@ public class ClimbSubsystem extends SubsystemBase {
     rightClimbController.setSetpoint(position + 1);
   }
 
+  public boolean isStopped() {
+    return stopped;
+  }
+
   /**
    * Updates the motor output voltage based on their current position
    */
   public void updatePID() {
     double leftPower = leftClimbController.calculate(getLeftPosition());
-    leftPower = MathUtil.clamp(leftPower, -2, 2);
+    leftPower = MathUtil.clamp(leftPower, -4, 4);
     SmartDashboard.putNumber("Left Climb power", leftPower);
     setLeftVoltage(leftPower);
 
     double rightPower = rightClimbController.calculate(getRightPosition());
-    rightPower = MathUtil.clamp(rightPower, -2, 2);
+    rightPower = MathUtil.clamp(rightPower, -4, 4);
     SmartDashboard.putNumber("Right Climb power", rightPower);
     setRightVoltage(rightPower);
   }
@@ -177,6 +182,8 @@ public class ClimbSubsystem extends SubsystemBase {
       rightMotorVoltage = 0;
       rightEncoder.setPosition(0);
     }
+
+    stopped = leftMotorVoltage == 0 && rightMotorVoltage == 0;
 
     // Update motor voltages
     leftClimb.setVoltage(leftMotorVoltage);

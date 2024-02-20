@@ -32,14 +32,14 @@ public class ResetClimbCommand extends Command {
   public void execute() {
     // run both climbers at -1 volts
     // they will automatically stop when they reach the bottom
-    climb.setLeftVoltage(-1);
-    climb.setRightVoltage(-1);
+    climb.setLeftVoltage(-2);
+    climb.setRightVoltage(-2);
   }
 
   @Override
   public boolean isFinished() {
     // stop command once both motors have reached the bottom
-    return climb.getLeftVoltage() == 0 && climb.getRightVoltage() == 0;
+    return climb.isStopped();
   }
 
   

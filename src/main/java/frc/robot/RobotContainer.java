@@ -12,9 +12,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -62,7 +64,7 @@ public class RobotContainer
   //private final WristSubsystem wristSub = new WristSubsystem();
   private final ArmWristSubsystem armWristSub = new ArmWristSubsystem();
 
-  private final ClimbSubsystem climbSub = new ClimbSubsystem();
+  public final ClimbSubsystem climbSub = new ClimbSubsystem();
   // private final LimitSwitchSubsystem extLimitSub = new LimitSwitchSubsystem();
  // private final ExtensionSubsystem extSub = new ExtensionSubsystem();
 
@@ -71,6 +73,7 @@ public class RobotContainer
   // Replace with CommandPS4Controller or CommandJoystick if needed
   CommandXboxController driverController = new CommandXboxController(0);
   CommandXboxController armController = new CommandXboxController(1);
+  CommandXboxController testingController = new CommandXboxController(2);
   //CommandXboxController driverController = new CommandXboxController(0);
   // CommandJoystick driverController   = new CommandJoystick(3]\[]);//(OperatorConstants.DRIVER_CONTROLLER_PORT);
   //XboxController driverXbox = new XboxController(0);
@@ -178,8 +181,8 @@ public class RobotContainer
     //                                        new InstantCommand( () -> drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simDrv : drv))));
     // driverController.rightTrigger().onFalse(new SequentialCommandGroup( new InstantCommand( () -> drivebase.removeDefaultCommand()),
     //                                        new InstantCommand( () -> drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simDrvSlow : drvSlow))));
-    driverController.rightTrigger().onTrue(slowDrvCmd);
-    driverController.rightTrigger().onFalse(new InstantCommand( () -> CommandScheduler.getInstance().cancel(slowDrvCmd)));
+    driverController.leftTrigger().onTrue(slowDrvCmd);
+    driverController.leftTrigger().onFalse(new InstantCommand( () -> CommandScheduler.getInstance().cancel(slowDrvCmd)));
     
 
     //new JoystickButton(driverXbox, 1).onTrue((new InstantCommand(drivebase::zeroGyro)));
@@ -267,8 +270,8 @@ public class RobotContainer
 
 
     // Climber
-    armController.pov(180).onTrue(new ClimbCommand(climbSub, 3));
-    armController.pov(90).onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.HOLD)));
+    armController.pov(180).onTrue(new ClimbCommand(climbSub, 0));
+    armController.pov(90).onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.CLIMB)));
     armController.pov(0).onTrue(new ClimbCommand(climbSub, 90));
     armController.pov(270).onTrue(new ClimbCommand(climbSub, 25));
 
@@ -280,8 +283,22 @@ public class RobotContainer
     //armController.pov(270).onTrue(new ClimbCommand(climbSub, 25));
     armController.rightBumper().onTrue(new InstantCommand(() -> armWristSub.runAndResetExtEncoder()));
 
-  }
+    driverController.a().onTrue(
+      new InstantCommand(() -> armWristSub.goToPosition(Height.PRECLIMB))
+      //.andThen(new ResetClimbCommand(climbSub)).andThen(new WaitCommand(1))
+      //.andThen(new ClimbCommand(climbSub, 90))
+      );
 
+    driverController.b().onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.TRAP)));
+
+    driverController.pov(180).onTrue(new InstantCommand(() -> armWristSub.toggleArm()).andThen(new InstantCommand(() -> armWristSub.setArmVoltage(-12))));
+    driverController.pov(180).onFalse(new InstantCommand(() -> armWristSub.toggleArm()));
+
+    driverController.pov(90).onFalse(new InstantCommand(() -> armWristSub.setExtensionGoal(armWristSub.extensionTarget - 2)));
+    driverController.pov(270).onFalse(new InstantCommand(() -> armWristSub.setExtensionGoal(armWristSub.extensionTarget + 2)));
+
+
+  }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
@@ -290,7 +307,7 @@ public class RobotContainer
   public Command getAutonomousCommand()
   {
     // An example command will be run in autonomous
-    return drivebase.getAutonomousCommand("BlueLeftThreeNote", true, true);
+    return drivebase.getAutonomousCommand("BlueLeftFarFirst", true, true);
   }
 
   public void setDriveMode()
