@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.AutoClimbCommand;
 import frc.robot.commands.ClimbCommand;
 import frc.robot.commands.IntakingCommand;
 import frc.robot.commands.ResetClimbCommand;
@@ -291,11 +292,15 @@ public class RobotContainer
 
     driverController.b().onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.TRAP)));
 
+    driverController.y().onTrue(new ParallelCommandGroup(new TimedIntakeSetPowerCommand(intakeSub, 10, 0.75), new WaitCommand(0.25).andThen(new InstantCommand(() -> armWristSub.goToPosition(Height.PRECLIMB)))));
+
     driverController.pov(180).onTrue(new InstantCommand(() -> armWristSub.toggleArm()).andThen(new InstantCommand(() -> armWristSub.setArmVoltage(-12))));
     driverController.pov(180).onFalse(new InstantCommand(() -> armWristSub.toggleArm()));
 
     driverController.pov(90).onFalse(new InstantCommand(() -> armWristSub.setExtensionGoal(armWristSub.extensionTarget - 2)));
     driverController.pov(270).onFalse(new InstantCommand(() -> armWristSub.setExtensionGoal(armWristSub.extensionTarget + 2)));
+
+    driverController.x().onTrue(new AutoClimbCommand(climbSub, armWristSub));
 
 
   }

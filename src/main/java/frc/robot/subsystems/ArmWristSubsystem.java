@@ -70,7 +70,7 @@ public class ArmWristSubsystem extends SubsystemBase{
     boolean armPIDRun;
     boolean pause = false;
     boolean reachPos;
-    boolean isClimbing;
+    public boolean isClimbing;
     boolean runAndResetExt;
     boolean firstStartingBot;
 
@@ -726,6 +726,7 @@ public class ArmWristSubsystem extends SubsystemBase{
     public Height getHeight(){
         return lastHeight;
     }
+
     // true is source, false is ground
     private boolean ampPos;
     public void goToPosition(Height pos) {
