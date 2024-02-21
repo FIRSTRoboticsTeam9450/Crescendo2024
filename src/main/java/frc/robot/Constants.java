@@ -100,6 +100,15 @@ public final class Constants
     public static final double offsetToSource = 0.255;
   }
 
+  public static class ArmPositions{
+    public static final double armHardLowerLimit = 0.105;//0.08;
+    public static final double armHardUpperLimit = 0.7;//0.51;
+    public static final double wristHardLowerLimit = 0.234; //      0.141
+    public static final double wristHardUpperLimit = 0.8; //    0.7785
+    public static final double extHardLowerLimit = 0; // 0.749
+    public static final double extHardUpperLimit = -75; // 0.059
+  }
+
   public static class Extension{
     public static final double maxExtensionInches = 12; //14.5
     public static final double maxExtensionTics = 0.06; 

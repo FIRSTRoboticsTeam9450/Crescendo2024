@@ -220,8 +220,13 @@ public class RobotContainer
 
     // Source
     
+    // armController.y().onTrue(new SequentialCommandGroup(
+    //   new InstantCommand(() -> armWristSub.goToPosition(Height.SOURCE)),
+    //   new IntakingCommand(intakeSub, 5)
+    // ));
+
     armController.y().onTrue(new SequentialCommandGroup(
-      new InstantCommand(() -> armWristSub.goToPosition(Height.SOURCE)),
+      armWristSub.chooseToSourceMovement(),
       new IntakingCommand(intakeSub, 5)
     ));
    
@@ -238,8 +243,8 @@ public class RobotContainer
     */
     
     // Amp
-    armController.b().onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.AMP)));
-    //driverController.rightBumper().onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.AMP)));
+    //armController.b().onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.AMP)));
+    armController.b().onTrue(armWristSub.chooseToAmpMovement());
    
    /*
     //New Ground
@@ -252,10 +257,14 @@ public class RobotContainer
     */
 
     // Ground
+    // armController.a().onTrue(new SequentialCommandGroup(
+    //   new InstantCommand(() -> armWristSub.goToPosition(Height.GROUND)),
+    //   new IntakingCommand(intakeSub, 8)
+    //   ));
     armController.a().onTrue(new SequentialCommandGroup(
-      new InstantCommand(() -> armWristSub.goToPosition(Height.GROUND)),
+      armWristSub.chooseToGroundMovement(),
       new IntakingCommand(intakeSub, 8)
-      ));
+    ));
         
     /*
     // New Holding
@@ -267,7 +276,8 @@ public class RobotContainer
     */
 
     // Holding Position
-    armController.x().onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.HOLD)));
+    //armController.x().onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.HOLD)));
+    armController.x().onTrue(armWristSub.chooseToHoldMovement());
 
 
     // Climber
