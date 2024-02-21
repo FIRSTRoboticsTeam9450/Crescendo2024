@@ -850,102 +850,40 @@ public class ArmWristSubsystem extends SubsystemBase{
     @Override
     public void periodic(){
     
-        SmartDashboard.putBoolean("extension switch", extensionMotor.getForwardLimitSwitch(SparkLimitSwitch.Type.kNormallyClosed).isPressed());
 
 
 
         
-            if (isClimbing) {
-                    updateArmClimbPID();
-                } else {
-                    updateRotationOutput();
+        if (isClimbing) {
+            updateArmClimbPID();
+        } else {
+            updateRotationOutput();
+            updateWristPos();
 
-                }
+            if (!runAndResetExt) {
+                updateExtensionOutput();
+            }
+
+        }
+
+        // if toggle is true, run motor [toward lowerHardLimit]
+        if (runAndResetExt) {   
+            setExtVoltage(5); 
+        }
+
+        /* Stops motor and resets encoder after limit switch reached */
+        if (getLowerLimSwitch()) {
+            extensionMotor.stopMotor();
+            extRelEncoder.setPosition(0);
+            runAndResetExt = false;
+        }
+    
             
-           
-            if (wristPIDRun) {
-                    updateWristPos();
-                
-            }
 
-          
-            /* <------- below is logic for hold to ground and ground to hold positions --------> */
-            
-            // during ground to hold pos, we want extension and wrist to move at the same time as arm when arm goes
-            // to straight pos, but not when we go from hold to ground, so this if statement is outside the 
-            // arm error limiter if statement beneath this if statement
-            if (lastHeight == Height.GROUND && !wristPIDRun) {
-                    if (!runAndResetExt) {
-                        updateExtensionOutput();
-                    }
-                    
-                    updateWristPos();
-            }
-
-            //Implemented - Krish
-            if (ampToGround) {
-                if (Math.abs(getAbsArmPos() - armTarget) < 0.2) {
-                    setExtensionGoal(extHardLowerLimit + Constants.Extension.offsetToGround);
-                    ampToGround = false;
-                }
-            }
-
-            //Implemented - Krish
-            if (groundToAmp) {
-                if (Math.abs(getAbsArmPos() - armTarget) < 0.2) {
-                    setExtensionGoal(extHardLowerLimit + Constants.Extension.offsetToAmpFromGround);
-                    groundToAmp = false;
-                }
-            }
-
-            //Implemented - Krish
-            if (holdToSource) {
-                if (Math.abs(getAbsArmPos() - armTarget) < 0.1) {
-                    setExtensionGoal(extHardLowerLimit + Constants.Extension.offsetToSource);
-                    holdToSource = false;
-                }
-            }
-
-            //Implemented - Krish
-            if (holdToAmp) {
-                if (Math.abs(getAbsArmPos() - armTarget) < 0.1) {
-                    setExtensionGoal(extHardLowerLimit + Constants.Extension.offsetToAmpFromSource_Hold);
-                    holdToAmp = false;
-                }
-            }
-
-            // to start wrist movement after moving up a bit b/c wrist kinda slow lol (runs when going
-            // from hold to ground pos and the arm is part way up from its first arm pos)
-            if (lastHeight == Height.HOLD && !wristPIDRun && Math.abs(getAbsArmPos() - armTarget) < 0.75) {
-                updateWristPos();
-            }
-
-            // runs extension after arm error is certain amount... the wristPIDRun logic in the first
-            // if statment is to make a smaller error range for when going from hold to ground and vice versa
-            if(Math.abs(getAbsArmPos() - armTarget) < (wristPIDRun ? 0.4 : 0.01)){
-                if (lastHeight == Height.HOLD && !wristPIDRun && Math.abs(getAbsWristPos() - wristTarget) < 0.1) {
-                    // changes to actual arm goal after the first arm goal was reached sufficiently
-                    setArmGoal(armHardLowerLimit + Constants.Arm.offsetToGround);
-                    // toggles wristPIDRun so tht the other if statment will use old error range, and so 
-                    // that this if statement wont be entered again
-                    wristPIDRun = true;
-                    lastHeight = Height.GROUND;
-                } else if (lastHeight == Height.GROUND && !wristPIDRun) {
-                    // changes to actual arm goal after the first arm goal was reached sufficiently
-                    setArmGoal(armHardLowerLimit + Constants.Arm.offsetToHold);
-                    // toggles wristPIDRun so tht the other if statment will use old error range, and so 
-                    // that this if statement wont be entered again]\[]
-                    wristPIDRun = true;
-                    lastHeight = Height.HOLD;
-                }
-                
-                // runs extension after error is certain range
-                if (!runAndResetExt) {
-                        updateExtensionOutput();
-                }
+        
                 
             
-            
+        SmartDashboard.putBoolean("extension switch", extensionMotor.getForwardLimitSwitch(SparkLimitSwitch.Type.kNormallyClosed).isPressed());
         SmartDashboard.putNumber("Arm Position", getAbsArmPos());
         SmartDashboard.putNumber("Arm Target", armTarget);
         SmartDashboard.putNumber("Wrist Pos", getAbsWristPos());
@@ -976,24 +914,9 @@ public class ArmWristSubsystem extends SubsystemBase{
             wrist.setIdleMode(IdleMode.kCoast);
         }
         
-
-
-        // if toggle is true, run motor [toward lowerHardLimit]
-        if (runAndResetExt) {   
-            setExtVoltage(5); 
-        }
-
-        /* Stops motor and resets encoder after limit switch reached */
-        if (getLowerLimSwitch()) {
-            extensionMotor.stopMotor();
-            extRelEncoder.setPosition(0);
-            runAndResetExt = false;
-        }
-    
-    
         SmartDashboard.putNumber("Ext Rel Pos", getExtRelPos());
     }
-}
+
 
 
     //---------------------------------------------------
