@@ -64,6 +64,7 @@ public class ArmWristSubsystem extends SubsystemBase{
     private boolean ampToGround = false;
     private boolean groundToAmp = false;
     private boolean holdToSource = false;
+    private boolean holdToAmp = false;
     
     boolean wristBrakeToggle;
     boolean wristPIDRun;
@@ -592,6 +593,13 @@ public class ArmWristSubsystem extends SubsystemBase{
                 }
             }
 
+            if (holdToAmp) {
+                if (Math.abs(getAbsArmPos() - armTarget) < 0.1) {
+                    setExtensionGoal(extHardLowerLimit + Constants.Extension.offsetToAmpFromSource_Hold);
+                    holdToAmp = false;
+                }
+            }
+
             // to start wrist movement after moving up a bit b/c wrist kinda slow lol (runs when going
             // from hold to ground pos and the arm is part way up from its first arm pos)
             if (lastHeight == Height.HOLD && !wristPIDRun && Math.abs(getAbsArmPos() - armTarget) < 0.75) {
@@ -755,12 +763,18 @@ public class ArmWristSubsystem extends SubsystemBase{
                                 extHardLowerLimit - 5); // wrist from smallest 0.117
 
             }else if((ampPos || lastHeight == Height.HOLD) && pos == Height.AMP){
-                lastHeight = Height.AMP;
-                // setArmWristExtGoal(0.511, 0.0487, 0.34); //extTarget = 0.387
-                // setArmWristExtGoal(0.511, 0.0487, 0.47); //extTarget = 0.387
-                setArmWristExtGoal(armHardLowerLimit + Constants.Arm.offsetToAmpFromGround, 
+                if (lastHeight == Height.HOLD) {
+                    holdToAmp = true;
+                    setArmWristExtGoal(armHardLowerLimit + Constants.Arm.offsetToAmpFromGround, 
                                 wristHardLowerLimit + Constants.Wrist.offsetToAmpFromSource_Hold, 
-                                extHardLowerLimit + Constants.Extension.offsetToAmpFromSource_Hold); //extTarget = 0.387
+                                extHardLowerLimit - 5);
+                } else {
+                    setArmWristExtGoal(armHardLowerLimit + Constants.Arm.offsetToAmpFromGround, 
+                                wristHardLowerLimit + Constants.Wrist.offsetToAmpFromSource_Hold, 
+                                extHardLowerLimit + Constants.Extension.offsetToAmpFromSource_Hold);
+                }
+
+                lastHeight = Height.AMP;
 
             }else if(lastHeight == Height.HOLD && pos == Height.GROUND){
                 /*  lastHeight gets updated for this in the periodic method */
