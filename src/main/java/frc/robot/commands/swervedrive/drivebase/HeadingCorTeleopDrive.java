@@ -26,8 +26,8 @@ public class HeadingCorTeleopDrive extends Command
   private final SwerveSubsystem swerve;
   private final DoubleSupplier  vX, vY;
   private final DoubleSupplier headingHorizontal, headingVertical;
-  private final BooleanSupplier zeroGyro;
-  private double xGoal, yGoal;
+  private final BooleanSupplier zeroGyro, speedModify;
+  private double xGoal, yGoal, speedModifier;
   private boolean initRotation = false;
   private boolean isDrifting = false;
   private boolean noRotation;
@@ -56,7 +56,7 @@ public class HeadingCorTeleopDrive extends Command
    *                          with no deadband. Positive is away from the alliance wall.
    */
   public HeadingCorTeleopDrive(SwerveSubsystem swerve, DoubleSupplier vX, DoubleSupplier vY, DoubleSupplier headingHorizontal,
-                       DoubleSupplier headingVertical, BooleanSupplier zeroGyro)
+                       DoubleSupplier headingVertical, BooleanSupplier zeroGyro, BooleanSupplier speedModify)
   {
     this.swerve = swerve;
     this.vX = vX;
@@ -64,6 +64,7 @@ public class HeadingCorTeleopDrive extends Command
     this.headingHorizontal = headingHorizontal;
     this.headingVertical = headingVertical;
     this.zeroGyro = zeroGyro;
+    this.speedModify = speedModify;
 
     addRequirements(swerve);
   }
@@ -75,8 +76,9 @@ public class HeadingCorTeleopDrive extends Command
     noRotation = true;
     isDrifting = false;
 
-    xGoal = 0;
-    yGoal = 0;
+    xGoal = 0.0;
+    yGoal = 0.0;
+    speedModifier = 1.0;
 
     desiredSpeeds = swerve.getTargetSpeeds(-vX.getAsDouble(), -vY.getAsDouble(),
                                                          0,
@@ -87,14 +89,22 @@ public class HeadingCorTeleopDrive extends Command
   @Override
   public void execute()
   {
-
+    // for zeroing the gyro
     if (zeroGyro.getAsBoolean()) {
       swerve.zeroGyro();
-      xGoal = 0;
-      yGoal = 0;
+      xGoal = 0.0;
+      yGoal = 0.0;
     }
+
+    // for speedModifier drive enabled
+    if (speedModify.getAsBoolean()) {
+        speedModifier = 0.7; // instead of 0.5, because drive utilizes a cubic function for speed
+    } else {
+        speedModifier = 1.0; // if the speedModify boolean isn't toggled, then use regular speed
+    }
+      
     // Get the desired chassis speeds based on a 2 joystick module.
-    desiredSpeeds = swerve.getTargetSpeeds(-vX.getAsDouble(), -vY.getAsDouble(),
+    desiredSpeeds = swerve.getTargetSpeeds(-vX.getAsDouble() * speedModifier, -vY.getAsDouble() * speedModifier,
                                                          xGoal,
                                                          yGoal);
 
@@ -118,7 +128,7 @@ public class HeadingCorTeleopDrive extends Command
     
     
 
-    // Limit velocity to prevent tippy
+    // Limit velocity to prevent tippy (currently unused, may be used in future)
     Translation2d translation = SwerveController.getTranslation2d(desiredSpeeds);
     translation = SwerveMath.limitVelocity(translation, swerve.getFieldVelocity(), swerve.getPose(),
                                            Constants.LOOP_TIME, Constants.ROBOT_MASS, List.of(Constants.CHASSIS),
@@ -127,9 +137,9 @@ public class HeadingCorTeleopDrive extends Command
     //SmartDashboard.putString("Translation", translation.toString());
 
 
-    double xVelocity   = -Math.pow(vX.getAsDouble(), 3);
-    double yVelocity   = -Math.pow(vY.getAsDouble(), 3);
-    double angVelocity = -Math.pow(headingHorizontal.getAsDouble(), 3);
+    double xVelocity   = -Math.pow(vX.getAsDouble(), 3) * speedModifier;
+    double yVelocity   = -Math.pow(vY.getAsDouble(), 3) * speedModifier;
+    double angVelocity = -Math.pow(headingHorizontal.getAsDouble(), 3) * speedModifier;
     // SmartDashboard.putNumber("vX", xVelocity);
     // SmartDashboard.putNumber("vY", yVelocity);
     // SmartDashboard.putNumber("omega", angVelocity);
