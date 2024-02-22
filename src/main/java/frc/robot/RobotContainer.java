@@ -27,6 +27,10 @@ import frc.robot.commands.ClimbCommand;
 import frc.robot.commands.IntakingCommand;
 import frc.robot.commands.ResetClimbCommand;
 import frc.robot.commands.TimedIntakeSetPowerCommand;
+import frc.robot.commands.armpositions.toamp.BasicToAmpCommand;
+import frc.robot.commands.armpositions.toground.BasicToGroundCommand;
+import frc.robot.commands.armpositions.tohold.BasicToHoldCommand;
+import frc.robot.commands.armpositions.tosource.BasicToSourceCommand;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDrive;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteFieldDrive;
 import frc.robot.commands.swervedrive.drivebase.HeadingCorTeleopDrive;
@@ -63,7 +67,7 @@ public class RobotContainer
   //private final ExtensionSubsystem extSub = new ExtensionSubsystem();
   //private final ArmSubsystem armSub = new ArmSubsystem(extSub);
   //private final WristSubsystem wristSub = new WristSubsystem();
-  private final ArmWristSubsystem armWristSub = new ArmWristSubsystem();
+  public final ArmWristSubsystem armWristSub = new ArmWristSubsystem();
 
   public final ClimbSubsystem climbSub = new ClimbSubsystem();
   // private final LimitSwitchSubsystem extLimitSub = new LimitSwitchSubsystem();
@@ -78,33 +82,33 @@ public class RobotContainer
   //CommandXboxController driverController = new CommandXboxController(0);
   // CommandJoystick driverController   = new CommandJoystick(3]\[]);//(OperatorConstants.DRIVER_CONTROLLER_PORT);
   //XboxController driverXbox = new XboxController(0);
-  private double speedModifier = 0.5;
+  private double speedModifier = 0.67; //0.5
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer()
   {
-    Command armStore = new InstantCommand(() -> armWristSub.goToPosition(Height.HOLD));
-    Command armAmp = new InstantCommand(() -> armWristSub.goToPosition(Height.AMP));
-    Command armGround = new SequentialCommandGroup(
-      new InstantCommand(() -> armWristSub.goToPosition(Height.GROUND)),
-      new IntakingCommand(intakeSub, 8)
-      );
-    Command armStart = new InstantCommand(() -> armWristSub.setArmWristExtGoal(armWristSub.armHardLowerLimit + Constants.Arm.offsetToAmpFromGround - 0.05, 
-    armWristSub.wristHardLowerLimit + Constants.Wrist.offsetToSource, 
-    armWristSub.extHardLowerLimit - 5));
+    // Command armStore = new InstantCommand(() -> armWristSub.goToPosition(Height.HOLD));
+    // Command armAmp = new InstantCommand(() -> armWristSub.goToPosition(Height.AMP));
+    // Command armGround = new SequentialCommandGroup(
+    //   new InstantCommand(() -> armWristSub.goToPosition(Height.GROUND)),
+    //   new IntakingCommand(intakeSub, 8)
+    //   );
+    // Command armStart = new InstantCommand(() -> armWristSub.setArmWristExtGoal(armWristSub.armHardLowerLimit + Constants.Arm.offsetToAmpFromGround - 0.05, 
+    // armWristSub.wristHardLowerLimit + Constants.Wrist.offsetToSource, 
+    // armWristSub.extHardLowerLimit - 5));
 
-    Command outtake = new TimedIntakeSetPowerCommand(intakeSub, 10, 0.75);
-    Command resetExt = new InstantCommand(() -> armWristSub.runAndResetExtEncoder());
-    Command sweep = new SweepCommand(drivebase);
+    // Command outtake = new TimedIntakeSetPowerCommand(intakeSub, 10, 0.75);
+    // Command resetExt = new InstantCommand(() -> armWristSub.runAndResetExtEncoder());
+    // Command sweep = new SweepCommand(drivebase);
 
-    NamedCommands.registerCommand("ArmStart", armStart);
-    NamedCommands.registerCommand("ArmStore", armStore);
-    NamedCommands.registerCommand("ArmGround", armGround);
-    NamedCommands.registerCommand("ArmAmp", armAmp);
-    NamedCommands.registerCommand("Outtake", outtake);  
-    NamedCommands.registerCommand("ResetExt", resetExt);  
-    NamedCommands.registerCommand("Sweep", sweep);
+    // NamedCommands.registerCommand("ArmStart", armStart);
+    // NamedCommands.registerCommand("ArmStore", armStore);
+    // NamedCommands.registerCommand("ArmGround", armGround);
+    // NamedCommands.registerCommand("ArmAmp", armAmp);
+    // NamedCommands.registerCommand("Outtake", outtake);  
+    // NamedCommands.registerCommand("ResetExt", resetExt);  
+    // NamedCommands.registerCommand("Sweep", sweep);
 
     HeadingCorTeleopDrive drvHeadingCorr = new HeadingCorTeleopDrive(drivebase, 
                                                 () -> MathUtil.applyDeadband(driverController.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
@@ -199,7 +203,11 @@ public class RobotContainer
     //driverController.leftBumper().onTrue( new TimedIntakeSetPowerCommand(intakeSub, 10, 1.5));
     
     // /* outtake */
-    armController.rightTrigger().onTrue(new TimedIntakeSetPowerCommand(intakeSub, 10, 0.75));
+    armController.rightTrigger().onTrue(new SequentialCommandGroup(
+      new TimedIntakeSetPowerCommand(intakeSub, 10, 0.75),
+      new BasicToHoldCommand(armWristSub)
+  
+    ));
 
     //driverController.leftBumper().onFalse(new InstantCommand( () -> intakeSub.stopIntake() ));
     
@@ -226,7 +234,7 @@ public class RobotContainer
     // ));
 
     armController.y().onTrue(new SequentialCommandGroup(
-      armWristSub.chooseToSourceMovement(),
+      new BasicToSourceCommand(armWristSub),
       new IntakingCommand(intakeSub, 5)
     ));
    
@@ -244,7 +252,7 @@ public class RobotContainer
     
     // Amp
     //armController.b().onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.AMP)));
-    armController.b().onTrue(armWristSub.chooseToAmpMovement());
+    armController.b().onTrue(new BasicToAmpCommand(armWristSub));
    
    /*
     //New Ground
@@ -262,7 +270,7 @@ public class RobotContainer
     //   new IntakingCommand(intakeSub, 8)
     //   ));
     armController.a().onTrue(new SequentialCommandGroup(
-      armWristSub.chooseToGroundMovement(),
+      new BasicToGroundCommand(armWristSub),
       new IntakingCommand(intakeSub, 8)
     ));
         
@@ -277,7 +285,7 @@ public class RobotContainer
 
     // Holding Position
     //armController.x().onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.HOLD)));
-    armController.x().onTrue(armWristSub.chooseToHoldMovement());
+    armController.x().onTrue(new BasicToHoldCommand(armWristSub));
 
 
     // Climber
@@ -307,8 +315,8 @@ public class RobotContainer
     driverController.pov(180).onTrue(new InstantCommand(() -> armWristSub.toggleArm()).andThen(new InstantCommand(() -> armWristSub.setArmVoltage(-12))));
     driverController.pov(180).onFalse(new InstantCommand(() -> armWristSub.toggleArm()));
 
-    driverController.pov(90).onFalse(new InstantCommand(() -> armWristSub.setExtensionGoal(armWristSub.extensionTarget - 2)));
-    driverController.pov(270).onFalse(new InstantCommand(() -> armWristSub.setExtensionGoal(armWristSub.extensionTarget + 2)));
+    driverController.pov(90).onFalse(new InstantCommand(() -> armWristSub.setExtensionGoal(armWristSub.extensionTarget - 12)));
+    driverController.pov(270).onFalse(new InstantCommand(() -> armWristSub.setExtensionGoal(armWristSub.extensionTarget + 12)));
 
     driverController.x().onTrue(new AutoClimbCommand(climbSub, armWristSub));
 

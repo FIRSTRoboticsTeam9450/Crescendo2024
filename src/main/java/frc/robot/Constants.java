@@ -134,7 +134,7 @@ public final class Constants
     public static final double offsetToAmpFromSource_Hold = 0.0157;
     /**Not updated */
     public static final double offsetToGroundFromHold = 0;
-    public static final double offsetToGround = 0.477;
+    public static final double offsetToGround = 0.44;
     public static final double offsetToHold = 0.017;
     public static final double offsetToSource = 0.279;
 

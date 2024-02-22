@@ -54,7 +54,8 @@ public class ArmWristSubsystem extends SubsystemBase{
         PRECLIMB,
         TRAP
     }
-    private Height lastHeight = Height.HOLD;
+    private Height lastHeight = Height.SOURCE;
+    private boolean wasSourceIntake = true;
 
     
     //Extension Limiter ----
@@ -176,14 +177,14 @@ public class ArmWristSubsystem extends SubsystemBase{
         wristBrakeToggle = false;
         isClimbing = false;
         runAndResetExt = false;
-        firstStartingBot = true;
+        //firstStartingBot = true;
         
         
         armMotor.burnFlash();
         wrist.burnFlash();
         extensionMotor.burnFlash();
 
-        goToPosition(Height.SOURCE);
+        //goToPosition(Height.SOURCE);
         runAndResetExtEncoder();
 
 
@@ -247,6 +248,12 @@ public class ArmWristSubsystem extends SubsystemBase{
 
         extensionTarget = target;
     }
+
+    public double getExtensionGoal(){
+
+        return extensionTarget;
+    }
+
     public double calculateExtensionPID(){
         return extensionPid.calculate(getExtRelPos(), extensionTarget);
     }
@@ -355,6 +362,10 @@ public class ArmWristSubsystem extends SubsystemBase{
         return armPid.getGoal().position;
     }
 
+    public double newGetArmTarget(){
+        return armTarget;
+    }
+
     public double calculateArmClimbPID() {
         return armClimbPid.calculate(getAbsArmPos(), armTarget);
     }
@@ -398,7 +409,7 @@ public class ArmWristSubsystem extends SubsystemBase{
         double pidValue = calculateRotationPID();
 
         double voltage = pidValue + ffValue;
-        SmartDashboard.putNumber("Rotation Voltage", voltage);
+        //SmartDashboard.putNumber("Rotation Voltage", voltage);
 
         //voltage = MathUtil.clamp(voltage, -4, 4);
 
@@ -471,10 +482,10 @@ public class ArmWristSubsystem extends SubsystemBase{
         double voltage = MathUtil.clamp(pidValue /*+ ffVal*/, -5.0, 5.0);
         
         
-        SmartDashboard.putNumber("Wrist PID", pidValue);
-        SmartDashboard.putNumber("Wrist FF", ffVal);
-        SmartDashboard.putNumber("Wrist Voltage", voltage);
-        SmartDashboard.putNumber("Wrist Pos Error", wristPIDController.getPositionError());
+        // SmartDashboard.putNumber("Wrist PID", pidValue);
+        // SmartDashboard.putNumber("Wrist FF", ffVal);
+        // SmartDashboard.putNumber("Wrist Voltage", voltage);
+        // SmartDashboard.putNumber("Wrist Pos Error", wristPIDController.getPositionError());
       
     /*
         if (Math.abs(getWristAbsPos() - goalPos) <= 0.05) { // no voltage
@@ -761,23 +772,28 @@ public class ArmWristSubsystem extends SubsystemBase{
         return lastHeight;
     }
 
+
+    public boolean getWasSourceIntake(){
+        return wasSourceIntake;
+    }
+
+    public void setWasSourceIntake(boolean intake){
+        wasSourceIntake = intake;
+    }
+    
     //New Command Based Arm Movements------------------
     public Command chooseToSourceMovement(){
         
-        if(lastHeight == Height.AMP){
-            lastHeight = Height.SOURCE;
+        if(this.getHeight() == Height.AMP){
             return new AmpToSourceCommand(this);
 
-        }else if(lastHeight == Height.GROUND){
-            lastHeight = Height.SOURCE;
+        }else if(this.getHeight().equals(Height.GROUND)){
             return new GroundToSourceCommand(this);
 
-        }else if(lastHeight == Height.HOLD){
-            lastHeight = Height.SOURCE;
+        }else if(this.getHeight().equals(Height.HOLD)){
             return new HoldToSourceCommand(this);
 
         }else{
-            lastHeight = Height.SOURCE;
             return new BasicToSourceCommand(this);
         }
         
@@ -786,19 +802,15 @@ public class ArmWristSubsystem extends SubsystemBase{
     public Command chooseToAmpMovement(){
         
         if(lastHeight == Height.SOURCE){
-            lastHeight = Height.AMP;
             return new SourceToAmpCommand(this);
 
         }else if(lastHeight == Height.GROUND){
-            lastHeight = Height.AMP;
             return new GroundToAmpCommand(this);
 
         }else if(lastHeight == Height.HOLD){
-            lastHeight = Height.AMP;
             return new HoldToAmpCommand(this);
 
         }else{
-            lastHeight = Height.AMP;
             return new BasicToAmpCommand(this);
         }
         
@@ -807,19 +819,15 @@ public class ArmWristSubsystem extends SubsystemBase{
     public Command chooseToGroundMovement(){
         
         if(lastHeight == Height.SOURCE){
-            lastHeight = Height.GROUND;
             return new SourceToGroundCommand(this);
 
         }else if(lastHeight == Height.AMP){
-            lastHeight = Height.GROUND;
             return new AmpToGroundCommand(this);
 
         }else if(lastHeight == Height.HOLD){
-            lastHeight = Height.GROUND;
             return new HoldToGroundCommand(this);
 
         }else{
-            lastHeight = Height.GROUND;
             return new BasicToGroundCommand(this);
         }
         
@@ -828,19 +836,15 @@ public class ArmWristSubsystem extends SubsystemBase{
     public Command chooseToHoldMovement(){
         
         if(lastHeight == Height.SOURCE){
-            lastHeight = Height.HOLD;
             return new SourceToHoldCommand(this);
 
         }else if(lastHeight == Height.AMP){
-            lastHeight = Height.HOLD;
             return new AmpToHoldCommand(this);
 
         }else if(lastHeight == Height.GROUND){
-            lastHeight = Height.HOLD;
             return new GroundToHoldCommand(this);
 
         }else{
-            lastHeight = Height.HOLD;
             return new BasicToHoldCommand(this);
         }
         
@@ -864,18 +868,22 @@ public class ArmWristSubsystem extends SubsystemBase{
                 updateExtensionOutput();
             }
 
+
         }
 
         // if toggle is true, run motor [toward lowerHardLimit]
         if (runAndResetExt) {   
             setExtVoltage(5); 
+
         }
 
         /* Stops motor and resets encoder after limit switch reached */
-        if (getLowerLimSwitch()) {
-            extensionMotor.stopMotor();
+        if (getLowerLimSwitch() && runAndResetExt) {
+            //extensionMotor.stopMotor();
+            setExtVoltage(0);
             extRelEncoder.setPosition(0);
             runAndResetExt = false;
+
         }
     
             
@@ -883,17 +891,18 @@ public class ArmWristSubsystem extends SubsystemBase{
         
                 
             
-        SmartDashboard.putBoolean("extension switch", extensionMotor.getForwardLimitSwitch(SparkLimitSwitch.Type.kNormallyClosed).isPressed());
+        // SmartDashboard.putBoolean("extension switch", extensionMotor.getForwardLimitSwitch(SparkLimitSwitch.Type.kNormallyClosed).isPressed());
         SmartDashboard.putNumber("Arm Position", getAbsArmPos());
         SmartDashboard.putNumber("Arm Target", armTarget);
-        SmartDashboard.putNumber("Wrist Pos", getAbsWristPos());
-        SmartDashboard.putBoolean("Wrist is Brake", wrist.getIdleMode() == IdleMode.kBrake ? true : false);
-        SmartDashboard.putNumber("Arm Actual Voltage", armMotor.getOutputCurrent()*0.6);
-        SmartDashboard.putNumber("ArmFF kg", armFF.kg);
-        SmartDashboard.putNumber("FF Equation Value", getFFEquationVoltage());
-        SmartDashboard.putBoolean("Wrist Enabled", wristPIDRun);
-        SmartDashboard.putBoolean("Arm Enabled", armPIDRun);
-        SmartDashboard.putNumber("Wrist Target", wristTarget);
+        //SmartDashboard.putString("Last Height", getHeight().toString());
+        // SmartDashboard.putNumber("Wrist Pos", getAbsWristPos());
+        // SmartDashboard.putBoolean("Wrist is Brake", wrist.getIdleMode() == IdleMode.kBrake ? true : false);
+        // SmartDashboard.putNumber("Arm Actual Voltage", armMotor.getOutputCurrent()*0.6);
+        // SmartDashboard.putNumber("ArmFF kg", armFF.kg);
+        // SmartDashboard.putNumber("FF Equation Value", getFFEquationVoltage());
+        // SmartDashboard.putBoolean("Wrist Enabled", wristPIDRun);
+        // SmartDashboard.putBoolean("Arm Enabled", armPIDRun);
+        // SmartDashboard.putNumber("Wrist Target", wristTarget);
         SmartDashboard.putNumber("Extension Target", extensionTarget);
 
         if (SmartDashboard.getNumber("Change Extension Is Brake", 1) == 1) {
