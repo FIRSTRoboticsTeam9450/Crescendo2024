@@ -22,8 +22,9 @@ public class TeleopDrive extends Command
   private final DoubleSupplier   vX;
   private final DoubleSupplier   vY;
   private final DoubleSupplier   omega;
-  private final BooleanSupplier  driveMode;
+  private final BooleanSupplier  driveMode, zeroGyro, speedModify;
   private final SwerveController controller;
+    private double speedModifer;
 
   /**
    * Creates a new ExampleCommand.
@@ -31,7 +32,7 @@ public class TeleopDrive extends Command
    * @param swerve The subsystem used by this command.
    */
   public TeleopDrive(SwerveSubsystem swerve, DoubleSupplier vX, DoubleSupplier vY, DoubleSupplier omega,
-                     BooleanSupplier driveMode)
+                     BooleanSupplier driveMode, BooleanSupplier zeroGyro, BooleanSupplier speedModify)
   {
     this.swerve = swerve;
     this.vX = vX;
@@ -39,6 +40,8 @@ public class TeleopDrive extends Command
     this.omega = omega;
     this.driveMode = driveMode;
     this.controller = swerve.getSwerveController();
+    this.zeroGyro = zeroGyro;
+    this.speedModify = speedModify;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(swerve);
   }
@@ -47,15 +50,28 @@ public class TeleopDrive extends Command
   @Override
   public void initialize()
   {
+      speedModifer = 1.0;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute()
   {
-    double xVelocity   = -Math.pow(vX.getAsDouble(), 3);
-    double yVelocity   = -Math.pow(vY.getAsDouble(), 3);
-    double angVelocity = -Math.pow(omega.getAsDouble(), 3);
+    // for zeroing the gyro
+    if (zeroGyro.getAsBoolean()) {
+      swerve.zeroGyro();
+    }
+
+    // for speedModifier drive enabled
+    if (speedModify.getAsBoolean()) {
+        speedModifier = 0.7; // instead of 0.5, because drive utilizes a cubic function for speed
+    } else {
+        speedModifier = 1.0; // if the speedModify boolean isn't toggled, then use regular speed
+    }
+      
+    double xVelocity   = -Math.pow(vX.getAsDouble(), 3) * speedModifier;
+    double yVelocity   = -Math.pow(vY.getAsDouble(), 3) * speedModifier;
+    double angVelocity = -Math.pow(omega.getAsDouble(), 3) * speedModifier;
     SmartDashboard.putNumber("vX", xVelocity);
     SmartDashboard.putNumber("vY", yVelocity);
     SmartDashboard.putNumber("omega", angVelocity);
