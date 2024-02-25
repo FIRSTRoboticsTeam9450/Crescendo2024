@@ -115,14 +115,14 @@ public class RobotContainer
                                                 () -> MathUtil.applyDeadband(driverController.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
                                                 () -> driverController.getRightX(), () -> driverController.getRightY(),
                                                 () -> driverController.rightBumper().getAsBoolean(),
-() -> driverController.rightTrigger().getAsBoolean());
+() -> driverController.leftTrigger().getAsBoolean());
 
     HeadingCorTeleopDrive simDrvHeadingCorr = new HeadingCorTeleopDrive(drivebase, 
                                                 () -> MathUtil.applyDeadband(driverController.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
                                                 () -> MathUtil.applyDeadband(driverController.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
                                                 () -> driverController.getRightX(), () -> driverController.getRightY(), 
                                                 () -> driverController.rightBumper().getAsBoolean(),
-() -> driverController.rightTrigger().getAsBoolean());
+() -> driverController.leftTrigger().getAsBoolean());
 
 
 
@@ -222,7 +222,7 @@ public class RobotContainer
 
     armController.y().onTrue(new SequentialCommandGroup(
       new BasicToSourceCommand(armWristSub),
-      new IntakingCommand(intakeSub, 5)
+      new IntakingCommand(intakeSub, 8)
     ));
    
     //driverController.rightTrigger().onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.SOURCE)));

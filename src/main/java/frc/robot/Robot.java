@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.commands.armpositions.tosource.BasicToSourceCommand;
 import frc.robot.subsystems.ArmWristSubsystem.Height;
 
@@ -131,8 +132,10 @@ public class Robot extends TimedRobot
       m_autonomousCommand.cancel();
     }
 
-    new BasicToSourceCommand(m_robotContainer.armWristSub).schedule();
-    m_robotContainer.armWristSub.changeHeight(Height.SOURCE);
+    //new BasicToSourceCommand(m_robotContainer.armWristSub).schedule();
+    (new InstantCommand(() -> m_robotContainer.armWristSub.goToPosition(Height.PRECLIMB))).schedule();
+    (new InstantCommand(() -> m_robotContainer.armWristSub.runAndResetExtEncoder())).schedule();
+    m_robotContainer.armWristSub.changeHeight(Height.PRECLIMB);
     m_robotContainer.setDriveMode();
     m_robotContainer.setMotorBrake(true);
     m_robotContainer.climbSub.enablePid(false);

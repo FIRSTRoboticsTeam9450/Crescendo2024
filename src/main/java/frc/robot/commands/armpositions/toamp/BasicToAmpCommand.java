@@ -59,18 +59,18 @@ public class BasicToAmpCommand extends Command {
   @Override
   public void execute() {
     if(armWrist.getHeight() == Height.GROUND){
-      if (Math.abs(armWrist.getAbsArmPos() - armWrist.newGetArmTarget()) < 0.05) {
+      if (Math.abs(armWrist.getAbsArmPos() - armWrist.newGetArmTarget()) < 0.15) {
         armWrist.setExtensionGoal(Constants.ArmPositions.extHardLowerLimit + Constants.Extension.offsetToAmpFromGround);
         finished = true;
       }
     }
     
     if(armWrist.getHeight() == Height.HOLD){
-      if(Math.abs(armWrist.getAbsArmPos() - armWrist.newGetArmTarget()) < 0.05){
+      if(Math.abs(armWrist.getAbsArmPos() - armWrist.newGetArmTarget()) < 0.15){
 
         //Need to figure out a way to keep track of whether intaken from amp or source
         if(armWrist.getWasSourceIntake()){
-          armWrist.setExtensionGoal(Constants.ArmPositions.extHardLowerLimit + Constants.Extension.offsetToAmpFromSource_Hold - 12);
+          armWrist.setExtensionGoal(Constants.ArmPositions.extHardLowerLimit + Constants.Extension.offsetToAmpFromSource_Hold - 16);
         }else{
           armWrist.setExtensionGoal(Constants.ArmPositions.extHardLowerLimit + Constants.Extension.offsetToAmpFromGround - 24);
         }

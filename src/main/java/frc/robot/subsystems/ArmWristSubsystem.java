@@ -27,22 +27,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.commands.ExtensionCommand;
-import frc.robot.commands.armpositions.toamp.BasicToAmpCommand;
-import frc.robot.commands.armpositions.toamp.GroundToAmpCommand;
-import frc.robot.commands.armpositions.toamp.HoldToAmpCommand;
-import frc.robot.commands.armpositions.toamp.SourceToAmpCommand;
-import frc.robot.commands.armpositions.toground.AmpToGroundCommand;
-import frc.robot.commands.armpositions.toground.BasicToGroundCommand;
-import frc.robot.commands.armpositions.toground.HoldToGroundCommand;
-import frc.robot.commands.armpositions.toground.SourceToGroundCommand;
-import frc.robot.commands.armpositions.tohold.AmpToHoldCommand;
-import frc.robot.commands.armpositions.tohold.BasicToHoldCommand;
-import frc.robot.commands.armpositions.tohold.GroundToHoldCommand;
-import frc.robot.commands.armpositions.tohold.SourceToHoldCommand;
-import frc.robot.commands.armpositions.tosource.AmpToSourceCommand;
-import frc.robot.commands.armpositions.tosource.GroundToSourceCommand;
-import frc.robot.commands.armpositions.tosource.HoldToSourceCommand;
-import frc.robot.commands.armpositions.tosource.BasicToSourceCommand;
+
 
 public class ArmWristSubsystem extends SubsystemBase{
     public enum Height{
@@ -120,7 +105,7 @@ public class ArmWristSubsystem extends SubsystemBase{
 
     
 
-    private final ProfiledPIDController armPid = new ProfiledPIDController(40, 0, 0, new Constraints(4, 3));//maxVel = 3.5 and maxAccel = 2.5
+    private final ProfiledPIDController armPid = new ProfiledPIDController(40, 0, 0, new Constraints(9, 8));//maxVel = 3.5 and maxAccel = 2.5
     private final PIDController armClimbPid = new PIDController(30, 0, 0);
     
     private final PIDController wristPIDController = new PIDController(40, 0, 0); 
@@ -781,74 +766,7 @@ public class ArmWristSubsystem extends SubsystemBase{
         wasSourceIntake = intake;
     }
     
-    //New Command Based Arm Movements------------------
-    public Command chooseToSourceMovement(){
-        
-        if(this.getHeight() == Height.AMP){
-            return new AmpToSourceCommand(this);
-
-        }else if(this.getHeight().equals(Height.GROUND)){
-            return new GroundToSourceCommand(this);
-
-        }else if(this.getHeight().equals(Height.HOLD)){
-            return new HoldToSourceCommand(this);
-
-        }else{
-            return new BasicToSourceCommand(this);
-        }
-        
-    }
-
-    public Command chooseToAmpMovement(){
-        
-        if(lastHeight == Height.SOURCE){
-            return new SourceToAmpCommand(this);
-
-        }else if(lastHeight == Height.GROUND){
-            return new GroundToAmpCommand(this);
-
-        }else if(lastHeight == Height.HOLD){
-            return new HoldToAmpCommand(this);
-
-        }else{
-            return new BasicToAmpCommand(this);
-        }
-        
-    }
-
-    public Command chooseToGroundMovement(){
-        
-        if(lastHeight == Height.SOURCE){
-            return new SourceToGroundCommand(this);
-
-        }else if(lastHeight == Height.AMP){
-            return new AmpToGroundCommand(this);
-
-        }else if(lastHeight == Height.HOLD){
-            return new HoldToGroundCommand(this);
-
-        }else{
-            return new BasicToGroundCommand(this);
-        }
-        
-    }
-
-    public Command chooseToHoldMovement(){
-        
-        if(lastHeight == Height.SOURCE){
-            return new SourceToHoldCommand(this);
-
-        }else if(lastHeight == Height.AMP){
-            return new AmpToHoldCommand(this);
-
-        }else if(lastHeight == Height.GROUND){
-            return new GroundToHoldCommand(this);
-
-        }else{
-            return new BasicToHoldCommand(this);
-        }
-        
-    }
+    
 
 
     @Override

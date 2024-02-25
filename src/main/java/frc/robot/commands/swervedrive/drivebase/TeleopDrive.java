@@ -24,7 +24,7 @@ public class TeleopDrive extends Command
   private final DoubleSupplier   omega;
   private final BooleanSupplier  driveMode, zeroGyro, speedModify;
   private final SwerveController controller;
-    private double speedModifer;
+  private double speedModifier;
 
   /**
    * Creates a new ExampleCommand.
@@ -50,7 +50,7 @@ public class TeleopDrive extends Command
   @Override
   public void initialize()
   {
-      speedModifer = 1.0;
+      speedModifier = 1.0;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
