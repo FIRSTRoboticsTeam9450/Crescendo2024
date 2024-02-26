@@ -10,6 +10,7 @@ import frc.robot.commands.MotorCommand;
 import frc.robot.commands.ResetClimbCommand;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.IntakeTestingSubsystem;
+import frc.robot.subsystems.LaserSubsystem;
 import frc.robot.subsystems.MotorSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -27,7 +28,7 @@ public class RobotContainer {
 //HELLO
 
   // The robot's subsystems and commands are defined here...
-
+  public final LaserSubsystem laserSub = new LaserSubsystem();
   private final ClimbSubsystem ClimbSubsystem = new ClimbSubsystem();
   // private final MotorSubsystem driveTest = new MotorSubsystem();
   // private final IntakeTestingSubsystem intake = new IntakeTestingSubsystem();
