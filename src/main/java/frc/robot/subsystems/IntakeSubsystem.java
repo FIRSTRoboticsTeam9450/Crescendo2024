@@ -7,6 +7,10 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkMax;
+
+import au.grapplerobotics.ConfigurationFailedException;
+import au.grapplerobotics.LaserCan;
+
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 
@@ -30,7 +34,10 @@ public class IntakeSubsystem extends SubsystemBase {
   double voltageTo;
   double rampTime;
 
-
+  /* Laser */
+  private LaserCan laser;
+  private LaserCan.Measurement measurement;
+  
   Timer rampDownTimer;
 
   /* Constructor -> creates new WristIntakeSubsystem */
@@ -48,14 +55,35 @@ public class IntakeSubsystem extends SubsystemBase {
     rampDownBool = false;
     rampDownTimer = new Timer();
     isIntaking = false;
+
+
+    laser = new LaserCan(Constants.laserId);
+
+    // Optionally initialise the settings of the LaserCAN, if you haven't already done so in GrappleHook
+    try {
+      laser.setRangingMode(LaserCan.RangingMode.SHORT);
+      laser.setRegionOfInterest(new LaserCan.RegionOfInterest(8, 8, 16, 16));
+      laser.setTimingBudget(LaserCan.TimingBudget.TIMING_BUDGET_33MS);
+    } catch (ConfigurationFailedException e) {
+      System.out.println("Laser configuration failed! " + e);
+      
+    }
   }
 
 
   /* Called every 20ms ish */
   @Override
   public void periodic() {
-    
-   
+    /* Laser */
+    // This method will be called once per scheduler run
+    measurement = laser.getMeasurement(); // this line most important
+    if (measurement != null && measurement.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT) {
+      System.out.println("The target is " + measurement.distance_mm + "mm away!");
+    } else {
+      System.out.println("The target is out of range, or we can't get a reliable measurement!");
+      // You can still use distance_mm in here, if you're ok tolerating a clamped value or an unreliable measurement.
+    }
+
     /* Telemetry */
     SmartDashboard.putNumber("Intake Pos", getIntakePos());
     SmartDashboard.putNumber("Intake Velocity", getIntakeVelocity());
@@ -75,11 +103,11 @@ public class IntakeSubsystem extends SubsystemBase {
 
   /* Wrist Methods */
     
-  
-  
 
-
-  
+  /* Laser Methods */
+  public double getLaserDistance() {
+    return measurement.distance_mm;
+  }
 
 
   

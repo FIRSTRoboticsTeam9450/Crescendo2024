@@ -35,7 +35,6 @@ public class IntakingCommand extends Command {
   @Override
   public void execute() {
 
-
     if(intake.getTemp() > 60){
         intake.setIntakeVoltage(0);
     }else{
@@ -47,6 +46,14 @@ public class IntakingCommand extends Command {
         } else if(ramp && intake.getIntakeVelocity() > -700){
             intake.setIntakeVoltage(0.01);
         }
+
+        
+        // if (intake.getLaserDistance() <= 10 /*millimeters */) {
+        //   intake.setIntakeVoltage(0.01);
+        // } else {
+        //   intake.setIntakeVoltage(intakeVoltage);
+
+        // }
     }
   }
 

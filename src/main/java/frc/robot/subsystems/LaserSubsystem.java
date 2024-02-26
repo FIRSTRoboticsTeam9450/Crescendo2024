@@ -30,14 +30,14 @@ public class LaserSubsystem extends SubsystemBase {
 
 
   public void wristLaserLogic() {
-    if (getDistanceLaser() <= 2) {
+    if (getLaserDistance() <= 2) {
       // set slow wrist speed
     } else {
       // run intake at 
     }
   }
 
-  public double getDistanceLaser() {
+  public double getLaserDistance() {
     return measurement.distance_mm;
   }
 
