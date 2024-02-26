@@ -25,6 +25,7 @@ import frc.robot.commands.swervedrive.drivebase.AlignSource;
 import frc.robot.commands.swervedrive.drivebase.HeadingCorTeleopDrive;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDriveAdv;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
+import frc.robot.subsystems.LaserSubsystem;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import java.io.File;
 import java.time.Instant;
@@ -45,6 +46,8 @@ public class RobotContainer
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                          "swerve/neo"));
+
+  public final LaserSubsystem laserSub = new LaserSubsystem();
   // CommandJoystick rotationController = new CommandJoystick(1);
   // Replace with CommandPS4Controller or CommandJoystick if needed
   CommandXboxController driverController = new CommandXboxController(0);
