@@ -88,26 +88,26 @@ public class RobotContainer
    */
   public RobotContainer()
   {
-    // Command armStore = new InstantCommand(() -> armWristSub.goToPosition(Height.HOLD));
-    // Command armAmp = new InstantCommand(() -> armWristSub.goToPosition(Height.AMP));
-    // Command armGround = new SequentialCommandGroup(
-    //   new InstantCommand(() -> armWristSub.goToPosition(Height.GROUND)),
-    //   new IntakingCommand(intakeSub, 8)
-    //   );
+    Command armStore = new BasicToHoldCommand(armWristSub);
+    Command armAmp = new BasicToAmpCommand(armWristSub);
+    Command armGround = new SequentialCommandGroup(
+      new BasicToGroundCommand(armWristSub),
+      new IntakingCommand(intakeSub, 12)
+    );
     // Command armStart = new InstantCommand(() -> armWristSub.setArmWristExtGoal(armWristSub.armHardLowerLimit + Constants.Arm.offsetToAmpFromGround - 0.05, 
     // armWristSub.wristHardLowerLimit + Constants.Wrist.offsetToSource, 
     // armWristSub.extHardLowerLimit - 5));
 
-    // Command outtake = new TimedIntakeSetPowerCommand(intakeSub, 10, 0.75);
-    // Command resetExt = new InstantCommand(() -> armWristSub.runAndResetExtEncoder());
+    Command outtake = new TimedIntakeSetPowerCommand(intakeSub, 10, 0.75);
+    Command resetExt = new InstantCommand(() -> armWristSub.runAndResetExtEncoder());
     // Command sweep = new SweepCommand(drivebase);
 
     // NamedCommands.registerCommand("ArmStart", armStart);
-    // NamedCommands.registerCommand("ArmStore", armStore);
-    // NamedCommands.registerCommand("ArmGround", armGround);
-    // NamedCommands.registerCommand("ArmAmp", armAmp);
-    // NamedCommands.registerCommand("Outtake", outtake);  
-    // NamedCommands.registerCommand("ResetExt", resetExt);  
+    NamedCommands.registerCommand("ArmStore", armStore);
+    NamedCommands.registerCommand("ArmGround", armGround);
+    NamedCommands.registerCommand("ArmAmp", armAmp);
+    NamedCommands.registerCommand("Outtake", outtake);  
+    NamedCommands.registerCommand("ResetExt", resetExt);  
     // NamedCommands.registerCommand("Sweep", sweep);
 
     HeadingCorTeleopDrive drvHeadingCorr = new HeadingCorTeleopDrive(drivebase, 
