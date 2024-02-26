@@ -49,4 +49,6 @@ public final class Constants
     public static final double RIGHT_X_DEADBAND = 0.05;
     public static final double TURN_CONSTANT = 0.75;
   }
+
+  public static final int laserId = 32;
 }
