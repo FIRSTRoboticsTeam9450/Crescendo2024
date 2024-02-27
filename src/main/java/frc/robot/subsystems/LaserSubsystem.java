@@ -15,7 +15,7 @@ public class LaserSubsystem extends SubsystemBase {
   private LaserCan.Measurement measurement;
   /** Creates a new LaserSubsystem. */
   public LaserSubsystem() {
-    laser = new LaserCan(Constants.laserId);
+    laser = new LaserCan(0);
 
     // Optionally initialise the settings of the LaserCAN, if you haven't already done so in GrappleHook
     try {

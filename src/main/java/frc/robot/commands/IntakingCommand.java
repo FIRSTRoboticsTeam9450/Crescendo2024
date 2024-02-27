@@ -48,7 +48,7 @@ public class IntakingCommand extends Command {
         // }
 
         
-        if (intake.getLaserDistance() <= 17 /*millimeters */) {
+        if (intake.getLaserDistance() <= 25 /*millimeters */) {
           intake.setIntakeVoltage(0.01);
         } else {
           intake.setIntakeVoltage(intakeVoltage);

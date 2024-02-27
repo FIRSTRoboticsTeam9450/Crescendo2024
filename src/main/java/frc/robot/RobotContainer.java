@@ -69,7 +69,7 @@ public class RobotContainer
   //private final ArmSubsystem armSub = new ArmSubsystem(extSub);
   //private final WristSubsystem wristSub = new WristSubsystem();
   public final ArmWristSubsystem armWristSub = new ArmWristSubsystem();
-  public final LaserSubsystem laserSub = new LaserSubsystem();
+  // public final LaserSubsystem laserSub = new LaserSubsystem();
 
   public final ClimbSubsystem climbSub = new ClimbSubsystem();
   // private final LimitSwitchSubsystem extLimitSub = new LimitSwitchSubsystem();
