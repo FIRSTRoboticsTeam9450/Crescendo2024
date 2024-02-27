@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ArmWristSubsystem;
@@ -16,6 +17,7 @@ public class IntakingCommand extends Command {
   private boolean ramp;
   boolean finished = false;
   private Timer timer = new Timer();
+  MedianFilter median = new MedianFilter(3);
 
   public IntakingCommand(IntakeSubsystem intake, double intakeVoltage){
     // Use addRequirements() here to declare subsystem dependencies.
@@ -36,6 +38,7 @@ public class IntakingCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    double medianValue = median.calculate(intake.getLaserDistance());
 
     if(intake.getTemp() > 60){
         intake.setIntakeVoltage(0);
@@ -50,7 +53,7 @@ public class IntakingCommand extends Command {
         // }
 
         
-        if (intake.getLaserDistance() <= 25 && intake.getLaserDistance() >= 19 /*millimeters */) {
+        if (/*intake.getLaserDistance()*/medianValue <= 25 && /*intake.getLaserDistance()*/medianValue >= 19 /*millimeters */) {
           intake.setIntakeVoltage(0.01);
           finished = true;
         } else {
