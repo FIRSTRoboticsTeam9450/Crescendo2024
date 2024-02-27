@@ -64,20 +64,22 @@ public class TeleopDrive extends Command
 
     // for speedModifier drive enabled
     if (speedModify.getAsBoolean()) {
-        speedModifier = 0.7; // instead of 0.5, because drive utilizes a cubic function for speed
+        speedModifier = 0.5; // instead of 0.5, because drive utilizes a cubic function for speed
     } else {
         speedModifier = 1.0; // if the speedModify boolean isn't toggled, then use regular speed
     }
       
-    double xVelocity   = -Math.pow(vX.getAsDouble(), 3) * speedModifier;
-    double yVelocity   = -Math.pow(vY.getAsDouble(), 3) * speedModifier;
-    double angVelocity = -Math.pow(omega.getAsDouble(), 3) * speedModifier;
+    double xVelocity   = -vX.getAsDouble() * speedModifier;
+    double yVelocity   = -vY.getAsDouble() * speedModifier;
+
+    
+    double angVelocity = -omega.getAsDouble() * speedModifier;
     SmartDashboard.putNumber("vX", xVelocity);
     SmartDashboard.putNumber("vY", yVelocity);
     SmartDashboard.putNumber("omega", angVelocity);
 
     // Drive using raw values.
-    swerve.drive(new Translation2d(xVelocity * swerve.maximumSpeed, yVelocity * swerve.maximumSpeed),
+    swerve.drive(new Translation2d(xVelocity * SwerveSubsystem.maximumSpeed, yVelocity * SwerveSubsystem.maximumSpeed),
                  angVelocity * controller.config.maxAngularVelocity,
                  driveMode.getAsBoolean());
     SmartDashboard.putNumber("MaxAngVel", controller.config.maxAngularVelocity);

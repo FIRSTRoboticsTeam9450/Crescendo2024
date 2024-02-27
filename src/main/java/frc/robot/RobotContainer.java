@@ -139,19 +139,19 @@ public class RobotContainer
                                                                                  OperatorConstants.LEFT_X_DEADBAND),
                                                     () -> driverController.getRawAxis(4), () -> true,
                                                 () -> driverController.rightBumper().getAsBoolean(),
-() -> driverController.rightTrigger().getAsBoolean());
+() -> driverController.leftTrigger().getAsBoolean());
     TeleopDrive closedFieldRel = new TeleopDrive(
         drivebase,
         () -> MathUtil.applyDeadband(driverController.getLeftX() , OperatorConstants.LEFT_X_DEADBAND),
         () -> MathUtil.applyDeadband(driverController.getLeftY() , OperatorConstants.LEFT_Y_DEADBAND),
         () -> driverController.getRawAxis(4), () -> true,
         () -> driverController.rightBumper().getAsBoolean(),
-        () -> driverController.rightTrigger().getAsBoolean()); // change the int in the parameter to the appropriate axis
+        () -> driverController.leftTrigger().getAsBoolean()); // change the int in the parameter to the appropriate axis
 
     
     
-    // drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simClosedFieldRel : closedFieldRel);
-    drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simDrvHeadingCorr : drvHeadingCorr);
+    drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simClosedFieldRel : closedFieldRel);
+    // drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simDrvHeadingCorr : drvHeadingCorr);
     
     // driverController.rightTrigger().whileFalse();
     // driverController.rightTrigger().whileTrue(closedFieldRelSlow);
@@ -224,7 +224,9 @@ public class RobotContainer
 
     armController.y().onTrue(new SequentialCommandGroup(
       new BasicToSourceCommand(armWristSub),
-      new IntakingCommand(intakeSub, 8)
+      new IntakingCommand(intakeSub, 8),
+      new InstantCommand(() -> armWristSub.goToPosition(Height.PRECLIMB)),
+      new InstantCommand(() -> armWristSub.changeHeight(Height.PRECLIMB))
     ));
    
     //driverController.rightTrigger().onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.SOURCE)));
@@ -260,7 +262,8 @@ public class RobotContainer
     //   ));
     armController.a().onTrue(new SequentialCommandGroup(
       new BasicToGroundCommand(armWristSub),
-      new IntakingCommand(intakeSub, 12)
+      new IntakingCommand(intakeSub, 12),
+      new BasicToHoldCommand(armWristSub)
     ));
         
     /*

@@ -39,7 +39,7 @@ public class ArmWristSubsystem extends SubsystemBase{
         PRECLIMB,
         TRAP
     }
-    private Height lastHeight = Height.SOURCE;
+    private Height lastHeight = Height.PRECLIMB;
     private boolean wasSourceIntake = true;
 
     

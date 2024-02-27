@@ -14,6 +14,7 @@ public class IntakingCommand extends Command {
   private IntakeSubsystem intake;
   private double intakeVoltage;
   private boolean ramp;
+  boolean finished = false;
   private Timer timer = new Timer();
 
   public IntakingCommand(IntakeSubsystem intake, double intakeVoltage){
@@ -29,6 +30,7 @@ public class IntakingCommand extends Command {
     ramp = false;
     timer.reset();
     timer.start();
+    finished = false;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -48,8 +50,9 @@ public class IntakingCommand extends Command {
         // }
 
         
-        if (intake.getLaserDistance() <= 25 /*millimeters */) {
+        if (intake.getLaserDistance() <= 25 && intake.getLaserDistance() >= 19 /*millimeters */) {
           intake.setIntakeVoltage(0.01);
+          finished = true;
         } else {
           intake.setIntakeVoltage(intakeVoltage);
 
@@ -66,6 +69,6 @@ public class IntakingCommand extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return finished;
   }
 }
