@@ -182,6 +182,8 @@ public class SwerveSubsystem extends SubsystemBase
     Logger.recordOutput("SwerveStates/TranslationSetpoints", translation);
     Logger.recordOutput("SwerveStates/RotationSetpoint", rotation);
     Logger.recordOutput("SwerveStates/CurrentRobotVelocity", getRobotVelocity());
+    Logger.recordOutput("SwerveStates/CurrentTranslation", SwerveController.getTranslation2d(getRobotVelocity()));
+
     
     swerveDrive.drive(translation,
                       rotation,
@@ -217,6 +219,8 @@ public class SwerveSubsystem extends SubsystemBase
       Logger.recordOutput("SwerveStates/TranslationSetpoints", new Translation2d());
       Logger.recordOutput("SwerveStates/RotationSetpoint", 0.0);
       Logger.recordOutput("SwerveStates/CurrentRobotVelocity", new ChassisSpeeds());
+      Logger.recordOutput("SwerveStates/CurrentTranslation", new Translation2d());
+
 
     }
     
