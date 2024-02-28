@@ -5,15 +5,7 @@
 package frc.robot;
 
 
-import frc.robot.commands.ClimbCommand;
-import frc.robot.commands.MotorCommand;
-import frc.robot.commands.ResetClimbCommand;
-import frc.robot.subsystems.ClimbSubsystem;
-import frc.robot.subsystems.IntakeTestingSubsystem;
-import frc.robot.subsystems.LaserSubsystem;
-import frc.robot.subsystems.MotorSubsystem;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
+
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -25,17 +17,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  */
 public class RobotContainer {
 
-//HELLO
 
-  // The robot's subsystems and commands are defined here...
-  public final LaserSubsystem laserSub = new LaserSubsystem();
-  private final ClimbSubsystem ClimbSubsystem = new ClimbSubsystem();
-  // private final MotorSubsystem driveTest = new MotorSubsystem();
-  // private final IntakeTestingSubsystem intake = new IntakeTestingSubsystem();
-
-  // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandXboxController m_driverController =
-      new CommandXboxController(0);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -44,9 +26,9 @@ public class RobotContainer {
     //Command climbCommand = new ClimbCommand(ClimbSubsystem);
 
     //ClimbSubsystem.setDefaultCommand(climbCommand);
-    m_driverController.a().onTrue(new ClimbCommand(ClimbSubsystem, 10));
-    m_driverController.y().onTrue(new ClimbCommand(ClimbSubsystem, 65));
-    m_driverController.x().onTrue(new ResetClimbCommand(ClimbSubsystem));
+    // m_driverController.a().onTrue(new ClimbCommand(ClimbSubsystem, 10));
+    // m_driverController.y().onTrue(new ClimbCommand(ClimbSubsystem, 65));
+    // m_driverController.x().onTrue(new ResetClimbCommand(ClimbSubsystem));
     configureBindings();
   }
 
