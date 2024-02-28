@@ -19,6 +19,7 @@ public class LaserSubsystem extends SubsystemBase {
 
     // Optionally initialise the settings of the LaserCAN, if you haven't already done so in GrappleHook
     try {
+      
       laser.setRangingMode(LaserCan.RangingMode.SHORT);
       laser.setRegionOfInterest(new LaserCan.RegionOfInterest(8, 8, 16, 16));
       laser.setTimingBudget(LaserCan.TimingBudget.TIMING_BUDGET_33MS);
