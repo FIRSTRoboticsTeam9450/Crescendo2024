@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.69697649003839,
-        "y": 7.508146546542204
+        "x": 1.7,
+        "y": 7.62
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9824115366120743,
-        "y": 7.473382551749108
+        "x": 1.9854350465736845,
+        "y": 7.585236005206903
       },
       "isLocked": false,
-      "linkedName": "AmpScore"
+      "linkedName": null
     },
     {
       "anchor": {
@@ -33,7 +33,7 @@
   "eventMarkers": [
     {
       "name": "ArmGround",
-      "waypointRelativePos": 0,
+      "waypointRelativePos": 0.0,
       "command": {
         "type": "parallel",
         "data": {

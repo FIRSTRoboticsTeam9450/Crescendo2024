@@ -76,38 +76,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "AmpToLeftSecondNote"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "ArmAmp"
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "SecondNoteToAmp"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Outtake"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ArmStore"
+            "pathName": "AmpToCenterNote"
           }
         }
       ]

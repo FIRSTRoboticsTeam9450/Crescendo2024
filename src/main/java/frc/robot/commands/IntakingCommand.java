@@ -33,6 +33,7 @@ public class IntakingCommand extends Command {
     timer.reset();
     timer.start();
     finished = false;
+    median = new MedianFilter(3);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

@@ -3,41 +3,41 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.69697649003839,
-        "y": 7.508146546542204
+        "x": 1.5,
+        "y": 7.51
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.8316045245677073,
-        "y": 7.147639405733275
+        "x": 1.901478536053158,
+        "y": 7.498408353874834
       },
       "isLocked": false,
       "linkedName": "AmpScore"
     },
     {
       "anchor": {
-        "x": 2.575783765717787,
-        "y": 7.66
+        "x": 2.943465151461739,
+        "y": 7.625004858550643
       },
       "prevControl": {
-        "x": 2.364653948855673,
-        "y": 7.663693693543478
+        "x": 2.732335334599625,
+        "y": 7.628698552094121
       },
       "nextControl": {
-        "x": 3.088517471440733,
-        "y": 7.651029778709138
+        "x": 3.456198857184685,
+        "y": 7.616034637259781
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 7.594715153652132,
-        "y": 7.445640937793504
+        "x": 7.744394136475106,
+        "y": 7.293906307860065
       },
       "prevControl": {
-        "x": 6.695831334769891,
-        "y": 7.4646284376449135
+        "x": 6.845510317592865,
+        "y": 7.3128938077114745
       },
       "nextControl": null,
       "isLocked": false,
@@ -46,13 +46,60 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.4,
-      "rotationDegrees": 0.0,
+      "waypointRelativePos": 1.3,
+      "rotationDegrees": -90.0,
       "rotateFast": false
     }
   ],
-  "constraintZones": [],
-  "eventMarkers": [],
+  "constraintZones": [
+    {
+      "name": "Amp",
+      "minWaypointRelativePos": 0,
+      "maxWaypointRelativePos": 1.15,
+      "constraints": {
+        "maxVelocity": 1.0,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 120.0,
+        "maxAngularAcceleration": 720.0
+      }
+    }
+  ],
+  "eventMarkers": [
+    {
+      "name": "ArmGround",
+      "waypointRelativePos": 1.4,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "ArmGround"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "ArmToHold",
+      "waypointRelativePos": 0,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "ArmStore"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 2.0,
     "maxAcceleration": 3.0,
@@ -62,7 +109,7 @@
   "goalEndState": {
     "velocity": 0,
     "rotation": 0.0,
-    "rotateFast": false
+    "rotateFast": true
   },
   "reversed": false,
   "folder": null,

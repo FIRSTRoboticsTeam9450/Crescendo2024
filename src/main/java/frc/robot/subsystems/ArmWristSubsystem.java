@@ -389,6 +389,9 @@ public class ArmWristSubsystem extends SubsystemBase{
         return armPid.calculate(getAbsArmPos(), armTarget);
     }
     public void updateRotationOutput(){
+        if (!armPIDRun) {
+            return;
+        }
         
         double ffValue = getFFEquationVoltage()/*calculateRotationFF()*/;
         double pidValue = calculateRotationPID();
