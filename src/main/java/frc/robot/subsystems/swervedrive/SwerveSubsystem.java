@@ -15,6 +15,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -22,6 +23,9 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.io.File;
+
+import org.littletonrobotics.junction.Logger;
+
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
 import swervelib.math.SwerveMath;
@@ -175,6 +179,10 @@ public class SwerveSubsystem extends SubsystemBase
   
    public void drive(Translation2d translation, double rotation, boolean fieldRelative)
   {
+    Logger.recordOutput("SwerveStates/TranslationSetpoints", translation);
+    Logger.recordOutput("SwerveStates/RotationSetpoint", rotation);
+    Logger.recordOutput("SwerveStates/CurrentRobotVelocity", getRobotVelocity());
+    
     swerveDrive.drive(translation,
                       rotation,
                       fieldRelative,
@@ -204,6 +212,18 @@ public class SwerveSubsystem extends SubsystemBase
   @Override
   public void periodic()
   {
+    // Log empty setpoint states when disabled
+    if (DriverStation.isDisabled()) {
+      Logger.recordOutput("SwerveStates/TranslationSetpoints", new Translation2d());
+      Logger.recordOutput("SwerveStates/RotationSetpoint", 0.0);
+      Logger.recordOutput("SwerveStates/CurrentRobotVelocity", new ChassisSpeeds());
+
+    }
+    
+  
+
+      
+    
   }
 
   @Override
