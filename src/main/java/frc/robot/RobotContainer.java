@@ -137,14 +137,14 @@ public class RobotContainer
                                                                                  OperatorConstants.LEFT_Y_DEADBAND),
                                                     () -> MathUtil.applyDeadband(driverController.getLeftX() ,
                                                                                  OperatorConstants.LEFT_X_DEADBAND),
-                                                    () -> driverController.getRawAxis(4), () -> true,
+                                                    () -> MathUtil.applyDeadband(driverController.getRawAxis(4), 0.1), () -> true,
                                                 () -> driverController.rightBumper().getAsBoolean(),
 () -> driverController.leftTrigger().getAsBoolean());
     TeleopDrive closedFieldRel = new TeleopDrive(
         drivebase,
-        () -> MathUtil.applyDeadband(driverController.getLeftX() , OperatorConstants.LEFT_X_DEADBAND),
         () -> MathUtil.applyDeadband(driverController.getLeftY() , OperatorConstants.LEFT_Y_DEADBAND),
-        () -> driverController.getRawAxis(4), () -> true,
+        () -> MathUtil.applyDeadband(driverController.getLeftX() , OperatorConstants.LEFT_X_DEADBAND),
+        () -> MathUtil.applyDeadband(driverController.getRawAxis(4), 0.1), () -> true,
         () -> driverController.rightBumper().getAsBoolean(),
         () -> driverController.leftTrigger().getAsBoolean()); // change the int in the parameter to the appropriate axis
 
@@ -302,7 +302,7 @@ public class RobotContainer
 
     driverController.b().onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.TRAP)));
 
-    driverController.y().onTrue(new ParallelCommandGroup(new TimedIntakeSetPowerCommand(intakeSub, 10, 0.75), new WaitCommand(0.25).andThen(new InstantCommand(() -> armWristSub.goToPosition(Height.PRECLIMB)))));
+    driverController.y().onTrue(new ParallelCommandGroup(new TimedIntakeSetPowerCommand(intakeSub, 10, 0.75), new WaitCommand(0).andThen(new InstantCommand(() -> armWristSub.goToPosition(Height.PRECLIMB)))));
 
     driverController.pov(180).onTrue(new InstantCommand(() -> armWristSub.toggleArm()).andThen(new InstantCommand(() -> armWristSub.setArmVoltage(-12))));
     driverController.pov(180).onFalse(new InstantCommand(() -> armWristSub.toggleArm()));
@@ -310,7 +310,8 @@ public class RobotContainer
     driverController.rightTrigger().onFalse(new InstantCommand(() -> armWristSub.setExtensionGoal(armWristSub.extensionTarget - 12)));
     driverController.pov(270).onFalse(new InstantCommand(() -> armWristSub.setExtensionGoal(armWristSub.extensionTarget + 12)));
 
-    driverController.x().onTrue(new AutoClimbCommand(climbSub, armWristSub));
+    driverController.x().onTrue(
+      new AutoClimbCommand(climbSub, armWristSub));
 
 
   }
