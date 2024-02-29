@@ -206,7 +206,7 @@ public class ArmWristSubsystem extends SubsystemBase{
   }
 
   public void setExtVoltage(double voltage) {
-    extensionMotor.setVoltage(voltage);
+    // extensionMotor.setVoltage(voltage);
     SmartDashboard.putNumber("Ext Voltage", voltage);
 
   }
@@ -786,7 +786,7 @@ public class ArmWristSubsystem extends SubsystemBase{
             updateWristPos();
 
             if (!runAndResetExt) {
-                updateExtensionOutput();
+                // updateExtensionOutput();
             }
 
 
