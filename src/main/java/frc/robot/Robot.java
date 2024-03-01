@@ -175,6 +175,8 @@ public class Robot extends LoggedRobot
   @Override
   public void teleopPeriodic()
   {
+    // just in case :)
+    m_robotContainer.setMotorBrake(true);
   }
 
   @Override
