@@ -28,6 +28,7 @@ import org.littletonrobotics.junction.Logger;
 
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
+import swervelib.SwerveModule;
 import swervelib.math.SwerveMath;
 import swervelib.parser.SwerveControllerConfiguration;
 import swervelib.parser.SwerveDriveConfiguration;
@@ -81,7 +82,11 @@ public class SwerveSubsystem extends SubsystemBase
       throw new RuntimeException(e);
     }
     swerveDrive.setHeadingCorrection(false); // Heading correction should only be used while controlling the robot via angle.
-
+    
+    for (SwerveModule module : swerveDrive.getModules()) {
+      module.setAntiJitter(false);
+    }
+    
     setupPathPlanner();
   }
 
