@@ -46,9 +46,7 @@ public class ArmWristSubsystem extends SubsystemBase{
     //Extension Limiter ----
     private double radiusX, radiusY, extensionLength, totalextensionX, totalextensionY, theta;
     //----
-    private double armTarget = 0.37;//0.485;  //.453
-    private double wristTarget = 0.387;
-    public double extensionTarget = 0;
+    
 
     public double armHardLowerLimit = 0.105;//0.08;
     private double armHardUpperLimit = 0.7;//0.51;
@@ -56,6 +54,10 @@ public class ArmWristSubsystem extends SubsystemBase{
     private double wristHardUpperLimit = 0.8; //    0.7785
     public double extHardLowerLimit = 0; // 0.749
     private double extHardUpperLimit = -75; // 0.059
+
+    private double armTarget = armHardLowerLimit + Constants.Arm.offsetToAmpFromGround - 0.05;//0.485;  //.453
+    private double wristTarget = 0.387;
+    public double extensionTarget = 0;
 
     private double armStraightUp = 0.46;
     private double armBalanced = 0.36;

@@ -10,6 +10,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
+
+import org.littletonrobotics.junction.Logger;
+
 import swervelib.SwerveController;
 
 /**
@@ -77,6 +80,8 @@ public class TeleopDrive extends Command
     SmartDashboard.putNumber("vX", xVelocity);
     SmartDashboard.putNumber("vY", yVelocity);
     SmartDashboard.putNumber("omega", angVelocity);
+        
+    Logger.recordOutput("SwerveStates/SwerveModuleAzimuthSetpoint", Math.atan(yVelocity / xVelocity));
 
     // Drive using raw values.
     swerve.drive(new Translation2d(xVelocity * SwerveSubsystem.maximumSpeed, yVelocity * SwerveSubsystem.maximumSpeed),

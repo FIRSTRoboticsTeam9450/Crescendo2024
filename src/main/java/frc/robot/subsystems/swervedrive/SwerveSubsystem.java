@@ -221,7 +221,7 @@ public class SwerveSubsystem extends SubsystemBase
       Logger.recordOutput("SwerveStates/RotationSetpoint", 0.0);
       Logger.recordOutput("SwerveStates/CurrentRobotVelocity", new ChassisSpeeds());
       Logger.recordOutput("SwerveStates/CurrentTranslation", new Translation2d());
-      Logger.recordOutput("SwerveStates/SwerveDriveStates", new SwerveModuleState[3]);
+      // Logger.recordOutput("SwerveStates/SwerveDriveStates", new SwerveModuleState[3]);
 
 
     }
