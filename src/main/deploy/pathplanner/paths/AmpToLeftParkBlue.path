@@ -16,41 +16,23 @@
     },
     {
       "anchor": {
-        "x": 2.85582141745541,
-        "y": 6.096108609773567
+        "x": 2.8752978027901492,
+        "y": 6.9920223351715975
       },
       "prevControl": {
-        "x": 2.85582141745541,
-        "y": 6.464275445726004
+        "x": 2.5073286934018935,
+        "y": 7.004086896135147
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "SecondNote"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
-  "eventMarkers": [
-    {
-      "name": "ArmGround",
-      "waypointRelativePos": 0.0,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "ArmGround"
-              }
-            }
-          ]
-        }
-      }
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 1.1,
+    "maxVelocity": 1.5,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 120.0,
     "maxAngularAcceleration": 720.0
@@ -61,7 +43,7 @@
     "rotateFast": true
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Blue",
   "previewStartingState": {
     "rotation": -90.0,
     "velocity": 0

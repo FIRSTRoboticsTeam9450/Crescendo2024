@@ -8,60 +8,42 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9027875727163086,
-        "y": 7.563397459621556
+        "x": 2.1382226192899934,
+        "y": 7.615236005206904
       },
       "isLocked": false,
       "linkedName": "AmpScore"
     },
     {
       "anchor": {
-        "x": 2.35,
-        "y": 7.2
+        "x": 2.8752978027901492,
+        "y": 6.9920223351715975
       },
       "prevControl": {
-        "x": 2.2588078494824892,
-        "y": 7.24103646773288
+        "x": 2.5073286934018935,
+        "y": 7.004086896135147
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "CloseNote"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
-  "eventMarkers": [
-    {
-      "name": "ArmToGround",
-      "waypointRelativePos": 0,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "ArmGround"
-              }
-            }
-          ]
-        }
-      }
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 0.3,
+    "maxVelocity": 1.5,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 120.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": -25.24052926478683,
+    "velocity": 0.0,
+    "rotation": -90.0,
     "rotateFast": true
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Red",
   "previewStartingState": {
     "rotation": -90.0,
     "velocity": 0

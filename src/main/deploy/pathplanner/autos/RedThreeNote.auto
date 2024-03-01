@@ -30,7 +30,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "LeftStartToAmp"
+                  "pathName": "LeftStartToAmpRed"
                 }
               }
             ]
@@ -45,7 +45,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "AmpToCloseNote"
+            "pathName": "AmpToCloseNoteRed"
           }
         },
         {
@@ -61,7 +61,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "CloseNoteToAmp"
+                  "pathName": "CloseNoteToAmpRed"
                 }
               }
             ]
@@ -76,18 +76,43 @@
         {
           "type": "path",
           "data": {
-            "pathName": "AmpToCenterNote"
+            "pathName": "AmpToLeftSecondNoteRed"
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "CenterNoteToAmp"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "ArmAmp"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "SecondNoteToAmpRed"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Outtake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ArmStore"
           }
         }
       ]
     }
   },
-  "folder": null,
+  "folder": "Red",
   "choreoAuto": false
 }

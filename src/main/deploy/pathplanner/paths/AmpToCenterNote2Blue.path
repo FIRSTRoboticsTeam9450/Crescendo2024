@@ -16,28 +16,28 @@
     },
     {
       "anchor": {
-        "x": 2.943465151461739,
-        "y": 7.625004858550643
+        "x": 2.962941536796478,
+        "y": 7.527622931876944
       },
       "prevControl": {
-        "x": 2.732335334599625,
-        "y": 7.628698552094121
+        "x": 2.751811719934364,
+        "y": 7.531316625420422
       },
       "nextControl": {
-        "x": 3.456198857184685,
-        "y": 7.616034637259781
+        "x": 3.4756752425194244,
+        "y": 7.518652710586082
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 7.832037870481434,
-        "y": 7.469193775872724
+        "x": 7.783346907144586,
+        "y": 7.342597271196915
       },
       "prevControl": {
-        "x": 6.933154051599193,
-        "y": 7.488181275724133
+        "x": 6.884463088262345,
+        "y": 7.361584771048324
       },
       "nextControl": null,
       "isLocked": false,
@@ -46,7 +46,7 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.3,
+      "waypointRelativePos": 1.55,
       "rotationDegrees": -90.0,
       "rotateFast": false
     }
@@ -67,7 +67,7 @@
   "eventMarkers": [
     {
       "name": "ArmGround",
-      "waypointRelativePos": 1.05,
+      "waypointRelativePos": 1.1,
       "command": {
         "type": "parallel",
         "data": {
@@ -76,23 +76,6 @@
               "type": "named",
               "data": {
                 "name": "ArmGround"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "name": "ArmToHold",
-      "waypointRelativePos": 0,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "ArmStore"
               }
             }
           ]
@@ -112,7 +95,7 @@
     "rotateFast": true
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Blue",
   "previewStartingState": {
     "rotation": -90.0,
     "velocity": 0
