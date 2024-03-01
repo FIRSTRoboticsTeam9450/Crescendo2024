@@ -155,7 +155,7 @@ public class RobotContainer
     
     // driverController.rightTrigger().whileFalse();
     // driverController.rightTrigger().whileTrue(closedFieldRelSlow);
-    
+    driverController.leftStick().onTrue(new InstantCommand( () -> resetDrive(closedFieldRel, simClosedFieldRel)));
 
     // Configure the trigger bindings
     configureBindings();
@@ -329,6 +329,12 @@ public class RobotContainer
   public void setDriveMode()
   {
     //drivebase.setDefaultCommand();
+  }
+
+  public void resetDrive(TeleopDrive closedFieldRel, TeleopDrive simClosedFieldRel) {
+    drivebase.removeDefaultCommand();
+    
+    drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simClosedFieldRel : closedFieldRel);
   }
 
   public void setMotorBrake(boolean brake)
