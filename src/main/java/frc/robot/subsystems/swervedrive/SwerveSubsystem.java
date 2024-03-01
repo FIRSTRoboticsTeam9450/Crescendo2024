@@ -28,6 +28,7 @@ import org.littletonrobotics.junction.Logger;
 
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
+import swervelib.SwerveDriveTest;
 import swervelib.SwerveModule;
 import swervelib.math.SwerveMath;
 import swervelib.parser.SwerveControllerConfiguration;
@@ -82,10 +83,9 @@ public class SwerveSubsystem extends SubsystemBase
       throw new RuntimeException(e);
     }
     swerveDrive.setHeadingCorrection(false); // Heading correction should only be used while controlling the robot via angle.
-    
-    for (SwerveModule module : swerveDrive.getModules()) {
-      module.setAntiJitter(false);
-    }
+
+
+    setAntiJitter(false);
     
     setupPathPlanner();
   }
@@ -182,6 +182,17 @@ public class SwerveSubsystem extends SubsystemBase
     swerveDrive.setHeadingCorrection(state);
    }
   
+   public void resetAngleMotors() {
+      // SwerveDriveTest.angleModules(swerveDrive, new Rotation2d());
+      SwerveDriveTest.centerModules(swerveDrive);
+   }
+
+   public void setAntiJitter(boolean antiJitter) {
+    for (SwerveModule module : swerveDrive.getModules()) {
+      module.setAntiJitter(antiJitter);
+    }
+   }
+
    public void drive(Translation2d translation, double rotation, boolean fieldRelative)
   {
     Logger.recordOutput("SwerveStates/TranslationSetpoints", translation);
@@ -227,8 +238,9 @@ public class SwerveSubsystem extends SubsystemBase
       Logger.recordOutput("SwerveStates/CurrentRobotVelocity", new ChassisSpeeds());
       Logger.recordOutput("SwerveStates/CurrentTranslation", new Translation2d());
       // Logger.recordOutput("SwerveStates/SwerveDriveStates", new SwerveModuleState[3]);
+      
 
-
+      //swerveDrive.setModuleStates(new SwerveModuleState[3], false);
     }
     
   
