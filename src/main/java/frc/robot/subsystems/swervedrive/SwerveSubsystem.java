@@ -101,9 +101,9 @@ public class SwerveSubsystem extends SubsystemBase
         this::getRobotVelocity, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
         this::setChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
         new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-                                         new PIDConstants(4.0, 0.0, 0.0),
+                                         new PIDConstants(5.0, 0.0, 0.0),
                                          // Translation PID constants
-                                         new PIDConstants(2,
+                                         new PIDConstants(7,
                                                           0,
                                                           0
                                                           ),

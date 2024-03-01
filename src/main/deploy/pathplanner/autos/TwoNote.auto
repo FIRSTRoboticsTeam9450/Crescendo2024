@@ -78,6 +78,12 @@
           "data": {
             "pathName": "AmpToCenterNote"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "CenterNoteToAmp"
+          }
         }
       ]
     }

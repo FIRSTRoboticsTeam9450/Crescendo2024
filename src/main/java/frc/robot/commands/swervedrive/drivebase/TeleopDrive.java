@@ -69,7 +69,7 @@ public class TeleopDrive extends Command
     if (speedModify.getAsBoolean()) {
         speedModifier = 0.5; // instead of 0.5, because drive utilizes a cubic function for speed
     } else {
-        speedModifier = 1.0; // if the speedModify boolean isn't toggled, then use regular speed
+        speedModifier = 0.2; // if the speedModify boolean isn't toggled, then use regular speed
     }
       
     double xVelocity   = -vX.getAsDouble() * speedModifier;

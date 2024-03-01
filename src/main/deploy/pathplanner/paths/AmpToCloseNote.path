@@ -3,24 +3,24 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.7,
-        "y": 7.51
+        "x": 1.8527875727163086,
+        "y": 7.65
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.75,
-        "y": 7.4233974596215555
+        "x": 1.9027875727163086,
+        "y": 7.563397459621556
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "AmpScore"
     },
     {
       "anchor": {
-        "x": 2.25,
+        "x": 2.35,
         "y": 7.2
       },
       "prevControl": {
-        "x": 2.158807849482489,
+        "x": 2.2588078494824892,
         "y": 7.24103646773288
       },
       "nextControl": null,
