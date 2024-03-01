@@ -14,42 +14,48 @@
         {
           "type": "path",
           "data": {
-            "pathName": "LeftStartToAmp"
+            "pathName": "LeftStartToAmpBlue"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "AmpToCloseNote"
+            "pathName": "AmpToCenterNote2Blue"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "CloseNoteToAmp"
+            "pathName": "CenterNoteToAmpBlue"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "AmpToCenterNote"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "CenterNoteToAmp2"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "AmpToLeftPark"
+            "pathName": "AmpToLeftParkBlue"
           }
         }
       ]
     }
   },
-  "folder": null,
+  "folder": "Blue",
   "choreoAuto": false
 }

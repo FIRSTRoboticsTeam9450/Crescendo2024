@@ -14,7 +14,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "LeftStartToAmp"
+            "pathName": "LeftStartToAmpRed"
           }
         },
         {
@@ -26,7 +26,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "AmpToCenterNote2"
+            "pathName": "AmpToCenterNote2Red"
           }
         },
         {
@@ -38,7 +38,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "CenterNoteToAmp"
+            "pathName": "CenterNoteToAmpRed"
           }
         },
         {
@@ -50,12 +50,12 @@
         {
           "type": "path",
           "data": {
-            "pathName": "AmpToLeftPark"
+            "pathName": "AmpToLeftParkRed"
           }
         }
       ]
     }
   },
-  "folder": null,
+  "folder": "Red",
   "choreoAuto": false
 }

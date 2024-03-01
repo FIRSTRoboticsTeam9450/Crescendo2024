@@ -8,6 +8,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -33,6 +34,7 @@ import frc.robot.commands.armpositions.tohold.BasicToHoldCommand;
 import frc.robot.commands.armpositions.tosource.BasicToSourceCommand;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDrive;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteFieldDrive;
+import frc.robot.commands.swervedrive.drivebase.AlignSource;
 import frc.robot.commands.swervedrive.drivebase.HeadingCorTeleopDrive;
 import frc.robot.commands.swervedrive.drivebase.SweepCommand;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDriveAdv;
@@ -50,6 +52,7 @@ import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import java.io.File;
 import java.util.function.DoubleSupplier;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 /**
@@ -85,11 +88,16 @@ public class RobotContainer
   // CommandJoystick driverController   = new CommandJoystick(3]\[]);//(OperatorConstants.DRIVER_CONTROLLER_PORT);
   //XboxController driverXbox = new XboxController(0);
   private double speedModifier = 0.67; //0.5
+  private final SendableChooser<Command> autoChooser;
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer()
   {
+
+    autoChooser = AutoBuilder.buildAutoChooser();
+    SmartDashboard.putData("Auto Chooser", autoChooser);
+
     Command armStore = new BasicToHoldCommand(armWristSub);
     Command armAmp = new BasicToAmpCommand(armWristSub);
     Command armGround = new SequentialCommandGroup(
@@ -155,7 +163,7 @@ public class RobotContainer
     
     // driverController.rightTrigger().whileFalse();
     // driverController.rightTrigger().whileTrue(closedFieldRelSlow);
-    
+    driverController.leftStick().onTrue(new InstantCommand( () -> resetDrive(/*closedFieldRel, simClosedFieldRel*/)));
 
     // Configure the trigger bindings
     configureBindings();
@@ -310,8 +318,14 @@ public class RobotContainer
     driverController.rightTrigger().onFalse(new InstantCommand(() -> armWristSub.setExtensionGoal(armWristSub.extensionTarget - 12)));
     driverController.pov(270).onFalse(new InstantCommand(() -> armWristSub.setExtensionGoal(armWristSub.extensionTarget + 12)));
 
-    driverController.x().onTrue(
-      new AutoClimbCommand(climbSub, armWristSub));
+    driverController.x().onTrue(new AutoClimbCommand(climbSub, armWristSub));
+
+    driverController.leftBumper().onTrue(new AlignSource(drivebase).andThen(new SequentialCommandGroup(
+      new BasicToSourceCommand(armWristSub),
+      new IntakingCommand(intakeSub, 8), 
+      new InstantCommand(() -> armWristSub.goToPosition(Height.PRECLIMB)),
+      new InstantCommand(() -> armWristSub.changeHeight(Height.PRECLIMB)))
+      ));
 
 
   }
@@ -323,12 +337,19 @@ public class RobotContainer
   public Command getAutonomousCommand()
   {
     // An example command will be run in autonomous
-    return drivebase.getAutonomousCommand("AmpFar", true, true);
+    return drivebase.getAutonomousCommand("BlueThreeNote", true, true);
   }
 
   public void setDriveMode()
   {
     //drivebase.setDefaultCommand();
+  }
+
+  public void resetDrive(/*TeleopDrive closedFieldRel, TeleopDrive simClosedFieldRel*/) {
+    // drivebase.removeDefaultCommand();
+    
+    // drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simClosedFieldRel : closedFieldRel);
+    drivebase.resetAngleMotors();
   }
 
   public void setMotorBrake(boolean brake)

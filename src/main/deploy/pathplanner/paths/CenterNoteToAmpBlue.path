@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.744394136475106,
-        "y": 7.293906307860065
+        "x": 7.783346907144586,
+        "y": 7.342597271196915
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.744394136475106,
-        "y": 7.293906307860065
+        "x": 6.783346907144586,
+        "y": 7.342597271196915
       },
       "isLocked": false,
       "linkedName": "Center Note"
@@ -32,12 +32,12 @@
     },
     {
       "anchor": {
-        "x": 1.5,
-        "y": 7.51
+        "x": 1.85,
+        "y": 7.65
       },
       "prevControl": {
-        "x": 1.4717564615214012,
-        "y": 7.125363737263973
+        "x": 1.8217564615214012,
+        "y": 7.265363737263973
       },
       "nextControl": null,
       "isLocked": false,
@@ -56,8 +56,55 @@
       "rotateFast": false
     }
   ],
-  "constraintZones": [],
-  "eventMarkers": [],
+  "constraintZones": [
+    {
+      "name": "New Constraints Zone",
+      "minWaypointRelativePos": 0.7,
+      "maxWaypointRelativePos": 2.0,
+      "constraints": {
+        "maxVelocity": 1.0,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 120.0,
+        "maxAngularAcceleration": 720.0
+      }
+    }
+  ],
+  "eventMarkers": [
+    {
+      "name": "ArmHold",
+      "waypointRelativePos": 0.0,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "ArmStore"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "ArmAmp",
+      "waypointRelativePos": 0.85,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "ArmAmp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 2.0,
     "maxAcceleration": 3.0,
@@ -70,7 +117,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Blue",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

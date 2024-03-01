@@ -114,7 +114,7 @@ public final class Constants
     public static final double maxExtensionTics = 0.06; 
     public static final double zeroTics = 0.73;
 
-    public static final double offsetToAmpFromGround = 0.5/0.69 * -75 + 5; // -0.5
+    public static final double offsetToAmpFromGround = 0.5/0.69 * -75 + 10; // -0.5
     public static final double offsetToAmpFromSource_Hold = 0.409/0.69 * -75; // -0.409
     /**Not updated */
     public static final double offsetToGroundFromHold = 0;
@@ -131,7 +131,7 @@ public final class Constants
     public static final double upWristInches = 2;
 
     public static final double offsetToAmpFromGround = 0.117;
-    public static final double offsetToAmpFromSource_Hold = 0.0157;
+    public static final double offsetToAmpFromSource_Hold = 0.08;
     /**Not updated */
     public static final double offsetToGroundFromHold = 0;
     public static final double offsetToGround = 0.44;

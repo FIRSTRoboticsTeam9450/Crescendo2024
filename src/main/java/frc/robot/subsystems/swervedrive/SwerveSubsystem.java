@@ -28,6 +28,8 @@ import org.littletonrobotics.junction.Logger;
 
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
+import swervelib.SwerveDriveTest;
+import swervelib.SwerveModule;
 import swervelib.math.SwerveMath;
 import swervelib.parser.SwerveControllerConfiguration;
 import swervelib.parser.SwerveDriveConfiguration;
@@ -82,6 +84,9 @@ public class SwerveSubsystem extends SubsystemBase
     }
     swerveDrive.setHeadingCorrection(false); // Heading correction should only be used while controlling the robot via angle.
 
+
+    setAntiJitter(false);
+    
     setupPathPlanner();
   }
 
@@ -96,9 +101,9 @@ public class SwerveSubsystem extends SubsystemBase
         this::getRobotVelocity, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
         this::setChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
         new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-                                         new PIDConstants(4.0, 0.0, 0.0),
+                                         new PIDConstants(5.0, 0.0, 0.0),
                                          // Translation PID constants
-                                         new PIDConstants(2,
+                                         new PIDConstants(7,
                                                           0,
                                                           0
                                                           ),
@@ -177,6 +182,17 @@ public class SwerveSubsystem extends SubsystemBase
     swerveDrive.setHeadingCorrection(state);
    }
   
+   public void resetAngleMotors() {
+      // SwerveDriveTest.angleModules(swerveDrive, new Rotation2d());
+      SwerveDriveTest.centerModules(swerveDrive);
+   }
+
+   public void setAntiJitter(boolean antiJitter) {
+    for (SwerveModule module : swerveDrive.getModules()) {
+      module.setAntiJitter(antiJitter);
+    }
+   }
+
    public void drive(Translation2d translation, double rotation, boolean fieldRelative)
   {
     Logger.recordOutput("SwerveStates/TranslationSetpoints", translation);
@@ -184,6 +200,7 @@ public class SwerveSubsystem extends SubsystemBase
     Logger.recordOutput("SwerveStates/CurrentRobotVelocity", getRobotVelocity());
     Logger.recordOutput("SwerveStates/CurrentTranslation", SwerveController.getTranslation2d(getRobotVelocity()));
 
+    Logger.recordOutput("SwerveStates/SwerveDriveStates", swerveDrive.getStates());
     
     swerveDrive.drive(translation,
                       rotation,
@@ -220,8 +237,10 @@ public class SwerveSubsystem extends SubsystemBase
       Logger.recordOutput("SwerveStates/RotationSetpoint", 0.0);
       Logger.recordOutput("SwerveStates/CurrentRobotVelocity", new ChassisSpeeds());
       Logger.recordOutput("SwerveStates/CurrentTranslation", new Translation2d());
+      // Logger.recordOutput("SwerveStates/SwerveDriveStates", new SwerveModuleState[3]);
+      
 
-
+      //swerveDrive.setModuleStates(new SwerveModuleState[3], false);
     }
     
   

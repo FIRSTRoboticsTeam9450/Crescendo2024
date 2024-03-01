@@ -10,6 +10,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
+
+import org.littletonrobotics.junction.Logger;
+
 import swervelib.SwerveController;
 
 /**
@@ -64,9 +67,9 @@ public class TeleopDrive extends Command
 
     // for speedModifier drive enabled
     if (speedModify.getAsBoolean()) {
-        speedModifier = 0.5; // instead of 0.5, because drive utilizes a cubic function for speed
+        speedModifier = 0.2; // instead of 0.5, because drive utilizes a cubic function for speed
     } else {
-        speedModifier = 1.0; // if the speedModify boolean isn't toggled, then use regular speed
+        speedModifier = 1; // if the speedModify boolean isn't toggled, then use regular speed
     }
       
     double xVelocity   = -vX.getAsDouble() * speedModifier;
@@ -77,6 +80,8 @@ public class TeleopDrive extends Command
     SmartDashboard.putNumber("vX", xVelocity);
     SmartDashboard.putNumber("vY", yVelocity);
     SmartDashboard.putNumber("omega", angVelocity);
+        
+    Logger.recordOutput("SwerveStates/SwerveModuleAzimuthSetpoint", Math.atan(yVelocity / xVelocity));
 
     // Drive using raw values.
     swerve.drive(new Translation2d(xVelocity * SwerveSubsystem.maximumSpeed, yVelocity * SwerveSubsystem.maximumSpeed),
