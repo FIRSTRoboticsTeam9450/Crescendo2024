@@ -33,6 +33,7 @@ import frc.robot.commands.armpositions.tohold.BasicToHoldCommand;
 import frc.robot.commands.armpositions.tosource.BasicToSourceCommand;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDrive;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteFieldDrive;
+import frc.robot.commands.swervedrive.drivebase.AlignSource;
 import frc.robot.commands.swervedrive.drivebase.HeadingCorTeleopDrive;
 import frc.robot.commands.swervedrive.drivebase.SweepCommand;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDriveAdv;
@@ -310,8 +311,14 @@ public class RobotContainer
     driverController.rightTrigger().onFalse(new InstantCommand(() -> armWristSub.setExtensionGoal(armWristSub.extensionTarget - 12)));
     driverController.pov(270).onFalse(new InstantCommand(() -> armWristSub.setExtensionGoal(armWristSub.extensionTarget + 12)));
 
-    driverController.x().onTrue(
-      new AutoClimbCommand(climbSub, armWristSub));
+    driverController.x().onTrue(new AutoClimbCommand(climbSub, armWristSub));
+
+    driverController.leftBumper().onTrue(new AlignSource(drivebase).andThen(new SequentialCommandGroup(
+      new BasicToSourceCommand(armWristSub),
+      new IntakingCommand(intakeSub, 8), 
+      new InstantCommand(() -> armWristSub.goToPosition(Height.PRECLIMB)),
+      new InstantCommand(() -> armWristSub.changeHeight(Height.PRECLIMB)))
+      ));
 
 
   }
