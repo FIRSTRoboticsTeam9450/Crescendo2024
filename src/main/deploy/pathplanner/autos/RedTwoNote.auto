@@ -76,13 +76,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "AmpToCenterNoteRed"
+            "pathName": "AmpToCenterNoteBlue"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "CenterNoteToAmpRed"
+            "pathName": "CenterToPark"
           }
         }
       ]

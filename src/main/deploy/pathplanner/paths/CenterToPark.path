@@ -3,36 +3,36 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.8527875727163086,
-        "y": 7.65
+        "x": 7.783346907144586,
+        "y": 7.342597271196915
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9027875727163086,
-        "y": 7.563397459621556
+        "x": 6.783346907144585,
+        "y": 7.342597271196915
       },
       "isLocked": false,
-      "linkedName": "AmpScore"
+      "linkedName": "Center Note"
     },
     {
       "anchor": {
-        "x": 2.4370791327585035,
-        "y": 7.196524381186367
+        "x": 6.244712465700139,
+        "y": 7.342597271196915
       },
       "prevControl": {
-        "x": 2.3458869822409927,
-        "y": 7.237560848919247
+        "x": 7.244712465700139,
+        "y": 7.342597271196915
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "CloseNote"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "ArmToGround",
+      "name": "New Event Marker",
       "waypointRelativePos": 0,
       "command": {
         "type": "parallel",
@@ -41,7 +41,7 @@
             {
               "type": "named",
               "data": {
-                "name": "ArmGround"
+                "name": "ArmStore"
               }
             }
           ]
@@ -50,21 +50,21 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 0.3,
+    "maxVelocity": 4.0,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 120.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -25.24052926478683,
-    "rotateFast": true
+    "rotation": 0,
+    "rotateFast": false
   },
   "reversed": false,
   "folder": "Blue",
   "previewStartingState": {
-    "rotation": -90.0,
+    "rotation": 0,
     "velocity": 0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }
