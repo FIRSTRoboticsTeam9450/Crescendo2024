@@ -89,6 +89,8 @@ public class RobotContainer
   //XboxController driverXbox = new XboxController(0);
   private double speedModifier = 0.67; //0.5
   private final SendableChooser<Command> autoChooser;
+
+  public boolean driveEnabled = true;
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -158,12 +160,15 @@ public class RobotContainer
 
     
     
+    
     drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simClosedFieldRel : closedFieldRel);
     // drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simDrvHeadingCorr : drvHeadingCorr);
     
     // driverController.rightTrigger().whileFalse();
     // driverController.rightTrigger().whileTrue(closedFieldRelSlow);
-    driverController.leftStick().onTrue(new InstantCommand( () -> resetDrive(/*closedFieldRel, simClosedFieldRel*/)));
+    // driverController.start().onTrue(new SequentialCommandGroup(new InstantCommand( () -> drivebase.), new InstantCommand( () -> resetDrive(/*closedFieldRel, simClosedFieldRel*/)).andThen(new WaitCommand(.2)),
+                                    
+    //                                 new InstantCommand( () -> drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simClosedFieldRel : closedFieldRel))));
 
     // Configure the trigger bindings
     configureBindings();

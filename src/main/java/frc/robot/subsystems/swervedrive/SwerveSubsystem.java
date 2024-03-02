@@ -183,8 +183,12 @@ public class SwerveSubsystem extends SubsystemBase
    }
   
    public void resetAngleMotors() {
-      // SwerveDriveTest.angleModules(swerveDrive, new Rotation2d());
+      // SwerveDriveTest.angleModules(swerveDrive, new Rotation2d(Math.PI/4));
       SwerveDriveTest.centerModules(swerveDrive);
+
+      for (SwerveModule swerve : swerveDrive.getModules()) {
+        swerve.setAngle(0);
+      }
    }
 
    public void setAntiJitter(boolean antiJitter) {
