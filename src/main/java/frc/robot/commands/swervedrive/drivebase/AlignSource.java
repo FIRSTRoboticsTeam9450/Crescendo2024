@@ -33,7 +33,7 @@ public class AlignSource extends Command {
         xController = new PIDController(3, 0, 0);
         zController = new PIDController(3, 0, 0);
         xController.setSetpoint(-0.22);
-        zController.setSetpoint(-0.42);
+        zController.setSetpoint(-0.39);
 
         yawController = new PIDController(0.05, 0, 0);
         yawController.setSetpoint(0);
@@ -59,7 +59,7 @@ public class AlignSource extends Command {
 
     @Override
     public boolean isFinished() {
-        if (yawController.getPositionError() < 1 && xController.getPositionError() < 0.02 && zController.getPositionError() < 0.02 && timer.get() > 1) {
+        if (yawController.getPositionError() < 1 && xController.getPositionError() < 0.05 && zController.getPositionError() < 0.05 && timer.get() > 1) {
             drive.drive(new Translation2d(0, 0), 0, false);
             return true;
         }

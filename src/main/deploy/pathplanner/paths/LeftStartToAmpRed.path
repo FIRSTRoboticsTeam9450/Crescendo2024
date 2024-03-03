@@ -17,15 +17,15 @@
     {
       "anchor": {
         "x": 1.8527875727163086,
-        "y": 7.65
+        "y": 7.6
       },
       "prevControl": {
         "x": 1.8527875727163086,
-        "y": 7.15
+        "y": 7.1
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "AmpScore"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],

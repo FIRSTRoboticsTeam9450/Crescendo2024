@@ -106,7 +106,12 @@ public class IntakeSubsystem extends SubsystemBase {
 
   /* Laser Methods */
   public double getLaserDistance() {
-    return measurement.distance_mm;
+    try {
+      return measurement.distance_mm;
+    } catch (NullPointerException e) {
+      e.printStackTrace();
+    }
+    return 100;
   }
 
 

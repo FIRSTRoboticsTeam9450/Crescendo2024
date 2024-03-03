@@ -88,7 +88,7 @@ public class RobotContainer
   // CommandJoystick driverController   = new CommandJoystick(3]\[]);//(OperatorConstants.DRIVER_CONTROLLER_PORT);
   //XboxController driverXbox = new XboxController(0);
   private double speedModifier = 0.67; //0.5
-  private final SendableChooser<Command> autoChooser;
+  //private final SendableChooser<String> autoChooser;
 
   public boolean driveEnabled = true;
   /**
@@ -97,8 +97,24 @@ public class RobotContainer
   public RobotContainer()
   {
 
-    autoChooser = AutoBuilder.buildAutoChooser();
-    SmartDashboard.putData("Auto Chooser", autoChooser);
+    //autoChooser = AutoBuilder.buildAutoChooser();
+    //autoChooser = new SendableChooser<Command>();
+
+    /*
+    autoChooser = new SendableChooser<String>();
+    autoChooser.addOption("(either) No Preload Exit Starting", "ExitStarting");
+    autoChooser.addOption("Blue 3 Notes", "BlueThreeNote");
+    autoChooser.addOption("Red 3 Notes", "RedThreeNote");
+    autoChooser.addOption("Blue 2 Note + Far Grab", "BlueTwoNote");
+    autoChooser.addOption("Red 2 Note + Far Grab", "RedTwoNote");
+    autoChooser.addOption("Blue Preload + Far Score", "BlueAmpFar");
+    autoChooser.addOption("Red Preload + Far Score", "RedAmpFar");
+    autoChooser.addOption("(either) Preload Only", "BluePreload");
+    autoChooser.setDefaultOption("Red 3 Notes", "RedThreeNote");
+    */
+
+
+    //SmartDashboard.putData("Auto Chooser", autoChooser);
 
     Command armStore = new BasicToHoldCommand(armWristSub);
     Command armAmp = new BasicToAmpCommand(armWristSub);
@@ -342,7 +358,7 @@ public class RobotContainer
   public Command getAutonomousCommand()
   {
     // An example command will be run in autonomous
-    return drivebase.getAutonomousCommand("BlueThreeNote", true, true);
+    return drivebase.getAutonomousCommand("RedThreeNote", true, true);
   }
 
   public void setDriveMode()
