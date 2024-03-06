@@ -209,7 +209,9 @@ public class SwerveSubsystem extends SubsystemBase
 
    public void drive(Translation2d translation, double rotation, boolean fieldRelative)
   {
-    Logger.recordOutput("SwerveStates/ControllerInputLog/SwerveSubsystem", new Translation3d(translation.getX(), translation.getY(), rotation));
+    Logger.recordOutput("SwerveStates/ControllerInputLog/SwerveSubsystem/x", translation.getX());
+    Logger.recordOutput("SwerveStates/ControllerInputLog/SwerveSubsystem/y", translation.getY());
+    Logger.recordOutput("SwerveStates/ControllerInputLog/SwerveSubsystem/z", rotation);
 
     
     Logger.recordOutput("SwerveStates/TranslationSetpoints", translation);

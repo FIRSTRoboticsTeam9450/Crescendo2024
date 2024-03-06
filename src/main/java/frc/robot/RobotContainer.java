@@ -181,8 +181,15 @@ public class RobotContainer
         () -> driverController.leftTrigger().getAsBoolean()); // change the int in the parameter to the appropriate axis
 
     
-    //Logger.recordOutput("SwerveStates/ControllerInputLog/RobotContainer", new Translation3d(driverController.getLeftY(), driverController.getLeftX(), driverController.getRawAxis(4)));
-    
+
+    DoubleSupplier y = () -> driverController.getLeftY();
+    DoubleSupplier x = () -> driverController.getLeftX();
+    DoubleSupplier z = () -> driverController.getRawAxis(4);
+
+    Logger.recordOutput("SwerveStates/ControllerInputLog/RobotContainer/x", y.getAsDouble());
+    Logger.recordOutput("SwerveStates/ControllerInputLog/RobotContainer/y", x.getAsDouble());
+    Logger.recordOutput("SwerveStates/ControllerInputLog/RobotContainer/z", z.getAsDouble());
+
     drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simClosedFieldRel : closedFieldRel);
     // drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simDrvHeadingCorr : drvHeadingCorr);
     
@@ -352,6 +359,7 @@ public class RobotContainer
 
 
   }
+
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

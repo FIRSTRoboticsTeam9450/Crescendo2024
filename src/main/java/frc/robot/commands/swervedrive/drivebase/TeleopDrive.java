@@ -9,6 +9,8 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
+
+import java.lang.reflect.Array;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
@@ -86,7 +88,9 @@ public class TeleopDrive extends Command
     SmartDashboard.putNumber("vY", yVelocity);
     SmartDashboard.putNumber("omega", angVelocity);
         
-    Logger.recordOutput("SwerveStates/ControllerInputLog/TeleopDrive", new Translation3d(xVelocity * SwerveSubsystem.maximumSpeed, yVelocity * SwerveSubsystem.maximumSpeed, angVelocity));
+    Logger.recordOutput("SwerveStates/ControllerInputLog/TeleopDrive/x", xVelocity * SwerveSubsystem.maximumSpeed);
+    Logger.recordOutput("SwerveStates/ControllerInputLog/TeleopDrive/y", yVelocity * SwerveSubsystem.maximumSpeed);
+    Logger.recordOutput("SwerveStates/ControllerInputLog/TeleopDrive/z", angVelocity * controller.config.maxAngularVelocity);
 
     Logger.recordOutput("SwerveStates/SwerveModuleAzimuthSetpoint", Math.atan(yVelocity / xVelocity));
 
