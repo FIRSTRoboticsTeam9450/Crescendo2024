@@ -19,6 +19,8 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -40,6 +42,9 @@ import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
 public class SwerveSubsystem extends SubsystemBase
 {
+
+  NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
+
 
   /**
    * Swerve drive object.
@@ -71,6 +76,8 @@ public class SwerveSubsystem extends SubsystemBase
     System.out.println("\t\"angle\": " + angleConversionFactor + ",");
     System.out.println("\t\"drive\": " + driveConversionFactor);
     System.out.println("}");
+
+
 
     // Configure the Telemetry before creating the SwerveDrive to avoid unnecessary objects being created.
     SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
@@ -257,6 +264,12 @@ public class SwerveSubsystem extends SubsystemBase
 
       
     
+  }
+
+  public void updateOdoLimelight() {
+    double[] poseArray = table.getEntry("botpose").getDoubleArray(new double[6]);
+    Pose2d limelightPose = new Pose2d(new Translation2d(poseArray[0], poseArray[2]), getHeading());
+    resetOdometry(limelightPose);
   }
 
   @Override

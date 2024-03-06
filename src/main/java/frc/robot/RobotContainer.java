@@ -37,6 +37,7 @@ import frc.robot.commands.armpositions.tosource.BasicToSourceCommand;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDrive;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteFieldDrive;
 import frc.robot.commands.swervedrive.drivebase.AlignSource;
+import frc.robot.commands.swervedrive.drivebase.AlignSource2;
 import frc.robot.commands.swervedrive.drivebase.HeadingCorTeleopDrive;
 import frc.robot.commands.swervedrive.drivebase.SweepCommand;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDriveAdv;
@@ -69,7 +70,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 public class RobotContainer
 {
   // The robot's subsystems and commands are defined here...
-  private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
+  public final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                          "swerve/vortex"));
                                                                          
   private final IntakeSubsystem intakeSub = new IntakeSubsystem();
@@ -180,7 +181,7 @@ public class RobotContainer
         () -> driverController.leftTrigger().getAsBoolean()); // change the int in the parameter to the appropriate axis
 
     
-    Logger.recordOutput("SwerveStates/ControllerInputLog/RobotContainer", new Translation3d(driverController.getLeftY(), driverController.getLeftX(), driverController.getRawAxis(4)));
+    //Logger.recordOutput("SwerveStates/ControllerInputLog/RobotContainer", new Translation3d(driverController.getLeftY(), driverController.getLeftX(), driverController.getRawAxis(4)));
     
     drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simClosedFieldRel : closedFieldRel);
     // drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simDrvHeadingCorr : drvHeadingCorr);
@@ -228,8 +229,8 @@ public class RobotContainer
     // /* outtake */
     armController.rightTrigger().onTrue(new SequentialCommandGroup(
       new TimedIntakeSetPowerCommand(intakeSub, 10, 0.75),
-      new BasicToHoldCommand(armWristSub)
-  
+      new BasicToHoldCommand(armWristSub),
+      new InstantCommand(() -> servo.setAxonAngle(130))
     ));
 
     //driverController.leftBumper().onFalse(new InstantCommand( () -> intakeSub.stopIntake() ));
@@ -297,7 +298,8 @@ public class RobotContainer
     armController.a().onTrue(new SequentialCommandGroup(
       new BasicToGroundCommand(armWristSub),
       new IntakingCommand(intakeSub, 12),
-      new BasicToHoldCommand(armWristSub)
+      new BasicToHoldCommand(armWristSub),
+      new InstantCommand(() -> servo.setAxonAngle(180))
     ));
         
     /*
@@ -346,15 +348,11 @@ public class RobotContainer
 
     driverController.x().onTrue(new AutoClimbCommand(climbSub, armWristSub));
 
-    driverController.leftBumper().onTrue(new AlignSource(drivebase).andThen(new SequentialCommandGroup(
-      new BasicToSourceCommand(armWristSub),
-      new IntakingCommand(intakeSub, 8), 
-      new InstantCommand(() -> armWristSub.goToPosition(Height.PRECLIMB)),
-      new InstantCommand(() -> armWristSub.changeHeight(Height.PRECLIMB)))
-      ));
+    driverController.leftBumper().onTrue(new AlignSource(drivebase));
 
 
   }
+
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *

@@ -15,8 +15,8 @@ public class LimelightSubsystem extends SubsystemBase {
 
   public LimelightSubsystem() {
     axon = new Servo(0);
-    SmartDashboard.putNumber("set axon angle", 180);
-    setAxonAngle(180);
+    SmartDashboard.putNumber("set axon angle", 107);
+    setAxonAngle(107);
   }
 
   /**
@@ -68,7 +68,7 @@ public class LimelightSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
     
     
-    setAxonAngle(SmartDashboard.getNumber("set axon angle", 180));
+    //setAxonAngle(SmartDashboard.getNumber("set axon angle", 107));
     SmartDashboard.putNumber("Axon angle", getAxonAngle());
   }
 }
