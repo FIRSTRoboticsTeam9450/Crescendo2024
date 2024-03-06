@@ -13,6 +13,7 @@ import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -47,7 +48,7 @@ public class SwerveSubsystem extends SubsystemBase
   /**
    * Maximum speed of the robot in meters per second, used to limit acceleration.
    */
-  public  static      double      maximumSpeed = Units.feetToMeters(17.6);//14.5
+  public  static      double      maximumSpeed = Units.feetToMeters(14);//14.5
 
   /**
    * Initialize {@link SwerveDrive} with the directory provided.
@@ -182,6 +183,8 @@ public class SwerveSubsystem extends SubsystemBase
     swerveDrive.setHeadingCorrection(state);
    }
   
+
+   
    public void resetAngleMotors() {
       // SwerveDriveTest.angleModules(swerveDrive, new Rotation2d(Math.PI/4));
       SwerveDriveTest.centerModules(swerveDrive);
@@ -199,6 +202,9 @@ public class SwerveSubsystem extends SubsystemBase
 
    public void drive(Translation2d translation, double rotation, boolean fieldRelative)
   {
+    Logger.recordOutput("SwerveStates/ControllerInputLog/SwerveSubsystem", new Translation3d(translation.getX(), translation.getY(), rotation));
+
+    
     Logger.recordOutput("SwerveStates/TranslationSetpoints", translation);
     Logger.recordOutput("SwerveStates/RotationSetpoint", rotation);
     Logger.recordOutput("SwerveStates/CurrentRobotVelocity", getRobotVelocity());

@@ -5,6 +5,7 @@
 package frc.robot.commands.swervedrive.drivebase;
 
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
@@ -72,15 +73,21 @@ public class TeleopDrive extends Command
         speedModifier = 1; // if the speedModify boolean isn't toggled, then use regular speed
     }
       
-    double xVelocity   = -vX.getAsDouble() * speedModifier;
-    double yVelocity   = -vY.getAsDouble() * speedModifier;
+    // double xVelocity   = -vX.getAsDouble() * speedModifier;
+    // double yVelocity   = -vY.getAsDouble() * speedModifier;
+    double angVelocity = -omega.getAsDouble() * speedModifier * 0.7;
 
-    
-    double angVelocity = -omega.getAsDouble() * speedModifier;
+
+    double xVelocity   = -Math.signum(vX.getAsDouble()) * Math.abs(Math.pow(vX.getAsDouble(), 2)) * speedModifier;
+    double yVelocity   = -Math.signum(vY.getAsDouble()) * Math.abs(Math.pow(vY.getAsDouble(), 2)) * speedModifier;
+    // double angVelocity = -Math.pow(omega.getAsDouble(), 3) * speedModifier;
+
     SmartDashboard.putNumber("vX", xVelocity);
     SmartDashboard.putNumber("vY", yVelocity);
     SmartDashboard.putNumber("omega", angVelocity);
         
+    Logger.recordOutput("SwerveStates/ControllerInputLog/TeleopDrive", new Translation3d(xVelocity * SwerveSubsystem.maximumSpeed, yVelocity * SwerveSubsystem.maximumSpeed, angVelocity));
+
     Logger.recordOutput("SwerveStates/SwerveModuleAzimuthSetpoint", Math.atan(yVelocity / xVelocity));
 
     // Drive using raw values.
