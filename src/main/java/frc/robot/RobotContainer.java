@@ -47,6 +47,7 @@ import frc.robot.subsystems.ExtensionSubsystem;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LaserSubsystem;
+import frc.robot.subsystems.LimelightSubsystem;
 import frc.robot.subsystems.LimitSwitchSubsystem;
 import frc.robot.subsystems.WristSubsystem;
 import frc.robot.subsystems.ArmWristSubsystem.Height;
@@ -77,7 +78,7 @@ public class RobotContainer
   //private final WristSubsystem wristSub = new WristSubsystem();
   public final ArmWristSubsystem armWristSub = new ArmWristSubsystem();
   // public final LaserSubsystem laserSub = new LaserSubsystem();
-
+  public final LimelightSubsystem servo = new LimelightSubsystem();
   public final ClimbSubsystem climbSub = new ClimbSubsystem();
   // private final LimitSwitchSubsystem extLimitSub = new LimitSwitchSubsystem();
  // private final ExtensionSubsystem extSub = new ExtensionSubsystem();
