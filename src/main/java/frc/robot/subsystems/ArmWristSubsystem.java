@@ -173,10 +173,10 @@ public class ArmWristSubsystem extends SubsystemBase{
         runAndResetExt = false;
         //firstStartingBot = true;
         
-        armBackMotor.follow(armFrontMotor, true); //true for inverted
-
-        
+        armFrontMotor.setInverted(true); // b/c we flipped direction of motor
         armFrontMotor.burnFlash();
+
+        armBackMotor.follow(armFrontMotor); 
         armBackMotor.burnFlash();
 
         wrist.burnFlash();
@@ -320,7 +320,7 @@ public class ArmWristSubsystem extends SubsystemBase{
     } 
     public void setArmVoltage(double voltage){
         // leftMotor.setVoltage(-voltage);
-
+        SmartDashboard.putNumber("Rotation Voltage", voltage);
        armFrontMotor.setVoltage(voltage);
     }
 
@@ -406,7 +406,7 @@ public class ArmWristSubsystem extends SubsystemBase{
             return;
         }
         
-        double ffValue = getFFEquationVoltage()/*calculateRotationFF()*/;
+        double ffValue = 0 /*getFFEquationVoltage()*/;
         double pidValue = calculateRotationPID();
 
         double voltage = pidValue + ffValue;
@@ -425,10 +425,10 @@ public class ArmWristSubsystem extends SubsystemBase{
             //Mainly b/c of the limit on the chain rn(if gone can remove this if statment)
         //    setArmVoltage(0);
         //}else{
-        if (Math.abs(voltage) < maxArmVoltage) { //10 volts good for tele
+        if (Math.abs(voltage) < /*maxArmVoltage*/2) { //10 volts good for tele
             setArmVoltage(voltage);
         } else {
-            setArmVoltage(maxArmVoltage * Math.signum(voltage));
+            setArmVoltage(/*maxArmVoltage*/2 * Math.signum(voltage));
         }
 
         //} 
@@ -863,7 +863,8 @@ public class ArmWristSubsystem extends SubsystemBase{
         SmartDashboard.putNumber("Ext Rel Pos", getExtRelPos());
         SmartDashboard.putNumber("Front Arm Motor Voltage?", armFrontMotor.getOutputCurrent()*0.6);
         SmartDashboard.putNumber("Back Arm Motor Voltage?", armBackMotor.getOutputCurrent()*0.6);
-        SmartDashboard.putNumberArray("ARM MOTOR POS's [F, B]", new double[]{armFrontMotor.getEncoder().getPosition(), armBackMotor.getEncoder().getPosition()});
+        SmartDashboard.putNumber("Front Arm Pos", armFrontMotor.getEncoder().getPosition());
+        SmartDashboard.putNumber("Back Arm Pos", armBackMotor.getEncoder().getPosition());
 
 
     }
