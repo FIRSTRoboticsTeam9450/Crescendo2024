@@ -83,13 +83,14 @@ public class ArmWristSubsystem extends SubsystemBase{
     Timer delayExt;
 
     /* Motors */
-    private CANSparkMax armMotor = new CANSparkMax(Constants.armId, MotorType.kBrushless);
+    private CANSparkMax armFrontMotor = new CANSparkMax(Constants.armFrontId, MotorType.kBrushless);
+    private CANSparkMax armBackMotor = new CANSparkMax(Constants.armBackId, MotorType.kBrushless);
     private CANSparkFlex wrist = new CANSparkFlex(Constants.wristId, MotorType.kBrushless);
     private CANSparkMax extensionMotor = new CANSparkMax(Constants.extensionId, MotorType.kBrushless);
 
      /* Absolute Encoder */
     SparkAbsoluteEncoder wristEncoder = wrist.getAbsoluteEncoder(Type.kDutyCycle);
-    SparkAbsoluteEncoder armEncoder = armMotor.getAbsoluteEncoder(Type.kDutyCycle);
+    SparkAbsoluteEncoder armEncoder = armFrontMotor.getAbsoluteEncoder(Type.kDutyCycle);
     RelativeEncoder extRelEncoder;
     
     /* Limit Switch */
@@ -117,20 +118,25 @@ public class ArmWristSubsystem extends SubsystemBase{
     public ArmWristSubsystem(){
         delayExt = new Timer();
         
-        armMotor.restoreFactoryDefaults();
+        armFrontMotor.restoreFactoryDefaults();
+        armBackMotor.restoreFactoryDefaults();
+
         // extensionMotor.restoreFactoryDefaults();
         wrist.restoreFactoryDefaults();
 
 
-        armMotor.setSmartCurrentLimit(40);
+        armFrontMotor.setSmartCurrentLimit(40);
+        armBackMotor.setSmartCurrentLimit(40);
+
         extensionMotor.setSmartCurrentLimit(40);
 
             
     
-        armMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 300);   //For follower motors
-        // armMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 65535); //Analog Sensor Voltage + Velocity + position
-        // armMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 65535); //Duty cycler velocity + pos
-        // armMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 65535); //Duty Cycle Absolute Encoder Velocity + Frequency
+        armFrontMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 300);   //For follower motors
+        armBackMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 300);
+        // armFrontMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 65535); //Analog Sensor Voltage + Velocity + position
+        // armFrontMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 65535); //Duty cycler velocity + pos
+        // armFrontMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 65535); //Duty Cycle Absolute Encoder Velocity + Frequency
 
         /* Status frames 3-6 set to 65535 if not using data port in spark max otherwise can prob leave them all alone*/
         wrist.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 300);   //For follower motors
@@ -154,7 +160,8 @@ public class ArmWristSubsystem extends SubsystemBase{
         
 
         wrist.setIdleMode(IdleMode.kBrake);
-        armMotor.setIdleMode(IdleMode.kCoast);
+        armFrontMotor.setIdleMode(IdleMode.kCoast);
+        armBackMotor.setIdleMode(IdleMode.kCoast);
         extensionMotor.setIdleMode(IdleMode.kCoast);
         extRelEncoder = extensionMotor.getEncoder();
 
@@ -166,8 +173,12 @@ public class ArmWristSubsystem extends SubsystemBase{
         runAndResetExt = false;
         //firstStartingBot = true;
         
+        armBackMotor.follow(armFrontMotor, true); //true for inverted
+
         
-        armMotor.burnFlash();
+        armFrontMotor.burnFlash();
+        armBackMotor.burnFlash();
+
         wrist.burnFlash();
         extensionMotor.burnFlash();
 
@@ -310,7 +321,7 @@ public class ArmWristSubsystem extends SubsystemBase{
     public void setArmVoltage(double voltage){
         // leftMotor.setVoltage(-voltage);
 
-       armMotor.setVoltage(voltage);
+       armFrontMotor.setVoltage(voltage);
     }
 
     public void setMaxArmVoltage(double voltage) {
@@ -574,7 +585,7 @@ public class ArmWristSubsystem extends SubsystemBase{
 
     //             }
     //         }else{
-    //             //armMotor.setVoltage(0);
+    //             //armFrontMotor.setVoltage(0);
     //         }
            
     //         if (wristPIDRun) {
@@ -671,7 +682,7 @@ public class ArmWristSubsystem extends SubsystemBase{
     //     SmartDashboard.putNumber("Arm Target", armTarget);
     //     SmartDashboard.putNumber("Wrist Pos", getAbsWristPos());
     //     SmartDashboard.putBoolean("Wrist is Brake", wrist.getIdleMode() == IdleMode.kBrake ? true : false);
-    //     SmartDashboard.putNumber("Arm Actual Voltage", armMotor.getOutputCurrent()*0.6);
+    //     SmartDashboard.putNumber("Arm Actual Voltage", armFrontMotor.getOutputCurrent()*0.6);
     //     SmartDashboard.putNumber("ArmFF kg", armFF.kg);
     //     SmartDashboard.putNumber("FF Equation Value", getFFEquationVoltage());
     //     SmartDashboard.putBoolean("Wrist Enabled", wristPIDRun);
@@ -686,9 +697,9 @@ public class ArmWristSubsystem extends SubsystemBase{
 
     //     armFFkg = () -> SmartDashboard.getNumber("Change ArmFF", 0.065);
     //     if (SmartDashboard.getNumber("Change Arm Is Brake", 1) == 1) {
-    //         armMotor.setIdleMode(IdleMode.kBrake);
+    //         armFrontMotor.setIdleMode(IdleMode.kBrake);
     //     } else {
-    //         armMotor.setIdleMode(IdleMode.kCoast);
+    //         armFrontMotor.setIdleMode(IdleMode.kCoast);
     //     }
     //     if (SmartDashboard.getNumber("Change Wrist Is Brake", 1) == 1) {
     //         wrist.setIdleMode(IdleMode.kBrake);
@@ -820,7 +831,7 @@ public class ArmWristSubsystem extends SubsystemBase{
         //SmartDashboard.putString("Last Height", getHeight().toString());
         // SmartDashboard.putNumber("Wrist Pos", getAbsWristPos());
         // SmartDashboard.putBoolean("Wrist is Brake", wrist.getIdleMode() == IdleMode.kBrake ? true : false);
-        // SmartDashboard.putNumber("Arm Actual Voltage", armMotor.getOutputCurrent()*0.6);
+        // SmartDashboard.putNumber("Arm Actual Voltage", armFrontMotor.getOutputCurrent()*0.6);
         // SmartDashboard.putNumber("ArmFF kg", armFF.kg);
         // SmartDashboard.putNumber("FF Equation Value", getFFEquationVoltage());
         // SmartDashboard.putBoolean("Wrist Enabled", wristPIDRun);
@@ -836,9 +847,12 @@ public class ArmWristSubsystem extends SubsystemBase{
 
         armFFkg = () -> SmartDashboard.getNumber("Change ArmFF", 0.065);
         if (SmartDashboard.getNumber("Change Arm Is Brake", 1) == 1) {
-            armMotor.setIdleMode(IdleMode.kBrake);
+            armFrontMotor.setIdleMode(IdleMode.kBrake);
+            armBackMotor.setIdleMode(IdleMode.kBrake);
         } else {
-            armMotor.setIdleMode(IdleMode.kCoast);
+            armFrontMotor.setIdleMode(IdleMode.kCoast);
+            armBackMotor.setIdleMode(IdleMode.kCoast);
+
         }
         if (SmartDashboard.getNumber("Change Wrist Is Brake", 1) == 1) {
             wrist.setIdleMode(IdleMode.kBrake);
@@ -847,6 +861,11 @@ public class ArmWristSubsystem extends SubsystemBase{
         }
         
         SmartDashboard.putNumber("Ext Rel Pos", getExtRelPos());
+        SmartDashboard.putNumber("Front Arm Motor Voltage?", armFrontMotor.getOutputCurrent()*0.6);
+        SmartDashboard.putNumber("Back Arm Motor Voltage?", armBackMotor.getOutputCurrent()*0.6);
+        SmartDashboard.putNumberArray("ARM MOTOR POS's [F, B]", new double[]{armFrontMotor.getEncoder().getPosition(), armBackMotor.getEncoder().getPosition()});
+
+
     }
 
 

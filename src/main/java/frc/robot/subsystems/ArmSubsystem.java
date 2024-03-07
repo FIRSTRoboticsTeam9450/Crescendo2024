@@ -41,7 +41,7 @@ public class ArmSubsystem extends SubsystemBase {
   boolean armPIDRun;
   boolean reachPos;
 
-  private CANSparkMax armMotor = new CANSparkMax(Constants.armId, MotorType.kBrushless);
+  private CANSparkMax armMotor = new CANSparkMax(Constants.armFrontId, MotorType.kBrushless);
   private SparkAbsoluteEncoder armEncoder = armMotor.getAbsoluteEncoder(Type.kDutyCycle);
 
   DoubleSupplier armFFkg = () -> 0.065;
