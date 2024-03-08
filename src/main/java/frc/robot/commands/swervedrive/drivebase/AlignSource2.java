@@ -21,7 +21,7 @@ public class AlignSource2 extends Command {
     PIDController zController;
     NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
 
-    double[] pose;
+    double[] tagPose;
     Timer timer;
     
     public AlignSource2(SwerveSubsystem drive) {
@@ -34,14 +34,15 @@ public class AlignSource2 extends Command {
     public void initialize() {
         xController = new PIDController(3, 0, 0);
         zController = new PIDController(3, 0, 0);
-        xController.setSetpoint(-0.22);
-        zController.setSetpoint(-0.39);
+        
 
         yawController = new PIDController(0.05, 0, 0);
         yawController.setSetpoint(0);
         timer.restart();
-        pose = table.getEntry("botpose_targetspace").getDoubleArray(new double[6]);
-        drive.resetOdometry(new Pose2d(new Translation2d(pose[0], pose[2]), new Rotation2d(pose[5])));
+        tagPose = table.getEntry("targetpose_robotspace").getDoubleArray(new double[6]);
+        xController.setSetpoint(tagPose[2] - 1);
+        zController.setSetpoint(-tagPose[0]);
+        drive.resetOdometry(new Pose2d(new Translation2d(), new Rotation2d()));
 
     }
 
@@ -59,14 +60,17 @@ public class AlignSource2 extends Command {
         double zPower = zController.calculate(drivePose.getY());
         zPower = MathUtil.clamp(zPower, -1, 1);
 
-        drive.drive(new Translation2d(zPower, -xPower), -yawPower, false);
+        // positive x = forward, positive y = left, positive rotation = counterclockwise
+        drive.drive(new Translation2d(xPower, zPower), yawPower, true);
+
+
     }
 
     @Override
     public boolean isFinished() {
         if (yawController.getPositionError() < 1 && xController.getPositionError() < 0.05 && zController.getPositionError() < 0.05 && timer.get() > 1) {
-            drive.drive(new Translation2d(0, 0), 0, false);
-            return true;
+            //drive.drive(new Translation2d(0, 0), 0, false);
+            return false;
         }
         return false;
     }

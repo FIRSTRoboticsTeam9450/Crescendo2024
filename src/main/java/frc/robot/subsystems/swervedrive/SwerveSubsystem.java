@@ -23,6 +23,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.io.File;
@@ -261,10 +262,10 @@ public class SwerveSubsystem extends SubsystemBase
 
       //swerveDrive.setModuleStates(new SwerveModuleState[3], false);
     }
-    
-  
 
-      
+    double[] poseArr = table.getEntry("targetpose_robotspace").getDoubleArray(new double[6]);
+    SmartDashboard.putNumber("Limelight X", poseArr[0]);
+    SmartDashboard.putNumber("Limelight Z", poseArr[2]);
     
   }
 

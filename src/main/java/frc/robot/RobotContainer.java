@@ -355,7 +355,7 @@ public class RobotContainer
 
     driverController.x().onTrue(new AutoClimbCommand(climbSub, armWristSub));
 
-    driverController.leftBumper().onTrue(new AlignSource(drivebase));
+    driverController.leftBumper().onTrue(new AlignSource2(drivebase));
 
 
   }
