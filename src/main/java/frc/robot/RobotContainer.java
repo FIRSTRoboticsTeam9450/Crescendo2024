@@ -181,7 +181,7 @@ public class RobotContainer
         () -> driverController.leftTrigger().getAsBoolean()); // change the int in the parameter to the appropriate axis
 
     
-
+/* 
     DoubleSupplier y = () -> driverController.getLeftY();
     DoubleSupplier x = () -> driverController.getLeftX();
     DoubleSupplier z = () -> driverController.getRawAxis(4);
@@ -189,7 +189,7 @@ public class RobotContainer
     Logger.recordOutput("SwerveStates/ControllerInputLog/RobotContainer/x", y.getAsDouble());
     Logger.recordOutput("SwerveStates/ControllerInputLog/RobotContainer/y", x.getAsDouble());
     Logger.recordOutput("SwerveStates/ControllerInputLog/RobotContainer/z", z.getAsDouble());
-
+*/
     drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simClosedFieldRel : closedFieldRel);
     // drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simDrvHeadingCorr : drvHeadingCorr);
     

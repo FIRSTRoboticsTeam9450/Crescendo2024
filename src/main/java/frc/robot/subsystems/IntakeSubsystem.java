@@ -68,6 +68,8 @@ public class IntakeSubsystem extends SubsystemBase {
       System.out.println("Laser configuration failed! " + e);
       
     }
+
+    measurement = laser.getMeasurement();
   }
 
 
@@ -75,19 +77,27 @@ public class IntakeSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     /* Laser */
+    
+    /* 
+
     // This method will be called once per scheduler run
-    measurement = laser.getMeasurement(); // this line most important
+    // measurement = laser.getMeasurement(); // this line most important
     if (measurement != null && measurement.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT) {
-      System.out.println("The target is " + measurement.distance_mm + "mm away!");
+      // System.out.println("The target is " + measurement.distance_mm + "mm away!");
     } else {
       // System.out.println("The target is out of range, or we can't get a reliable measurement!");
       // You can still use distance_mm in here, if you're ok tolerating a clamped value or an unreliable measurement.
     }
 
+    */
+
     /* Telemetry */
+    
+    /*
     SmartDashboard.putNumber("Intake Pos", getIntakePos());
     SmartDashboard.putNumber("Intake Velocity", getIntakeVelocity());
-    
+    */
+
     //System.out.println(getIntakeVelocity());
     
     if (rampDownBool) {
@@ -99,6 +109,7 @@ public class IntakeSubsystem extends SubsystemBase {
         rampDownTimer.stop();
       }
     }
+
   }
 
   /* Wrist Methods */
