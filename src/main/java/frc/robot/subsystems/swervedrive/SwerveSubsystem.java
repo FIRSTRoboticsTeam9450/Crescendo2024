@@ -263,9 +263,9 @@ public class SwerveSubsystem extends SubsystemBase
       //swerveDrive.setModuleStates(new SwerveModuleState[3], false);
     }
 
-    double[] poseArray = table.getEntry("botpose").getDoubleArray(new double[6]);
-    SmartDashboard.putNumber("Limelight X", getPose().getX());
-    SmartDashboard.putNumber("Limelight Z", getPose().getY());
+    double[] poseArr = table.getEntry("targetpose_robotspace").getDoubleArray(new double[6]);
+    SmartDashboard.putNumber("Limelight X", poseArr[0]);
+    SmartDashboard.putNumber("Limelight Z", poseArr[2]);
     
   }
 

@@ -21,7 +21,7 @@ public class AlignSource2 extends Command {
     PIDController zController;
     NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
 
-    double[] pose;
+    double[] tagPose;
     Timer timer;
     
     public AlignSource2(SwerveSubsystem drive) {
@@ -34,14 +34,15 @@ public class AlignSource2 extends Command {
     public void initialize() {
         xController = new PIDController(3, 0, 0);
         zController = new PIDController(3, 0, 0);
-        xController.setSetpoint(0.5);
-        zController.setSetpoint(-0.39);
+        
 
         yawController = new PIDController(0.05, 0, 0);
         yawController.setSetpoint(0);
         timer.restart();
-        //pose = table.getEntry("targetpose_robotspace").getDoubleArray(new double[6]);
-        drive.resetOdometry(new Pose2d());
+        tagPose = table.getEntry("targetpose_robotspace").getDoubleArray(new double[6]);
+        xController.setSetpoint(tagPose[2] - 1);
+        zController.setSetpoint(-tagPose[0]);
+        drive.resetOdometry(new Pose2d(new Translation2d(), new Rotation2d()));
 
     }
 
@@ -53,14 +54,16 @@ public class AlignSource2 extends Command {
         yawPower = MathUtil.clamp(yawPower, -5, 5);
 
         double xPower = xController.calculate(drivePose.getX());
-        xPower = MathUtil.clamp(xPower, -0.25, 0.25);
+        xPower = MathUtil.clamp(xPower, -1, 1);
         SmartDashboard.putNumber("x power", xPower);
 
         double zPower = zController.calculate(drivePose.getY());
         zPower = MathUtil.clamp(zPower, -1, 1);
 
         // positive x = forward, positive y = left, positive rotation = counterclockwise
-        drive.drive(new Translation2d(xPower, 0), 0, true);
+        drive.drive(new Translation2d(xPower, zPower), yawPower, true);
+
+
     }
 
     @Override
