@@ -175,7 +175,9 @@ public final class Constants
 
   public static final int gyroId = 13;
 
-  public static final int armId = 22;
+  public static final int armFrontId = 22;
+  public static final int armBackId = 33;
+
   public static final int extensionId = 23;
 
   public static final int wristId = 24;
