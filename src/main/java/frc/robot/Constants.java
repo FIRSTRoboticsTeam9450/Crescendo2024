@@ -67,15 +67,15 @@ public final class Constants
     public static final double drivetcks2ftfactor = 1.0 / 4096 * 6 * Math.PI / 12;
 
     public static final double WheelRadius = 0.0508;
-    public static final int EncoderResolution = 4096; // tics per revolution
+    public static final int EncoderResolution = 7168; // tics per revolution
     public static final double DRIVE_MOTOR_CONVERSION = 2 * Math.PI * WheelRadius; // distance 
     public static final double TURNING_MOTOR_CONVERSION = 2 * Math.PI; // distance 
     public static final double VELOCITY_CONVERSION_FACTOR = Math.PI * WheelRadius / 30; //Distance per second
   }
 
   public static class Speeds{
-    public static final double MaxSpeed = 55;
-    public static final double MaxAngularSpeed = 50*Math.PI;
+    public static final double MaxSpeed = 21;
+    public static final double MaxAngularSpeed = 4*Math.PI;
   }
 
   //Extension Limiting Equation Constants----------------------------
