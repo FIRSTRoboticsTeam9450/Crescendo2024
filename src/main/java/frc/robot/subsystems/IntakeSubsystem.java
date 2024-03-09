@@ -78,7 +78,7 @@ public class IntakeSubsystem extends SubsystemBase {
   public void periodic() {
     /* Laser */
     
-    measurement = laser.getMeasurement(); // this line most important
+    // measurement = laser.getMeasurement(); 
 
 /* 
     // This method will be called once per scheduler run
@@ -119,7 +119,7 @@ public class IntakeSubsystem extends SubsystemBase {
   /* Laser Methods */
   public double getLaserDistance() {
     try {
-      return measurement.distance_mm;
+      return laser.getMeasurement().distance_mm;
     } catch (NullPointerException e) {
       e.printStackTrace();
     }
