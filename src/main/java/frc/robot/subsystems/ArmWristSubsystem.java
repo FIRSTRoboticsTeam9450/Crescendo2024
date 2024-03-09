@@ -67,7 +67,7 @@ public class ArmWristSubsystem extends SubsystemBase{
     private double armPurpenGround = 0.206;
     private double armFFWhenPurpen = 0.42;
 
-    private double maxArmVoltage = 8;
+    private double maxArmVoltage = 9;
 
     private boolean ampToGround = false;
     private boolean groundToAmp = false;
@@ -113,7 +113,7 @@ public class ArmWristSubsystem extends SubsystemBase{
     
 
     private final ProfiledPIDController armPidProfile = new ProfiledPIDController(30, 0, 0, new TrapezoidProfile.Constraints(0, 0));//maxVel = 3.5 and maxAccel = 2.5 9, 8
-    private final PIDController armPid = new PIDController(25, 0, 0, 0.02);
+    private final PIDController armPid = new PIDController(35, 0, 0, 0.02);
     private final PIDController armClimbPid = new PIDController(30, 0, 0);
     
     private final PIDController wristPIDController = new PIDController(40, 0, 0); 
@@ -320,7 +320,9 @@ public class ArmWristSubsystem extends SubsystemBase{
         return armEncoder.getPosition();
     }
 
-    
+    public void setRelArmPos(double position) {
+        armRelEncoder.setPosition(position);
+    }
     /**
     * @return the relative position of the extension
     */
@@ -445,7 +447,7 @@ public class ArmWristSubsystem extends SubsystemBase{
         //return armPid.calculate(getArmPosition(), armAbsTarget);
         Logger.recordOutput("Arm/armAbsTarget", armAbsTarget);
         
-        return armPid.calculate(getAbsArmPos(), armAbsTarget);
+        return armPid.calculate(getArmRelPos(), armAbsTarget);
     }
 
     public void updateRotationOutput(){
@@ -476,11 +478,13 @@ public class ArmWristSubsystem extends SubsystemBase{
             //Mainly b/c of the limit on the chain rn(if gone can remove this if statment)
         //    setArmVoltage(0);
         //}else{
+            
         if (Math.abs(voltage) < maxArmVoltage) { //10 volts good for tele
             setArmVoltage(voltage);
         } else {
             setArmVoltage(maxArmVoltage * Math.signum(voltage));
         }
+        
         // absolute encoder used to reset relative encoder
         if (Math.abs(getAbsArmPos() - 0.501) <= 0.021 && armAbsTarget == 0.501) {
             armRelEncoder.setPosition(getAbsArmPos());
@@ -496,9 +500,9 @@ public class ArmWristSubsystem extends SubsystemBase{
         //return armFF.calculate(getArmPosition(), armPid.getSetpoint().velocity);
         //return armFF.calculate(getAbsArmPos(), armPid.getSetpoint().velocity);
         if (getAbsArmPos() >= 0.46) {
-            return -armFF.calculate(getAbsArmPos(), 0);
+            return -armFF.calculate(getArmRelPos(), 0);
         } else {
-            return armFF.calculate(getAbsArmPos(), 0);
+            return armFF.calculate(getArmRelPos(), 0);
         }
     }
     
@@ -538,7 +542,7 @@ public class ArmWristSubsystem extends SubsystemBase{
         double ffVal = wristFeedForward.calculate(velSetpoint, accel); //takes velocity, and acceleration
         
         double voltage = MathUtil.clamp(pidValue /*+ ffVal*/, -5.0, 5.0);
-        double maxWristVoltage = 3.0; // magnitude of voltage
+        double maxWristVoltage = 4.5; // magnitude of voltage
         
         Logger.recordOutput("Wrist/maxVoltage", maxWristVoltage);
         // SmartDashboard.putNumber("Wrist PID", pidValue);
@@ -960,7 +964,7 @@ public class ArmWristSubsystem extends SubsystemBase{
                 pos = Height.HOLD;
             }
         } else {
-            setMaxArmVoltage(8);
+            setMaxArmVoltage(9);
         }
       
         if(pause && reachPos){

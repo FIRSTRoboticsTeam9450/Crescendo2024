@@ -310,6 +310,7 @@ public class RobotContainer
       new InstantCommand(() -> servo.setAxonAngle(180))
     ));
         
+    
     /*
     // New Holding
     armController.x().onTrue(new SequentialCommandGroup(
@@ -392,5 +393,13 @@ public class RobotContainer
 
   public void setArmWristExtBrake(boolean brake) {
     armWristSub.setAllBrake(brake);
+  }
+
+  public void setRelArmPos(double position) {
+    armWristSub.setRelArmPos(position);
+  }
+
+  public double getAbsArmPos() {
+    return armWristSub.getAbsArmPos();
   }
 } 

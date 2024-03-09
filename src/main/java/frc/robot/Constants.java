@@ -94,8 +94,8 @@ public final class Constants
 
     public static final double offsetToAmpFromGround = 0.446;
     public static final double offsetToAmpFromSource_Hold = 0.406;
-    public static final double offsetToStraightOutPos = 0.195;
-    public static final double offsetToGround = 0.0666;
+    public static final double offsetToStraightOutPos = 0.125;//0.195
+    public static final double offsetToGround = 0.0756;//0.0666
     public static final double offsetToHold = 0.025;
     public static final double offsetToSource = 0.255;
   }
