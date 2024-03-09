@@ -84,21 +84,23 @@ public class TeleopDrive extends Command
     double yVelocity   = -Math.signum(vY.getAsDouble()) * Math.abs(Math.pow(vY.getAsDouble(), 2)) * speedModifier;
     // double angVelocity = -Math.pow(omega.getAsDouble(), 3) * speedModifier;
 
-    SmartDashboard.putNumber("vX", xVelocity);
-    SmartDashboard.putNumber("vY", yVelocity);
-    SmartDashboard.putNumber("omega", angVelocity);
-        
+    // SmartDashboard.putNumber("vX", xVelocity);
+    // SmartDashboard.putNumber("vY", yVelocity);
+    // SmartDashboard.putNumber("omega", angVelocity);
+    
+    
     Logger.recordOutput("SwerveStates/ControllerInputLog/TeleopDrive/x", xVelocity * SwerveSubsystem.maximumSpeed);
     Logger.recordOutput("SwerveStates/ControllerInputLog/TeleopDrive/y", yVelocity * SwerveSubsystem.maximumSpeed);
     Logger.recordOutput("SwerveStates/ControllerInputLog/TeleopDrive/z", angVelocity * controller.config.maxAngularVelocity);
 
     Logger.recordOutput("SwerveStates/SwerveModuleAzimuthSetpoint", Math.atan(yVelocity / xVelocity));
+    
 
     // Drive using raw values.
     swerve.drive(new Translation2d(xVelocity * SwerveSubsystem.maximumSpeed, yVelocity * SwerveSubsystem.maximumSpeed),
                  angVelocity * controller.config.maxAngularVelocity,
                  driveMode.getAsBoolean());
-    SmartDashboard.putNumber("MaxAngVel", controller.config.maxAngularVelocity);
+    // SmartDashboard.putNumber("MaxAngVel", controller.config.maxAngularVelocity);
   }
 
   // Called once the command ends or is interrupted.

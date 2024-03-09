@@ -189,6 +189,8 @@ public class ClimbSubsystem extends SubsystemBase {
     leftClimb.setVoltage(leftMotorVoltage);
     rightClimb.setVoltage(rightMotorVoltage);
 
+
+    /* 
     // Telemetry
     SmartDashboard.putNumber("Left Climb pos", getLeftPosition());
     SmartDashboard.putNumber("Right Climb pos", getRightPosition());
@@ -200,5 +202,7 @@ public class ClimbSubsystem extends SubsystemBase {
     SmartDashboard.putBoolean("Left Switch", getLeftLimitSwitch());
     SmartDashboard.putBoolean("Right Switch", getRightLimitSwitch());
     SmartDashboard.putBoolean("PID", runPid);
+    */
+  
   }
 }

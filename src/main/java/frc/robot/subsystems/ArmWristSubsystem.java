@@ -58,7 +58,7 @@ public class ArmWristSubsystem extends SubsystemBase{
     public double extHardLowerLimit = 0; // 0.749
     private double extHardUpperLimit = -75; // 0.059
 
-    private double armTarget = armHardLowerLimit + Constants.Arm.offsetToAmpFromGround - 0.05;//0.485;  //.453
+    private double armAbsTarget = armHardLowerLimit + Constants.Arm.offsetToAmpFromGround - 0.05;//0.485;  //.453
     private double wristTarget = 0.387;
     public double extensionTarget = 0;
 
@@ -95,6 +95,7 @@ public class ArmWristSubsystem extends SubsystemBase{
     SparkAbsoluteEncoder wristEncoder = wrist.getAbsoluteEncoder(Type.kDutyCycle);
     SparkAbsoluteEncoder armEncoder = armFrontMotor.getAbsoluteEncoder(Type.kDutyCycle);
     RelativeEncoder extRelEncoder;
+    RelativeEncoder armRelEncoder;
     
     /* Limit Switch */
     DigitalInput lowerHardLimSwitch;
@@ -112,7 +113,7 @@ public class ArmWristSubsystem extends SubsystemBase{
     
 
     private final ProfiledPIDController armPidProfile = new ProfiledPIDController(30, 0, 0, new TrapezoidProfile.Constraints(0, 0));//maxVel = 3.5 and maxAccel = 2.5 9, 8
-    private final PIDController armPid = new PIDController(25, 0, 0);
+    private final PIDController armPid = new PIDController(25, 0, 0, 0.02);
     private final PIDController armClimbPid = new PIDController(30, 0, 0);
     
     private final PIDController wristPIDController = new PIDController(40, 0, 0); 
@@ -164,10 +165,13 @@ public class ArmWristSubsystem extends SubsystemBase{
         
 
         wrist.setIdleMode(IdleMode.kBrake);
-        armFrontMotor.setIdleMode(IdleMode.kCoast);
-        armBackMotor.setIdleMode(IdleMode.kCoast);
-        extensionMotor.setIdleMode(IdleMode.kCoast);
+        armFrontMotor.setIdleMode(IdleMode.kBrake);
+        armBackMotor.setIdleMode(IdleMode.kBrake);
+        extensionMotor.setIdleMode(IdleMode.kBrake);
+        
         extRelEncoder = extensionMotor.getEncoder();
+        armRelEncoder = armBackMotor.getEncoder();
+        armRelEncoder.setPositionConversionFactor(1.0 / 103.85652383245);
 
 
         wristPIDRun = true;
@@ -177,6 +181,9 @@ public class ArmWristSubsystem extends SubsystemBase{
         runAndResetExt = false;
         //firstStartingBot = true;
         
+        // armPid.setTolerance(0.021);
+
+
         armFrontMotor.setInverted(true); // b/c we flipped direction of motor
         armBackMotor.setInverted(true);
         
@@ -191,7 +198,7 @@ public class ArmWristSubsystem extends SubsystemBase{
         runAndResetExtEncoder();
 
 
-        SmartDashboard.putNumber("Change Arm Target", armTarget);
+        SmartDashboard.putNumber("Change Arm Target", armAbsTarget);
         SmartDashboard.putNumber("Change Wrist Target", Constants.midWristPos);
         SmartDashboard.putNumber("Change ArmFF", 0.065);
         SmartDashboard.putNumber("Change Arm Is Brake", 1);
@@ -304,12 +311,24 @@ public class ArmWristSubsystem extends SubsystemBase{
 
 
 
+        
 
     public double getAbsArmPos(){
-        Logger.recordOutput("Arm/CurrentPos", armEncoder.getPosition());
-        
+        Logger.recordOutput("Arm/AbsCurrentPos", armEncoder.getPosition());
+        Logger.recordOutput("Arm/RelCurrentPos", armRelEncoder.getPosition());
+
         return armEncoder.getPosition();
     }
+
+    
+    /**
+    * @return the relative position of the extension
+    */
+    public double getArmRelPos() {
+        Logger.recordOutput("Arm/RelCurrentPos", armRelEncoder.getPosition());
+        return armRelEncoder.getPosition();
+    }
+
     public double getAbsWristPos(){
         Logger.recordOutput("Wrist/CurrentPos", wristEncoder.getPosition());
 
@@ -335,12 +354,14 @@ public class ArmWristSubsystem extends SubsystemBase{
         
         return  armFFWhenPurpen * updateArmFF_extension() * Math.cos((2*Math.PI/((armBalanced - armPurpenGround)*4)) * (getAbsArmPos() - armPurpenGround)); 
     } 
+
+    
     public void setArmVoltage(double voltage){
         // leftMotor.setVoltage(-voltage);
         SmartDashboard.putNumber("Rotation Voltage", voltage);
 
         Logger.recordOutput("Arm/ArmVoltage", voltage);
-
+        
        armFrontMotor.setVoltage(voltage);
        armBackMotor.setVoltage(voltage);
     }
@@ -350,44 +371,44 @@ public class ArmWristSubsystem extends SubsystemBase{
     }
 
     public void downManual(){
-        armTarget -= 0.01;
+        armAbsTarget -= 0.01;
 
-        //wrist.setGoal(2.57 - armTarget);
+        //wrist.setGoal(2.57 - armAbsTarget);
     }
     public void upManual(){
-        armTarget += 0.01;
+        armAbsTarget += 0.01;
 
-        //wrist.setGoal(2.57 - armTarget);
+        //wrist.setGoal(2.57 - armAbsTarget);
     }
 
     public void setArmGoal(double target) {
         //rotation.setGoal(target);
-        armTarget = target;
+        armAbsTarget = target;
     }
 
-    public void setArmWristExtGoal(double armTarget, double wristTarget, double extTarget){
+    public void setArmWristExtGoal(double armAbsTarget, double wristTarget, double extTarget){
         
-            setArmGoal(armTarget);
+            setArmGoal(armAbsTarget);
             setWristSetpoint(wristTarget);
             setExtensionGoal(extTarget);     
     }
 
-    public void setArmWristGoal(double armTarget, double wristTarget){
-            setArmGoal(armTarget);
+    public void setArmWristGoal(double armAbsTarget, double wristTarget){
+            setArmGoal(armAbsTarget);
             setWristSetpoint(wristTarget);   
     }
 
     public double getGoal(){
         // return armPid.getGoal().position;
-        return armTarget;
+        return armAbsTarget;
     }
 
-    public double newGetArmTarget(){
-        return armTarget;
+    public double newGetAbsArmTarget(){
+        return armAbsTarget;
     }
 
     public double calculateArmClimbPID() {
-        return armClimbPid.calculate(getAbsArmPos(), armTarget);
+        return armClimbPid.calculate(getAbsArmPos(), armAbsTarget);
     }
     public void updateArmClimbPID(){
         
@@ -419,10 +440,12 @@ public class ArmWristSubsystem extends SubsystemBase{
         //} 
     }
 
+
     public double calculateRotationPID(){
-        //return armPid.calculate(getArmPosition(), armTarget);
-        Logger.recordOutput("Arm/ArmTarget", armTarget);
-        return armPid.calculate(getAbsArmPos(), armTarget);
+        //return armPid.calculate(getArmPosition(), armAbsTarget);
+        Logger.recordOutput("Arm/armAbsTarget", armAbsTarget);
+        
+        return armPid.calculate(getAbsArmPos(), armAbsTarget);
     }
 
     public void updateRotationOutput(){
@@ -458,7 +481,11 @@ public class ArmWristSubsystem extends SubsystemBase{
         } else {
             setArmVoltage(maxArmVoltage * Math.signum(voltage));
         }
-
+        // absolute encoder used to reset relative encoder
+        if (Math.abs(getAbsArmPos() - 0.501) <= 0.021 && armAbsTarget == 0.501) {
+            armRelEncoder.setPosition(getAbsArmPos());
+        }
+        
         //} 
     }
     public double calculateRotationFF(){
@@ -610,7 +637,7 @@ public class ArmWristSubsystem extends SubsystemBase{
     //     SmartDashboard.putBoolean("extension switch", extensionMotor.getForwardLimitSwitch(SparkLimitSwitch.Type.kNormallyClosed).isPressed());
 
     //     // used for gotoPositio nmethod
-    //     reachPos = Math.abs(getAbsArmPos() - this.armTarget) > 0.08  
+    //     reachPos = Math.abs(getAbsArmPos() - this.armAbsTarget) > 0.08  
     //     && Math.abs(getExtRelPos() - this.extensionTarget) > 3
     //     && Math.abs(getAbsWristPos() - this.wristTarget) > 0.08;
 
@@ -648,7 +675,7 @@ public class ArmWristSubsystem extends SubsystemBase{
 
     //         //Implemented - Krish
     //         if (ampToGround) {
-    //             if (Math.abs(getAbsArmPos() - armTarget) < 0.2) {
+    //             if (Math.abs(getAbsArmPos() - armAbsTarget) < 0.2) {
     //                 setExtensionGoal(extHardLowerLimit + Constants.Extension.offsetToGround);
     //                 ampToGround = false;
     //             }
@@ -656,7 +683,7 @@ public class ArmWristSubsystem extends SubsystemBase{
 
     //         //Implemented - Krish
     //         if (groundToAmp) {
-    //             if (Math.abs(getAbsArmPos() - armTarget) < 0.2) {
+    //             if (Math.abs(getAbsArmPos() - armAbsTarget) < 0.2) {
     //                 setExtensionGoal(extHardLowerLimit + Constants.Extension.offsetToAmpFromGround);
     //                 groundToAmp = false;
     //             }
@@ -664,7 +691,7 @@ public class ArmWristSubsystem extends SubsystemBase{
 
     //         //Implemented - Krish
     //         if (holdToSource) {
-    //             if (Math.abs(getAbsArmPos() - armTarget) < 0.1) {
+    //             if (Math.abs(getAbsArmPos() - armAbsTarget) < 0.1) {
     //                 setExtensionGoal(extHardLowerLimit + Constants.Extension.offsetToSource);
     //                 holdToSource = false;
     //             }
@@ -672,7 +699,7 @@ public class ArmWristSubsystem extends SubsystemBase{
 
     //         //Implemented - Krish
     //         if (holdToAmp) {
-    //             if (Math.abs(getAbsArmPos() - armTarget) < 0.1) {
+    //             if (Math.abs(getAbsArmPos() - armAbsTarget) < 0.1) {
     //                 setExtensionGoal(extHardLowerLimit + Constants.Extension.offsetToAmpFromSource_Hold);
     //                 holdToAmp = false;
     //             }
@@ -680,13 +707,13 @@ public class ArmWristSubsystem extends SubsystemBase{
 
     //         // to start wrist movement after moving up a bit b/c wrist kinda slow lol (runs when going
     //         // from hold to ground pos and the arm is part way up from its first arm pos)
-    //         if (lastHeight == Height.HOLD && !wristPIDRun && Math.abs(getAbsArmPos() - armTarget) < 0.75) {
+    //         if (lastHeight == Height.HOLD && !wristPIDRun && Math.abs(getAbsArmPos() - armAbsTarget) < 0.75) {
     //             updateWristPos();
     //         }
 
     //         // runs extension after arm error is certain amount... the wristPIDRun logic in the first
     //         // if statment is to make a smaller error range for when going from hold to ground and vice versa
-    //         if(Math.abs(getAbsArmPos() - armTarget) < (wristPIDRun ? 0.4 : 0.01)){
+    //         if(Math.abs(getAbsArmPos() - armAbsTarget) < (wristPIDRun ? 0.4 : 0.01)){
     //             if (lastHeight == Height.HOLD && !wristPIDRun && Math.abs(getAbsWristPos() - wristTarget) < 0.1) {
     //                 // changes to actual arm goal after the first arm goal was reached sufficiently
     //                 setArmGoal(armHardLowerLimit + Constants.Arm.offsetToGround);
@@ -718,7 +745,7 @@ public class ArmWristSubsystem extends SubsystemBase{
     //     }
     //     //SmartDashboard.putNumber("LeftPosition", getLeftPosition());
     //     SmartDashboard.putNumber("Arm Position", getAbsArmPos());
-    //     SmartDashboard.putNumber("Arm Target", armTarget);
+    //     SmartDashboard.putNumber("Arm Target", armAbsTarget);
     //     SmartDashboard.putNumber("Wrist Pos", getAbsWristPos());
     //     SmartDashboard.putBoolean("Wrist is Brake", wrist.getIdleMode() == IdleMode.kBrake ? true : false);
     //     SmartDashboard.putNumber("Arm Actual Voltage", armFrontMotor.getOutputCurrent()*0.6);
@@ -747,7 +774,7 @@ public class ArmWristSubsystem extends SubsystemBase{
     //     }
         
     //    // wristTarget = SmartDashboard.getNumber("Change Wrist Target", 0.68);
-    //     //armTarget = SmartDashboard.getNumber("Change Arm Target", armTarget);
+    //     //armAbsTarget = SmartDashboard.getNumber("Change Arm Target", armAbsTarget);
 
 
 
@@ -821,13 +848,25 @@ public class ArmWristSubsystem extends SubsystemBase{
         wasSourceIntake = intake;
     }
     
+    public void setAllBrake(boolean brake) {
+        if (brake) {
+            armBackMotor.setIdleMode(IdleMode.kBrake);
+            armFrontMotor.setIdleMode(IdleMode.kBrake);
+            wrist.setIdleMode(IdleMode.kBrake);
+            extensionMotor.setIdleMode(IdleMode.kBrake);
+
+        } else {
+            armBackMotor.setIdleMode(IdleMode.kCoast);
+            armFrontMotor.setIdleMode(IdleMode.kCoast);
+            wrist.setIdleMode(IdleMode.kCoast);
+            extensionMotor.setIdleMode(IdleMode.kCoast);
+        }
+    }
+
     
-
-
     @Override
     public void periodic(){
-    
-
+        
 
         
         
@@ -836,6 +875,8 @@ public class ArmWristSubsystem extends SubsystemBase{
         } else {
             updateRotationOutput();
             updateWristPos();
+            
+
 
             if (!runAndResetExt) {
                 updateExtensionOutput();
@@ -861,7 +902,7 @@ public class ArmWristSubsystem extends SubsystemBase{
             
         // SmartDashboard.putBoolean("extension switch", extensionMotor.getForwardLimitSwitch(SparkLimitSwitch.Type.kNormallyClosed).isPressed());
         // SmartDashboard.putNumber("Arm Position", getAbsArmPos());
-        // SmartDashboard.putNumber("Arm Target", armTarget);
+        // SmartDashboard.putNumber("Arm Target", armAbsTarget);
         //SmartDashboard.putString("Last Height", getHeight().toString());
         // SmartDashboard.putNumber("Wrist Pos", getAbsWristPos());
         // SmartDashboard.putBoolean("Wrist is Brake", wrist.getIdleMode() == IdleMode.kBrake ? true : false);
@@ -873,6 +914,7 @@ public class ArmWristSubsystem extends SubsystemBase{
         // SmartDashboard.putNumber("Wrist Target", wristTarget);
         // SmartDashboard.putNumber("Extension Target", extensionTarget);
 
+        /* 
         if (SmartDashboard.getNumber("Change Extension Is Brake", 1) == 1) {
             extensionMotor.setIdleMode(IdleMode.kBrake);
         } else {
@@ -894,6 +936,8 @@ public class ArmWristSubsystem extends SubsystemBase{
             wrist.setIdleMode(IdleMode.kCoast);
         }
         
+        */
+
         // SmartDashboard.putNumber("Ext Rel Pos", getExtRelPos());
         // SmartDashboard.putNumber("Front Arm Motor Current", armFrontMotor.getOutputCurrent());
         // SmartDashboard.putNumber("Back Arm Motor Current", armBackMotor.getOutputCurrent());

@@ -40,7 +40,6 @@ public class Robot extends LoggedRobot
   private        Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
-
   private Timer disabledTimer;
 
   public Robot()
@@ -84,7 +83,7 @@ public class Robot extends LoggedRobot
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
-
+    
     // Create a timer to disable motor brake a few seconds after disable.  This will let the robot stop
     // immediately when disabled, but then also let it be pushed more 
     disabledTimer = new Timer();
@@ -113,7 +112,8 @@ public class Robot extends LoggedRobot
   @Override
   public void disabledInit()
   {
-    m_robotContainer.setMotorBrake(true);
+    m_robotContainer.setDriveBrake(true);
+    m_robotContainer.setArmWristExtBrake(true);
     disabledTimer.reset();
     disabledTimer.start();
   }
@@ -121,11 +121,16 @@ public class Robot extends LoggedRobot
   @Override
   public void disabledPeriodic()
   {
+    
+
     if (disabledTimer.hasElapsed(Constants.Drivebase.WHEEL_LOCK_TIME))
     {
-      m_robotContainer.setMotorBrake(false);
+      m_robotContainer.setDriveBrake(false);
+      m_robotContainer.setArmWristExtBrake(false);
       disabledTimer.stop();
-    }
+    } 
+
+    
   }
 
   /**
@@ -135,7 +140,8 @@ public class Robot extends LoggedRobot
   public void autonomousInit()
   {
     m_robotContainer.climbSub.enablePid(false);
-    m_robotContainer.setMotorBrake(true);
+    m_robotContainer.setDriveBrake(true);
+    m_robotContainer.setArmWristExtBrake(true);
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
@@ -170,7 +176,8 @@ public class Robot extends LoggedRobot
     (new InstantCommand(() -> m_robotContainer.armWristSub.runAndResetExtEncoder())).schedule();
     m_robotContainer.armWristSub.changeHeight(Height.PRECLIMB);
     m_robotContainer.setDriveMode();
-    m_robotContainer.setMotorBrake(true);
+    m_robotContainer.setDriveBrake(true);
+    m_robotContainer.setArmWristExtBrake(true);
     m_robotContainer.climbSub.enablePid(false);
   }
 
@@ -181,7 +188,7 @@ public class Robot extends LoggedRobot
   public void teleopPeriodic()
   {
     // just in case :)
-    // m_robotContainer.setMotorBrake(true);
+    // m_robotContainer.setDriveBrake(true);
     //m_robotContainer.drivebase.updateOdoLimelight();
   }
 

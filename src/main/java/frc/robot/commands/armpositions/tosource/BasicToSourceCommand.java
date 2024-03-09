@@ -65,7 +65,7 @@ public class BasicToSourceCommand extends Command {
   @Override
   public void execute() {
     if(armWrist.getHeight() == Height.HOLD){
-      if(Math.abs(armWrist.getAbsArmPos() - armWrist.newGetArmTarget()) < 0.05){
+      if(Math.abs(armWrist.getAbsArmPos() - armWrist.newGetAbsArmTarget()) < 0.05){
         armWrist.setExtensionGoal(Constants.ArmPositions.extHardLowerLimit + Constants.Extension.offsetToSource);
   
         finished = true;

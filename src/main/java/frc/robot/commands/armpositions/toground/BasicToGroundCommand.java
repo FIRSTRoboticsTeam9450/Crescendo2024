@@ -66,7 +66,7 @@ public class BasicToGroundCommand extends Command {
   @Override
   public void execute() {
     if(armWrist.getHeight() == Height.AMP){
-      if (Math.abs(armWrist.getAbsArmPos() - armWrist.newGetArmTarget()) < 0.05) {
+      if (Math.abs(armWrist.getAbsArmPos() - armWrist.newGetAbsArmTarget()) < 0.05) {
         armWrist.setExtensionGoal(Constants.ArmPositions.extHardLowerLimit + Constants.Extension.offsetToGround);
         finished = true;
       }
@@ -77,7 +77,7 @@ public class BasicToGroundCommand extends Command {
     
 
     if(armWrist.getHeight() == Height.HOLD){
-      if (Math.abs(armWrist.getAbsArmPos() - armWrist.newGetArmTarget()) < 0.05) {
+      if (Math.abs(armWrist.getAbsArmPos() - armWrist.newGetAbsArmTarget()) < 0.05) {
         armWrist.setExtensionGoal(Constants.ArmPositions.extHardLowerLimit + Constants.Extension.offsetToGround);
         secondState = true;
       }

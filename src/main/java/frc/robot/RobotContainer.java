@@ -54,6 +54,7 @@ import frc.robot.subsystems.WristSubsystem;
 import frc.robot.subsystems.ArmWristSubsystem.Height;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import java.io.File;
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import org.littletonrobotics.junction.Logger;
@@ -95,7 +96,7 @@ public class RobotContainer
   //XboxController driverXbox = new XboxController(0);
   private double speedModifier = 0.67; //0.5
   //private final SendableChooser<String> autoChooser;
-
+  private BooleanSupplier speedModify;
   public boolean driveEnabled = true;
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -144,6 +145,8 @@ public class RobotContainer
     NamedCommands.registerCommand("ResetExt", resetExt);  
     // NamedCommands.registerCommand("Sweep", sweep);
 
+    speedModify = () ->  driverController.leftTrigger().getAsBoolean(); // accounts for buttons.run() overrun issue by caching value
+
     HeadingCorTeleopDrive drvHeadingCorr = new HeadingCorTeleopDrive(drivebase, 
                                                 () -> MathUtil.applyDeadband(driverController.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
                                                 () -> MathUtil.applyDeadband(driverController.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
@@ -170,17 +173,15 @@ public class RobotContainer
                                                     () -> MathUtil.applyDeadband(driverController.getLeftX() ,
                                                                                  OperatorConstants.LEFT_X_DEADBAND),
                                                     () -> MathUtil.applyDeadband(driverController.getRawAxis(4), 0.1), () -> true,
-                                                () -> driverController.rightBumper().getAsBoolean(),
-() -> driverController.leftTrigger().getAsBoolean());
+                                                 () -> driverController.getHID().getRightBumper(),
+                                                  speedModify /* left trigger */);
     TeleopDrive closedFieldRel = new TeleopDrive(
         drivebase,
         () -> MathUtil.applyDeadband(driverController.getLeftY() , OperatorConstants.LEFT_Y_DEADBAND),
         () -> MathUtil.applyDeadband(driverController.getLeftX() , OperatorConstants.LEFT_X_DEADBAND),
         () -> MathUtil.applyDeadband(driverController.getRawAxis(4), 0.1), () -> true,
-        () -> driverController.rightBumper().getAsBoolean(),
-        () -> driverController.leftTrigger().getAsBoolean()); // change the int in the parameter to the appropriate axis
-
-    
+        () -> driverController.getHID().getRightBumper(),
+        speedModify /* left trigger */); 
 /* 
     DoubleSupplier y = () -> driverController.getLeftY();
     DoubleSupplier x = () -> driverController.getLeftX();
@@ -384,8 +385,12 @@ public class RobotContainer
     drivebase.resetAngleMotors();
   }
 
-  public void setMotorBrake(boolean brake)
+  public void setDriveBrake(boolean brake)
   {
     drivebase.setMotorBrake(brake);
+  }
+
+  public void setArmWristExtBrake(boolean brake) {
+    armWristSub.setAllBrake(brake);
   }
 } 
