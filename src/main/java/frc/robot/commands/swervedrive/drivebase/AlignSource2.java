@@ -36,13 +36,16 @@ public class AlignSource2 extends Command {
         zController = new PIDController(3, 0, 0);
         
 
-        yawController = new PIDController(0.05, 0, 0);
-        yawController.setSetpoint(0);
+        yawController = new PIDController(5, 0, 0);
+
         timer.restart();
-        tagPose = table.getEntry("targetpose_robotspace").getDoubleArray(new double[6]);
+        tagPose = table.getEntry("botpose_targetspace").getDoubleArray(new double[6]);
         xController.setSetpoint(tagPose[2] - 1);
         zController.setSetpoint(-tagPose[0]);
-        drive.resetOdometry(new Pose2d(new Translation2d(), new Rotation2d()));
+        //double[] robotPose = table.getEntry("botpose_targetspace").getDoubleArray(new double[6]);
+        double heading = tagPose[5] * Math.PI / 180;
+        yawController.setSetpoint(0);
+        drive.resetOdometry(new Pose2d(new Translation2d(), new Rotation2d(-tagPose[4] * Math.PI / 180)));
 
     }
 
@@ -50,12 +53,12 @@ public class AlignSource2 extends Command {
     public void execute() {
         Pose2d drivePose = drive.getPose();
         double yawPower = yawController.calculate(drivePose.getRotation().getRadians());
-        //power = MathUtil.clamp(power, -0.2, 0.2);
+        //power = MathUtil.clamp(power, 0.2, 0.2);
         yawPower = MathUtil.clamp(yawPower, -5, 5);
 
         double xPower = xController.calculate(drivePose.getX());
         xPower = MathUtil.clamp(xPower, -1, 1);
-        SmartDashboard.putNumber("x power", xPower);
+        SmartDashboard.putNumber("x power", tagPose[5]);
 
         double zPower = zController.calculate(drivePose.getY());
         zPower = MathUtil.clamp(zPower, -1, 1);
