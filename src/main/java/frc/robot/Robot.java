@@ -181,7 +181,7 @@ public class Robot extends LoggedRobot
   public void teleopPeriodic()
   {
     // just in case :)
-    m_robotContainer.setMotorBrake(true);
+    // m_robotContainer.setMotorBrake(true);
     //m_robotContainer.drivebase.updateOdoLimelight();
   }
 
