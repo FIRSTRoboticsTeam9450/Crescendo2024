@@ -112,8 +112,8 @@ public class ArmWristSubsystem extends SubsystemBase{
 
     
 
-    private final ProfiledPIDController armPidProfile = new ProfiledPIDController(30, 0, 0, new TrapezoidProfile.Constraints(0, 0));//maxVel = 3.5 and maxAccel = 2.5 9, 8
-    private final PIDController armPid = new PIDController(35, 0, 0, 0.02);
+    // private final ProfiledPIDController armPid = new ProfiledPIDController(35, 0, 0, new TrapezoidProfile.Constraints(1, 8.2));//maxVel = 3.5 and maxAccel = 2.5 9, 8
+    private final PIDController armPid = new PIDController(30, 0, 0, 0.02);
     private final PIDController armClimbPid = new PIDController(30, 0, 0);
     
     private final PIDController wristPIDController = new PIDController(40, 0, 0); 
@@ -191,12 +191,13 @@ public class ArmWristSubsystem extends SubsystemBase{
         armFrontMotor.burnFlash();
         armBackMotor.burnFlash();
 
+
         wrist.burnFlash();
         extensionMotor.burnFlash();
 
         //goToPosition(Height.SOURCE);
         runAndResetExtEncoder();
-
+        setRelArmPos(armEncoder.getPosition());
 
         SmartDashboard.putNumber("Change Arm Target", armAbsTarget);
         SmartDashboard.putNumber("Change Wrist Target", Constants.midWristPos);
@@ -320,6 +321,10 @@ public class ArmWristSubsystem extends SubsystemBase{
         return armEncoder.getPosition();
     }
 
+    public void updateRelArmPos() {
+        setRelArmPos(getAbsArmPos());
+    }
+
     public void setRelArmPos(double position) {
         armRelEncoder.setPosition(position);
     }
@@ -409,8 +414,9 @@ public class ArmWristSubsystem extends SubsystemBase{
         return armAbsTarget;
     }
 
+
     public double calculateArmClimbPID() {
-        return armClimbPid.calculate(getAbsArmPos(), armAbsTarget);
+        return armClimbPid.calculate(getArmRelPos(), armAbsTarget);
     }
     public void updateArmClimbPID(){
         
@@ -442,6 +448,12 @@ public class ArmWristSubsystem extends SubsystemBase{
         //} 
     }
 
+    /**
+     * Be careful with this...
+     */
+    // public void resetProfiledArmPID() {
+    //     armPid.reset(getArmRelPos());
+    // }
 
     public double calculateRotationPID(){
         //return armPid.calculate(getArmPosition(), armAbsTarget);

@@ -79,6 +79,7 @@ public class BasicToHoldCommand extends Command {
   @Override
   public void end(boolean interrupted) {
     armWrist.changeHeight(Height.HOLD);
+    armWrist.updateRelArmPos();
   }
 
   // Returns true when the command should end.
