@@ -385,6 +385,9 @@ public class SwerveModule
       SmartDashboard.putNumber("Module[" + configuration.name + "] Speed Setpoint", desiredState.speedMetersPerSecond);
       SmartDashboard.putNumber("Module[" + configuration.name + "] Angle Setpoint", desiredState.angle.getDegrees());
     }
+    
+    System.out.println("Is in SwerveModule setDesiredState");
+
   }
 
   /**

@@ -112,7 +112,7 @@ public class ArmWristSubsystem extends SubsystemBase{
 
     
 
-    // private final ProfiledPIDController armPid = new ProfiledPIDController(35, 0, 0, new TrapezoidProfile.Constraints(1, 8.2));//maxVel = 3.5 and maxAccel = 2.5 9, 8
+    // private final ProfiledPIDController armProfiledPid = new ProfiledPIDController(35, 0, 0, new TrapezoidProfile.Constraints(1, 8.2));//maxVel = 3.5 and maxAccel = 2.5 9, 8
     private final PIDController armPid = new PIDController(30, 0, 0, 0.02);
     private final PIDController armClimbPid = new PIDController(30, 0, 0);
     

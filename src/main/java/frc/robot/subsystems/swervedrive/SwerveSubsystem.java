@@ -213,7 +213,8 @@ public class SwerveSubsystem extends SubsystemBase
     Logger.recordOutput("SwerveStates/ControllerInputLog/SwerveSubsystem/x", translation.getX());
     Logger.recordOutput("SwerveStates/ControllerInputLog/SwerveSubsystem/y", translation.getY());
     Logger.recordOutput("SwerveStates/ControllerInputLog/SwerveSubsystem/z", rotation);
-
+    
+    System.out.println("Is in SwerveSubsystem drive");
     
     Logger.recordOutput("SwerveStates/TranslationSetpoints", translation);
     Logger.recordOutput("SwerveStates/RotationSetpoint", rotation);
