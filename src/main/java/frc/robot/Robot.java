@@ -127,7 +127,7 @@ public class Robot extends LoggedRobot
     if (disabledTimer.hasElapsed(Constants.Drivebase.WHEEL_LOCK_TIME))
     {
       m_robotContainer.setDriveBrake(false);
-      m_robotContainer.setArmWristExtBrake(false);
+      //m_robotContainer.setArmWristExtBrake(false);
       disabledTimer.stop();
     } 
 

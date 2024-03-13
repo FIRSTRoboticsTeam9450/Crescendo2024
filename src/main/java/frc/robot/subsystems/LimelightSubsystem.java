@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -15,6 +17,10 @@ public class LimelightSubsystem extends SubsystemBase {
   Servo axon;
 
   IntakeSubsystem intake;
+
+  NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
+
+  boolean ampMode;
 
   public LimelightSubsystem(IntakeSubsystem intake) {
     axon = new Servo(0);
@@ -66,15 +72,34 @@ public class LimelightSubsystem extends SubsystemBase {
     }
   }
 
-  
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-    
-    if (intake.getLaserDistance() < 10) {
+  public boolean isInAmpMode() {
+    return ampMode;
+  }
+
+  public void resetAngle() {
+    if (intake.getLaserDistance() < 15) {
       axon.setAngle(180);
     } else {
       axon.setAngle(130);
+    }
+  }
+
+  @Override
+  public void periodic() {
+    // This method will be called once per scheduler run
+
+    if (intake.getLaserDistance() < 15) {
+      if (table.getEntry("pipeline").getInteger(-1) == 1) {
+        NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(0);
+        axon.setAngle(180);
+        ampMode = true;
+      }
+    } else {
+      if (table.getEntry("pipeline").getInteger(-1) == 0) {
+        NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(1);
+        axon.setAngle(130);
+        ampMode = false;
+      }    
     }
     
     //setAxonAngle(SmartDashboard.getNumber("set axon angle", 107));
