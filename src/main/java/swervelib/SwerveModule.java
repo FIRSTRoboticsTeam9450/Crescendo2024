@@ -346,7 +346,7 @@ public class SwerveModule
     {
       driveMotor.setReference(velocity, driveMotorFeedforward.calculate(velocity));
       desiredState.speedMetersPerSecond = velocity;
-      Logger.recordOutput("SwerveStates/ControllerInputLog/SwerveModule/desiredDrvVel", velocity);
+      // Logger.recordOutput("SwerveStates/ControllerInputLog/SwerveModule/desiredDrvVel", velocity);
       
     }
 
@@ -358,12 +358,12 @@ public class SwerveModule
       angleMotor.setPosition(absoluteEncoderPosition);
       angleMotor.setReference(desiredState.angle.getDegrees(), 0, absoluteEncoderPosition);
       synchronizeEncoderQueued = false;
-      Logger.recordOutput("SwerveStates/ControllerInputLog/SwerveModule/desiredAngleIf", desiredState.angle.getDegrees());
+      // Logger.recordOutput("SwerveStates/ControllerInputLog/SwerveModule/desiredAngleIf", desiredState.angle.getDegrees());
 
     } else
     {
       angleMotor.setReference(desiredState.angle.getDegrees(), 0);
-      Logger.recordOutput("SwerveStates/ControllerInputLog/SwerveModule/desiredAngleElse", desiredState.angle.getDegrees());
+      // Logger.recordOutput("SwerveStates/ControllerInputLog/SwerveModule/desiredAngleElse", desiredState.angle.getDegrees());
 
     }
 
@@ -386,7 +386,7 @@ public class SwerveModule
       SmartDashboard.putNumber("Module[" + configuration.name + "] Angle Setpoint", desiredState.angle.getDegrees());
     }
     
-    System.out.println("Is in SwerveModule setDesiredState");
+    // System.out.println("Is in SwerveModule setDesiredState");
 
   }
 

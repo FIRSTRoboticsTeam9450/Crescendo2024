@@ -88,13 +88,13 @@ public class TeleopDrive extends Command
     // SmartDashboard.putNumber("vY", yVelocity);
     // SmartDashboard.putNumber("omega", angVelocity);
     
-    
+/*   
     Logger.recordOutput("SwerveStates/ControllerInputLog/TeleopDrive/x", xVelocity * SwerveSubsystem.maximumSpeed);
     Logger.recordOutput("SwerveStates/ControllerInputLog/TeleopDrive/y", yVelocity * SwerveSubsystem.maximumSpeed);
     Logger.recordOutput("SwerveStates/ControllerInputLog/TeleopDrive/z", angVelocity * controller.config.maxAngularVelocity);
 
     Logger.recordOutput("SwerveStates/SwerveModuleAzimuthSetpoint", Math.atan(yVelocity / xVelocity));
-    
+*/      
 
     // Drive using raw values.
     swerve.drive(new Translation2d(xVelocity * SwerveSubsystem.maximumSpeed, yVelocity * SwerveSubsystem.maximumSpeed),

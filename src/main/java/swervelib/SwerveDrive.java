@@ -447,13 +447,13 @@ public class SwerveDrive
         ? ChassisSpeeds.fromFieldRelativeSpeeds(
             translation.getX(), translation.getY(), rotation, getOdometryHeading())
         : new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
-
+/* 
     Logger.recordOutput("SwerveStates/ControllerInputLog/SwerveDrive/xVel", velocity.vxMetersPerSecond);
     Logger.recordOutput("SwerveStates/ControllerInputLog/SwerveDrive/yVel", velocity.vyMetersPerSecond);
     Logger.recordOutput("SwerveStates/ControllerInputLog/SwerveDrive/zVel", velocity.omegaRadiansPerSecond);
 
     System.out.println("Is in SwerveDrive drive");
-
+*/
 
     drive(velocity, isOpenLoop, new Translation2d());
   }
@@ -508,13 +508,13 @@ public class SwerveDrive
 
     // Calculate required module states via kinematics
     SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(velocity, centerOfRotationMeters);
-    
+/*     
     Logger.recordOutput("SwerveStates/ControllerInputLog/SwerveDrive/xModuleStates", swerveModuleStates[0].speedMetersPerSecond);
     Logger.recordOutput("SwerveStates/ControllerInputLog/SwerveDrive/yModuleStates", swerveModuleStates[1].speedMetersPerSecond);
     Logger.recordOutput("SwerveStates/ControllerInputLog/SwerveDrive/zModuleStates", swerveModuleStates[2].speedMetersPerSecond);
     
     System.out.println("Is in SwerveDrive [2nd] drive");
-
+*/
     setRawModuleStates(swerveModuleStates, isOpenLoop);
   }
 
@@ -582,7 +582,7 @@ public class SwerveDrive
       SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, maxSpeedMPS);
     }
 
-    System.out.println("Is in SwerveDrive setRawModuleStates");
+    // System.out.println("Is in SwerveDrive setRawModuleStates");
 
     // Sets states
     for (SwerveModule module : swerveModules)

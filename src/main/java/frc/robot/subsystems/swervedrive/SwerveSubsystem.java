@@ -210,6 +210,8 @@ public class SwerveSubsystem extends SubsystemBase
 
    public void drive(Translation2d translation, double rotation, boolean fieldRelative)
   {
+    
+/*    
     Logger.recordOutput("SwerveStates/ControllerInputLog/SwerveSubsystem/x", translation.getX());
     Logger.recordOutput("SwerveStates/ControllerInputLog/SwerveSubsystem/y", translation.getY());
     Logger.recordOutput("SwerveStates/ControllerInputLog/SwerveSubsystem/z", rotation);
@@ -222,7 +224,7 @@ public class SwerveSubsystem extends SubsystemBase
     Logger.recordOutput("SwerveStates/CurrentTranslation", SwerveController.getTranslation2d(getRobotVelocity()));
 
     Logger.recordOutput("SwerveStates/SwerveDriveStates", swerveDrive.getStates());
-    
+*/     
     swerveDrive.drive(translation,
                       rotation,
                       fieldRelative,
@@ -252,17 +254,6 @@ public class SwerveSubsystem extends SubsystemBase
   @Override
   public void periodic()
   {
-    // Log empty setpoint states when disabled
-    if (DriverStation.isDisabled()) {
-      Logger.recordOutput("SwerveStates/TranslationSetpoints", new Translation2d());
-      Logger.recordOutput("SwerveStates/RotationSetpoint", 0.0);
-      Logger.recordOutput("SwerveStates/CurrentRobotVelocity", new ChassisSpeeds());
-      Logger.recordOutput("SwerveStates/CurrentTranslation", new Translation2d());
-      // Logger.recordOutput("SwerveStates/SwerveDriveStates", new SwerveModuleState[3]);
-      
-
-      //swerveDrive.setModuleStates(new SwerveModuleState[3], false);
-    }
 
     double[] poseArr = table.getEntry("targetpose_robotspace").getDoubleArray(new double[6]);
     SmartDashboard.putNumber("Limelight X", poseArr[0]);
