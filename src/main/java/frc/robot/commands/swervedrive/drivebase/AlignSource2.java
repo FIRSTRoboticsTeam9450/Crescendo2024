@@ -6,12 +6,16 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 
 public class AlignSource2 extends Command {
@@ -22,16 +26,30 @@ public class AlignSource2 extends Command {
     NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
 
     double[] tagPose;
+    double[] robotPose;
     Timer timer;
+
+    boolean justLost = true;
+
+    boolean noTagStart = false;
+
+    XboxController controller;
+
+    boolean amp = true;
+
+    Rotation3d originalHeading;
     
-    public AlignSource2(SwerveSubsystem drive) {
+    public AlignSource2(SwerveSubsystem drive, XboxController controller) {
         this.drive = drive;
         addRequirements(drive);
         timer = new Timer();
+        this.controller = controller;
     }
 
     @Override
     public void initialize() {
+        noTagStart = false;
+
         xController = new PIDController(3, 0, 0);
         zController = new PIDController(3, 0, 0);
         
@@ -39,32 +57,94 @@ public class AlignSource2 extends Command {
         yawController = new PIDController(5, 0, 0);
 
         timer.restart();
-        tagPose = table.getEntry("botpose_targetspace").getDoubleArray(new double[6]);
-        xController.setSetpoint(tagPose[2] - 1);
-        zController.setSetpoint(-tagPose[0]);
-        //double[] robotPose = table.getEntry("botpose_targetspace").getDoubleArray(new double[6]);
-        double heading = tagPose[5] * Math.PI / 180;
-        yawController.setSetpoint(0);
-        drive.resetOdometry(new Pose2d(new Translation2d(), new Rotation2d(-tagPose[4] * Math.PI / 180)));
+
+        tagPose = new double[6];
+        robotPose = new double[6];
+        justLost = true;
+
+        if (table.getEntry("tid").getDouble(-1) == -1) {
+            controller.setRumble(RumbleType.kBothRumble, 1);
+            noTagStart = true;
+        }
 
     }
 
     @Override
     public void execute() {
-        Pose2d drivePose = drive.getPose();
-        double yawPower = yawController.calculate(drivePose.getRotation().getRadians());
-        //power = MathUtil.clamp(power, 0.2, 0.2);
-        yawPower = MathUtil.clamp(yawPower, -5, 5);
+        SmartDashboard.putBoolean("No tag", noTagStart);
+        if (noTagStart) {
+            drive.drive(new Translation2d(0, 0), 0, false);
+            return;
+        }
 
-        double xPower = xController.calculate(drivePose.getX());
-        xPower = MathUtil.clamp(xPower, -1, 1);
-        SmartDashboard.putNumber("x power", tagPose[5]);
+        double yawPower = 0;
+        double xPower = 0;
+        double zPower = 0;
 
-        double zPower = zController.calculate(drivePose.getY());
-        zPower = MathUtil.clamp(zPower, -1, 1);
+        // Check if it can see any tags
+        if (table.getEntry("tid").getDouble(-1) == -1) {
+            drive.drive(new Translation2d(0, 0), 0, false);
+            /*
+            if (justLost) {
+                if (amp) {
+                    xController.setSetpoint(tagPose[2] - 0.7);
+                    zController.setSetpoint(tagPose[0]);
+                    yawController.setSetpoint(0);
+                } else {
+                    xController.setSetpoint(tagPose[2] - 0.7);
+                    zController.setSetpoint(-tagPose[0] + 0.22);
+                    yawController.setSetpoint(0);
+                }
+                double heading = tagPose[5] * Math.PI / 180;
+                drive.resetOdometry(new Pose2d(new Translation2d(), new Rotation2d(-robotPose[4] * Math.PI / 180)));
+                justLost = false;
+            }
+            Pose2d drivePose = drive.getPose();
+            yawPower = yawController.calculate(drivePose.getRotation().getRadians());
+            xPower = xController.calculate(drivePose.getX());
+            zPower = zController.calculate(drivePose.getY());
+            yawPower = MathUtil.clamp(yawPower, -5, 5);
+            xPower = MathUtil.clamp(xPower, -1, 1);
+            zPower = MathUtil.clamp(zPower, -1, 1);
+            yawPower = 0;
 
-        // positive x = forward, positive y = left, positive rotation = counterclockwise
-        drive.drive(new Translation2d(xPower, zPower), yawPower, true);
+            if (amp) {
+                drive.drive(new Translation2d(xPower, zPower), yawPower, true);
+            } else {
+                drive.drive(new Translation2d(xPower, zPower), yawPower, true);
+            }
+            */
+            
+        } else {
+
+            tagPose = table.getEntry("targetpose_robotspace").getDoubleArray(tagPose);
+            robotPose = table.getEntry("botpose_targetspace").getDoubleArray(tagPose);
+            yawController.setP(0.05);
+            if (amp) {
+                yawController.setSetpoint(0);
+                xController.setSetpoint(0.12);
+                zController.setSetpoint(-0.7);
+            } else {
+                yawController.setSetpoint(0);
+                xController.setSetpoint(-0.22);
+                zController.setSetpoint(-0.39);
+            }
+            
+            yawPower = yawController.calculate(robotPose[4]);
+            xPower = xController.calculate(robotPose[0]);
+            zPower = zController.calculate(robotPose[2]);
+            yawPower = MathUtil.clamp(yawPower, -5, 5);
+            xPower = MathUtil.clamp(xPower, -1, 1);
+            zPower = MathUtil.clamp(zPower, -1, 1);
+
+            if (amp) {
+                drive.drive(new Translation2d(-zPower, xPower), -yawPower, false);
+            } else {
+                drive.drive(new Translation2d(zPower, -xPower), -yawPower, false);
+            }
+
+            justLost = true;
+        }
 
 
     }
@@ -76,6 +156,12 @@ public class AlignSource2 extends Command {
             return false;
         }
         return false;
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        drive.drive(new Translation2d(0, 0), 0, true);
+        controller.setRumble(RumbleType.kBothRumble, 0);
     }
 
 }

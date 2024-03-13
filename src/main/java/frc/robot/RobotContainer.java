@@ -80,7 +80,7 @@ public class RobotContainer
   //private final WristSubsystem wristSub = new WristSubsystem();
   public final ArmWristSubsystem armWristSub = new ArmWristSubsystem();
   // public final LaserSubsystem laserSub = new LaserSubsystem();
-  public final LimelightSubsystem servo = new LimelightSubsystem();
+  public final LimelightSubsystem servo = new LimelightSubsystem(intakeSub);
   public final ClimbSubsystem climbSub = new ClimbSubsystem();
   // private final LimitSwitchSubsystem extLimitSub = new LimitSwitchSubsystem();
  // private final ExtensionSubsystem extSub = new ExtensionSubsystem();
@@ -93,7 +93,7 @@ public class RobotContainer
   CommandXboxController testingController = new CommandXboxController(2);
   //CommandXboxController driverController = new CommandXboxController(0);
   // CommandJoystick driverController   = new CommandJoystick(3]\[]);//(OperatorConstants.DRIVER_CONTROLLER_PORT);
-  //XboxController driverXbox = new XboxController(0);
+  XboxController driverXbox = new XboxController(0);
   private double speedModifier = 0.67; //0.5
   //private final SendableChooser<String> autoChooser;
   private BooleanSupplier speedModify;
@@ -229,7 +229,7 @@ public class RobotContainer
 
 
     /* intake */
-    armController.leftTrigger().onTrue(new IntakingCommand(intakeSub, 5));
+    armController.leftTrigger().onTrue(new BasicToAmpCommand(armWristSub));
     // driverController.leftTrigger().onTrue(new InstantCommand(() -> intakeSub.intakeNote(5)));
     
     //driverController.leftBumper().onTrue( new TimedIntakeSetPowerCommand(intakeSub, 10, 1.5));
@@ -286,7 +286,7 @@ public class RobotContainer
     
     // Amp
     //armController.b().onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.AMP)));
-    armController.b().onTrue(new BasicToAmpCommand(armWristSub));
+    armController.b().onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.PRECLIMB)));
    
    /*
     //New Ground
@@ -327,7 +327,7 @@ public class RobotContainer
 
     // Climber
     armController.pov(180).onTrue(new ClimbCommand(climbSub, 0));
-    armController.pov(90).onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.CLIMB)));
+    armController.pov(90).onTrue(new BasicToHoldCommand(armWristSub).andThen(new WaitCommand(0.5)).andThen(new ClimbCommand(climbSub, 90)));
     armController.pov(0).onTrue(new ClimbCommand(climbSub, 90));
     armController.pov(270).onTrue(new ClimbCommand(climbSub, 25));
 
@@ -357,7 +357,7 @@ public class RobotContainer
 
     driverController.x().onTrue(new AutoClimbCommand(climbSub, armWristSub));
 
-    driverController.leftBumper().onTrue(new AlignSource2(drivebase));
+    driverController.leftBumper().whileTrue(new AlignSource2(drivebase, driverXbox));
 
 
   }

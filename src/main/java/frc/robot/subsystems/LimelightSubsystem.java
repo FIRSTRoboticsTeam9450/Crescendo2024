@@ -7,16 +7,20 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotContainer;
 
 public class LimelightSubsystem extends SubsystemBase {
   /** Creates a new LimelightSubsystem. */
   
   Servo axon;
 
-  public LimelightSubsystem() {
+  IntakeSubsystem intake;
+
+  public LimelightSubsystem(IntakeSubsystem intake) {
     axon = new Servo(0);
-    SmartDashboard.putNumber("set axon angle", 107);
-    setAxonAngle(107);
+    SmartDashboard.putNumber("set axon angle", 180);
+    setAxonAngle(180);
+    this.intake = intake;
   }
 
   /**
@@ -67,6 +71,11 @@ public class LimelightSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     
+    if (intake.getLaserDistance() < 10) {
+      axon.setAngle(180);
+    } else {
+      axon.setAngle(130);
+    }
     
     //setAxonAngle(SmartDashboard.getNumber("set axon angle", 107));
     SmartDashboard.putNumber("Axon angle", getAxonAngle());
