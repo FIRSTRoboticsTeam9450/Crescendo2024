@@ -167,21 +167,44 @@ public class RobotContainer
 
 
     
-    TeleopDrive simClosedFieldRel = new TeleopDrive(drivebase,
-                                                    () -> MathUtil.applyDeadband(driverController.getLeftY() ,
-                                                                                 OperatorConstants.LEFT_Y_DEADBAND),
-                                                    () -> MathUtil.applyDeadband(driverController.getLeftX() ,
-                                                                                 OperatorConstants.LEFT_X_DEADBAND),
-                                                    () -> MathUtil.applyDeadband(driverController.getRawAxis(4), 0.1), () -> true,
-                                                 () -> driverController.getHID().getRightBumper(),
-                                                  speedModify /* left trigger */);
+    // TeleopDrive simClosedFieldRel = new TeleopDrive(drivebase,
+    //                                                 () -> MathUtil.applyDeadband(driverController.getLeftY() ,
+    //                                                                              OperatorConstants.LEFT_Y_DEADBAND),
+    //                                                 () -> MathUtil.applyDeadband(driverController.getLeftX() ,
+    //                                                                              OperatorConstants.LEFT_X_DEADBAND),
+    //                                                 () -> MathUtil.applyDeadband(driverController.getRawAxis(4), 0.1), () -> true,
+    //                                              () -> driverController.getHID().getRightBumper(),
+    //                                               speedModify /* left trigger */);
+    // TeleopDrive closedFieldRel = new TeleopDrive(
+    //     drivebase,
+    //     () -> MathUtil.applyDeadband(driverController.getLeftY() , OperatorConstants.LEFT_Y_DEADBAND),
+    //     () -> MathUtil.applyDeadband(driverController.getLeftX() , OperatorConstants.LEFT_X_DEADBAND),
+    //     () -> MathUtil.applyDeadband(driverController.getRawAxis(4), 0.1), () -> true,
+    //     () -> driverController.getHID().getRightBumper(),
+    //     speedModify /* left trigger */); 
+
+
+
+    TeleopDrive simClosedFieldRel = new TeleopDrive(
+                drivebase,
+                () -> Math.abs(driverController.getLeftY()) < OperatorConstants.LEFT_Y_DEADBAND ? 0.0 : driverController.getLeftY(),
+                () -> Math.abs(driverController.getLeftX()) < OperatorConstants.LEFT_X_DEADBAND ? 0.0 : driverController.getLeftX(),
+                () -> Math.abs(driverController.getRawAxis(4)) < OperatorConstants.RIGHT_X_DEADBAND ? 0.0 : driverController.getRawAxis(4), 
+                () -> true,
+                () -> driverController.getHID().getRightBumper(),
+                speedModify /* left trigger */);
+
+
     TeleopDrive closedFieldRel = new TeleopDrive(
-        drivebase,
-        () -> MathUtil.applyDeadband(driverController.getLeftY() , OperatorConstants.LEFT_Y_DEADBAND),
-        () -> MathUtil.applyDeadband(driverController.getLeftX() , OperatorConstants.LEFT_X_DEADBAND),
-        () -> MathUtil.applyDeadband(driverController.getRawAxis(4), 0.1), () -> true,
-        () -> driverController.getHID().getRightBumper(),
-        speedModify /* left trigger */); 
+                drivebase,
+                () -> Math.abs(driverController.getLeftY()) < OperatorConstants.LEFT_Y_DEADBAND ? 0.0 : driverController.getLeftY(),
+                () -> Math.abs(driverController.getLeftX()) < OperatorConstants.LEFT_X_DEADBAND ? 0.0 : driverController.getLeftX(),
+                () -> Math.abs(driverController.getRawAxis(4)) < OperatorConstants.RIGHT_X_DEADBAND ? 0.0 : driverController.getRawAxis(4), 
+                () -> true,
+                () -> driverController.getHID().getRightBumper(),
+                speedModify /* left trigger */);
+
+
 /* 
     DoubleSupplier y = () -> driverController.getLeftY();
     DoubleSupplier x = () -> driverController.getLeftX();
