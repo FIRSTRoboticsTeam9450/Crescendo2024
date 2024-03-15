@@ -65,19 +65,22 @@ public class TeleopDrive extends Command
   public void execute()
   {
     
-/*      
+      
     // for zeroing the gyro
     if (zeroGyro.getAsBoolean()) {
       swerve.zeroGyro();
     }
-*/ 
+
+
+
     // for speedModifier drive enabled
     if (speedModify.getAsBoolean()) {
         speedModifier = 0.2; // instead of 0.5, because drive utilizes a cubic function for speed
     } else {
         speedModifier = 1; // if the speedModify boolean isn't toggled, then use regular speed
     }
-     
+
+
     // double xVelocity   = -vX.getAsDouble() * speedModifier;
     // double yVelocity   = -vY.getAsDouble() * speedModifier;
     double angVelocity = -omega.getAsDouble() * speedModifier * 0.7;

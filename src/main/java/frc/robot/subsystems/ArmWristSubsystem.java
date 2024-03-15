@@ -497,11 +497,14 @@ public class ArmWristSubsystem extends SubsystemBase{
         }
         
         // absolute encoder used to reset relative encoder
-        if (Math.abs(getAbsArmPos() - 0.501) <= 0.021 && armAbsTarget == 0.501) {
-            armRelEncoder.setPosition(getAbsArmPos());
-        }
-        
-        //} 
+        // if (Math.abs(getAbsArmPos() - 0.501) <= 0.021 && armAbsTarget == 0.501) {
+        //     updateRelArmPos();
+        // }
+        // System.out.println(armRelEncoder.getVelocity());
+        if (Math.abs(armRelEncoder.getVelocity()) <= 0.01) {
+            updateRelArmPos();
+            // System.out.println("UPDATED ARM" + " Abs = " + getAbsArmPos() + " Rel = " + getArmRelPos());
+        } 
     }
     public double calculateRotationFF(){
         // if(extensionTarget == 30){

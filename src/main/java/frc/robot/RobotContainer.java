@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -144,8 +145,7 @@ public class RobotContainer
     NamedCommands.registerCommand("Outtake", outtake);  
     NamedCommands.registerCommand("ResetExt", resetExt);  
     // NamedCommands.registerCommand("Sweep", sweep);
-
-    speedModify = () ->  driverController.leftTrigger().getAsBoolean(); // accounts for buttons.run() overrun issue by caching value
+    // speedModify = () ->  driverController.leftTrigger().getAsBoolean(); // accounts for buttons.run() overrun issue by caching value
 
     HeadingCorTeleopDrive drvHeadingCorr = new HeadingCorTeleopDrive(drivebase, 
                                                 () -> MathUtil.applyDeadband(driverController.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
@@ -192,7 +192,7 @@ public class RobotContainer
                 () -> Math.abs(driverController.getRawAxis(4)) < OperatorConstants.RIGHT_X_DEADBAND ? 0.0 : driverController.getRawAxis(4), 
                 true,
                 () -> driverController.getHID().getRightBumper(),
-                speedModify /* left trigger */);
+                () -> driverController.getHID().axisGreaterThan(2, 0.2, new EventLoop()).getAsBoolean() /* left trigger */);
 
 
     TeleopDrive closedFieldRel = new TeleopDrive(
@@ -202,9 +202,9 @@ public class RobotContainer
                 () -> Math.abs(driverController.getRawAxis(4)) < OperatorConstants.RIGHT_X_DEADBAND ? 0.0 : driverController.getRawAxis(4), 
                 true,
                 () -> driverController.getHID().getRightBumper(),
-                speedModify /* left trigger */);
+                () -> driverController.getHID().axisGreaterThan(2, 0.2, new EventLoop()).getAsBoolean() /* left trigger */);
 
-
+                // driverController.axisGreaterThan(2, 0.2).getAsBoolean()
 /* 
     DoubleSupplier y = () -> driverController.getLeftY();
     DoubleSupplier x = () -> driverController.getLeftX();
