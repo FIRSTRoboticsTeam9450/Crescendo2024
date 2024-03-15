@@ -190,7 +190,7 @@ public class RobotContainer
                 () -> Math.abs(driverController.getLeftY()) < OperatorConstants.LEFT_Y_DEADBAND ? 0.0 : driverController.getLeftY(),
                 () -> Math.abs(driverController.getLeftX()) < OperatorConstants.LEFT_X_DEADBAND ? 0.0 : driverController.getLeftX(),
                 () -> Math.abs(driverController.getRawAxis(4)) < OperatorConstants.RIGHT_X_DEADBAND ? 0.0 : driverController.getRawAxis(4), 
-                () -> true,
+                true,
                 () -> driverController.getHID().getRightBumper(),
                 speedModify /* left trigger */);
 
@@ -200,7 +200,7 @@ public class RobotContainer
                 () -> Math.abs(driverController.getLeftY()) < OperatorConstants.LEFT_Y_DEADBAND ? 0.0 : driverController.getLeftY(),
                 () -> Math.abs(driverController.getLeftX()) < OperatorConstants.LEFT_X_DEADBAND ? 0.0 : driverController.getLeftX(),
                 () -> Math.abs(driverController.getRawAxis(4)) < OperatorConstants.RIGHT_X_DEADBAND ? 0.0 : driverController.getRawAxis(4), 
-                () -> true,
+                true,
                 () -> driverController.getHID().getRightBumper(),
                 speedModify /* left trigger */);
 
@@ -214,13 +214,26 @@ public class RobotContainer
     Logger.recordOutput("SwerveStates/ControllerInputLog/RobotContainer/y", x.getAsDouble());
     Logger.recordOutput("SwerveStates/ControllerInputLog/RobotContainer/z", z.getAsDouble());
 */
-    drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simClosedFieldRel : closedFieldRel);
+    
+
+
+    drivebase.setDefaultCommand(RobotBase.isSimulation() ? simClosedFieldRel : closedFieldRel);
+    
+    
+    
     // drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simDrvHeadingCorr : drvHeadingCorr);
     
     // driverController.rightTrigger().whileFalse();
     // driverController.rightTrigger().whileTrue(closedFieldRelSlow);
     // driverController.start().onTrue(new SequentialCommandGroup(new InstantCommand( () -> drivebase.), new InstantCommand( () -> resetDrive(/*closedFieldRel, simClosedFieldRel*/)).andThen(new WaitCommand(.2)),
-                                    
+    
+    /* reset drive?? */
+    driverController.start().onTrue(new SequentialCommandGroup(
+        new InstantCommand( () -> drivebase.removeDefaultCommand()), 
+        new InstantCommand( () -> drivebase.drive(new Translation2d(), drivebase.getTargetSpeeds(0, 0, drivebase.getHeading().getSin(), drivebase.getHeading().getCos()).omegaRadiansPerSecond, true)), 
+        new WaitCommand(0.2), 
+        new InstantCommand( () -> drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simClosedFieldRel : closedFieldRel))));
+                         
     //                                 new InstantCommand( () -> drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simClosedFieldRel : closedFieldRel))));
 
     // Configure the trigger bindings

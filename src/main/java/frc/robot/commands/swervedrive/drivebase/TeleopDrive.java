@@ -28,8 +28,9 @@ public class TeleopDrive extends Command
   private final DoubleSupplier   vX;
   private final DoubleSupplier   vY;
   private final DoubleSupplier   omega;
-  private final BooleanSupplier  driveMode, zeroGyro, speedModify;
+  private final BooleanSupplier  zeroGyro, speedModify;
   private final SwerveController controller;
+  private boolean driveMode;
   private double speedModifier;
 
   /**
@@ -38,7 +39,7 @@ public class TeleopDrive extends Command
    * @param swerve The subsystem used by this command.
    */
   public TeleopDrive(SwerveSubsystem swerve, DoubleSupplier vX, DoubleSupplier vY, DoubleSupplier omega,
-                     BooleanSupplier driveMode, BooleanSupplier zeroGyro, BooleanSupplier speedModify)
+                     boolean driveMode, BooleanSupplier zeroGyro, BooleanSupplier speedModify)
   {
     this.swerve = swerve;
     this.vX = vX;
@@ -63,18 +64,20 @@ public class TeleopDrive extends Command
   @Override
   public void execute()
   {
+    
+/*      
     // for zeroing the gyro
     if (zeroGyro.getAsBoolean()) {
       swerve.zeroGyro();
     }
-
+*/ 
     // for speedModifier drive enabled
     if (speedModify.getAsBoolean()) {
         speedModifier = 0.2; // instead of 0.5, because drive utilizes a cubic function for speed
     } else {
         speedModifier = 1; // if the speedModify boolean isn't toggled, then use regular speed
     }
-      
+     
     // double xVelocity   = -vX.getAsDouble() * speedModifier;
     // double yVelocity   = -vY.getAsDouble() * speedModifier;
     double angVelocity = -omega.getAsDouble() * speedModifier * 0.7;
@@ -99,7 +102,7 @@ public class TeleopDrive extends Command
     // Drive using raw values.
     swerve.drive(new Translation2d(xVelocity * SwerveSubsystem.maximumSpeed, yVelocity * SwerveSubsystem.maximumSpeed),
                  angVelocity * controller.config.maxAngularVelocity,
-                 driveMode.getAsBoolean());
+                 driveMode);
     // SmartDashboard.putNumber("MaxAngVel", controller.config.maxAngularVelocity);
   }
 
