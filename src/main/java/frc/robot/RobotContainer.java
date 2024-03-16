@@ -387,8 +387,7 @@ public class RobotContainer
 
     driverController.y().onTrue(new ParallelCommandGroup(new TimedIntakeSetPowerCommand(intakeSub, 10, 0.75), new WaitCommand(0).andThen(new InstantCommand(() -> armWristSub.goToPosition(Height.PRECLIMB)))));
 
-    driverController.pov(180).onTrue(new InstantCommand(() -> armWristSub.toggleArm()).andThen(new InstantCommand(() -> armWristSub.setArmVoltage(-12))));
-    driverController.pov(180).onFalse(new InstantCommand(() -> armWristSub.toggleArm()));
+    
 
     driverController.rightTrigger().onFalse(new InstantCommand(() -> armWristSub.setExtensionGoal(armWristSub.extensionTarget - 12)));
     driverController.pov(270).onFalse(new InstantCommand(() -> armWristSub.setExtensionGoal(armWristSub.extensionTarget + 12)));

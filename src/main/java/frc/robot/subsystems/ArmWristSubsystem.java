@@ -113,7 +113,7 @@ public class ArmWristSubsystem extends SubsystemBase{
     
 
     // private final ProfiledPIDController armProfiledPid = new ProfiledPIDController(35, 0, 0, new TrapezoidProfile.Constraints(1, 8.2));//maxVel = 3.5 and maxAccel = 2.5 9, 8
-    private final PIDController armPid = new PIDController(30, 0, 0, 0.02);
+    // private final PIDController armPid = new PIDController(30, 0, 0, 0.02);
     private final PIDController armClimbPid = new PIDController(30, 0, 0);
     
     private final PIDController wristPIDController = new PIDController(40, 0, 0); 
@@ -207,7 +207,7 @@ public class ArmWristSubsystem extends SubsystemBase{
         SmartDashboard.putNumber("Wrist Position", wristEncoder.getPosition());
         SmartDashboard.putNumber("Change Extension Target", 0.47);
         SmartDashboard.putNumber("Change Extension Is Brake", 1);
-
+        SmartDashboard.putNumber("Max Arm Voltage", maxArmVoltage);
     }
 
 
@@ -287,7 +287,7 @@ public class ArmWristSubsystem extends SubsystemBase{
         double voltage = MathUtil.clamp(calculateExtensionPID(), -12.0, 12.0);
         double maxExtensionVoltage = 12.0;
 
-        // Logger.recordOutput("Extension/maxVoltage", maxArmVoltage);
+        Logger.recordOutput("Extension/maxVoltage", maxArmVoltage);
 
         
         // SmartDashboard.putNumber("Extension Percent", percentOutput);
@@ -345,11 +345,12 @@ public class ArmWristSubsystem extends SubsystemBase{
         armRelEncoder.setPosition(position);
     }
     /**
-    * @return the relative position of the extension
+    * @return the relative position of the arm
     */
     public double getArmRelPos() {
-        // Logger.recordOutput("Arm/RelCurrentPos", armRelEncoder.getPosition());
+        
         try {
+            Logger.recordOutput("Arm/RelCurrentPos", armRelEncoder.getPosition());
             return armRelEncoder.getPosition();
         } catch (NullPointerException e) {
             e.printStackTrace();
@@ -358,9 +359,10 @@ public class ArmWristSubsystem extends SubsystemBase{
     }
 
     public double getAbsWristPos(){
-        // Logger.recordOutput("Wrist/CurrentPos", wristEncoder.getPosition());
 
         try { 
+            Logger.recordOutput("Wrist/CurrentPos", wristEncoder.getPosition());
+
             return wristEncoder.getPosition();
         } catch (NullPointerException e) {
             e.printStackTrace();
@@ -385,7 +387,7 @@ public class ArmWristSubsystem extends SubsystemBase{
     // cosine equation FF, see https://www.desmos.com/calculator/ygpschqwqe
     public double getFFEquationVoltage() {
         
-        return  armFFWhenPurpen * updateArmFF_extension() * Math.cos((2*Math.PI/((armBalanced - armPurpenGround)*4)) * (getAbsArmPos() - armPurpenGround)); 
+        return  armFFWhenPurpen * updateArmFF_extension() * Math.cos((2*Math.PI/((armBalanced - armPurpenGround)*4)) * (getAbsArmPos() /* change to rel pos */ - armPurpenGround)); 
     } 
 
     
@@ -393,7 +395,7 @@ public class ArmWristSubsystem extends SubsystemBase{
         // leftMotor.setVoltage(-voltage);
         // SmartDashboard.putNumber("Rotation Voltage", voltage);
 
-        // Logger.recordOutput("Arm/ArmVoltage", voltage);
+        Logger.recordOutput("Arm/ArmVoltage", voltage);
         
        armFrontMotor.setVoltage(voltage);
        armBackMotor.setVoltage(voltage);
@@ -481,56 +483,33 @@ public class ArmWristSubsystem extends SubsystemBase{
     //     armPid.reset(getArmRelPos());
     // }
 
-    public double calculateRotationPID(){
-        //return armPid.calculate(getArmPosition(), armAbsTarget);
-        // Logger.recordOutput("Arm/armAbsTarget", armAbsTarget);
-        
-        return armPid.calculate(getArmRelPos(), armAbsTarget);
-    }
 
-    public void updateRotationOutput(){
-        if (!armPIDRun) {
+    
+    public void updateRotationOutput () {
+         if (!armPIDRun) {
             return;
         }
-        
-        double ffValue = getFFEquationVoltage();
-        double pidValue = calculateRotationPID();
+        double error = armAbsTarget - getArmRelPos();
+        // double pidValue = calculateRotationPID();
+        double pidValue = (error) * 60;
+        Logger.recordOutput("Arm/PIDValue", pidValue);
+        Logger.recordOutput("Arm/maxVoltage", maxArmVoltage);
+        Logger.recordOutput("Arm/armTarget", armAbsTarget);
 
-        double voltage = pidValue + ffValue;
-        //SmartDashboard.putNumber("Rotation Voltage", voltage);
-
-        //voltage = MathUtil.clamp(voltage, -4, 4);
-
-        // double voltage = convertToVolts(percentOutput);
-        // SmartDashboard.putNumber("percentOutput", percentOutput);
-        // SmartDashboard.putNumber("Rotation FF", ffValue);
-        // SmartDashboard.putNumber("PIDRotate", pidValue);
-        // Logger.recordOutput("Arm/PIDValue", pidValue);
-        // Logger.recordOutput("Arm/maxVoltage", maxArmVoltage);
-        
-
-       // boolean limit = (getAbsArmPos() >= armHardUpperLimit && Math.signum(voltage) == 1.0) || (getAbsArmPos() <=  && Math.signum(voltage) == -1.0);
-       // if(limit){
-            //Technically should set a ff constant negative 
-            //Mainly b/c of the limit on the chain rn(if gone can remove this if statment)
-        //    setArmVoltage(0);
-        //}else{
-            
-        if (Math.abs(voltage) < maxArmVoltage) { //10 volts good for tele
-            setArmVoltage(voltage);
+        if (Math.abs(pidValue) < maxArmVoltage) { //10 volts good for tele
+            setArmVoltage(pidValue);
         } else {
-            setArmVoltage(maxArmVoltage * Math.signum(voltage));
+            setArmVoltage(maxArmVoltage * Math.signum(pidValue));
         }
-        
-        // absolute encoder used to reset relative encoder
-        // if (Math.abs(getAbsArmPos() - 0.501) <= 0.021 && armAbsTarget == 0.501) {
-        //     updateRelArmPos();
-        // }
-        // System.out.println(armRelEncoder.getVelocity());
-        if (Math.abs(armRelEncoder.getVelocity()) <= 30) {
+
+        // basically if the difference between the abs and rel pos is enough, we know chain probably slipped
+        // since the rel encoder is off from the abs differently from climb and store positions, we only look at climb
+        // so if we are goign to the climb pos, and the error is within an amount, and the abs and rel are sufficiently off,
+        // then updateRelArmPos
+        if (armAbsTarget == 0.461 && Math.abs(getAbsArmPos() - getArmRelPos()) > 0.01619 && Math.abs(error) < 0.01) {
             updateRelArmPos();
-            // System.out.println("UPDATED ARM" + " Abs = " + getAbsArmPos() + " Rel = " + getArmRelPos());
-        } 
+        }
+
     }
     public double calculateRotationFF(){
         // if(extensionTarget == 30){
@@ -573,7 +552,7 @@ public class ArmWristSubsystem extends SubsystemBase{
 
     public void updateWristPos() {
         double goalPos = wristPIDController.getSetpoint();
-        // Logger.recordOutput("Wrist/WristTarget", goalPos);
+        Logger.recordOutput("Wrist/WristTarget", goalPos);
 
         double pidValue = wristPIDController.calculate(getAbsWristPos(), goalPos); //change back to goalPos after testing
         double changeInTime = Timer.getFPGATimestamp() - oldTime;
@@ -584,7 +563,7 @@ public class ArmWristSubsystem extends SubsystemBase{
         double voltage = MathUtil.clamp(pidValue /*+ ffVal*/, -5.0, 5.0);
         double maxWristVoltage = 4.5; // magnitude of voltage
         
-        // Logger.recordOutput("Wrist/maxVoltage", maxWristVoltage);
+        Logger.recordOutput("Wrist/maxVoltage", maxWristVoltage);
         // SmartDashboard.putNumber("Wrist PID", pidValue);
         // SmartDashboard.putNumber("Wrist FF", ffVal);
         // SmartDashboard.putNumber("Wrist Voltage", voltage);
@@ -617,7 +596,7 @@ public class ArmWristSubsystem extends SubsystemBase{
     }
 
     public void setWristVoltage(double voltage) {
-        // Logger.recordOutput("Wrist/WristVoltage", voltage);
+        Logger.recordOutput("Wrist/WristVoltage", voltage);
 
         wrist.setVoltage(voltage);
 
@@ -912,8 +891,7 @@ public class ArmWristSubsystem extends SubsystemBase{
     public void periodic(){
         
 
-        
-        
+       
         if (isClimbing) {
             updateArmClimbPID();
         } else {
@@ -932,7 +910,7 @@ public class ArmWristSubsystem extends SubsystemBase{
 
         /* Stops motor and resets encoder after limit switch reached */
         if (getLowerLimSwitch() && runAndResetExt) {
-            //extensionMotor.stopMotor();
+            extensionMotor.stopMotor();
             setExtVoltage(0);
             extRelEncoder.setPosition(0);
             runAndResetExt = false;
@@ -982,6 +960,12 @@ public class ArmWristSubsystem extends SubsystemBase{
         
         */
 
+        
+       
+        // SmartDashboard.putNumber("Max Arm Voltage", maxArmVoltage);
+        SmartDashboard.putNumber("Arm Rel Position", getArmRelPos());
+        SmartDashboard.putNumber("Ratio Abs/Rel arm", getAbsArmPos() / getArmRelPos());
+        SmartDashboard.putNumber("Arm Setpoint", armAbsTarget);
         // SmartDashboard.putNumber("Ext Rel Pos", getExtRelPos());
         // SmartDashboard.putNumber("Front Arm Motor Current", armFrontMotor.getOutputCurrent());
         // SmartDashboard.putNumber("Back Arm Motor Current", armBackMotor.getOutputCurrent());
@@ -995,6 +979,7 @@ public class ArmWristSubsystem extends SubsystemBase{
 
     //---------------------------------------------------
 
+    
     // true is source, false is ground
     private boolean ampPos;
     public void goToPosition(Height pos) {

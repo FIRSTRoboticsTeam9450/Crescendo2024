@@ -95,9 +95,9 @@ public final class Constants
     public static final double offsetToAmpFromGround = 0.456;
     public static final double offsetToAmpFromSource_Hold = 0.406;
     public static final double offsetToStraightOutPos = 0.125;//0.195
-    public static final double offsetToGround = 0.0675;//0.0756
-    public static final double offsetToHold = 0.025;
-    public static final double offsetToSource = 0.255;
+    public static final double offsetToGround = 0.091592;//0.0856
+    public static final double offsetToHold = 0.03745; // 0.035
+    public static final double offsetToSource = 0.2601; //0.255
   }
 
   public static class ArmPositions{
