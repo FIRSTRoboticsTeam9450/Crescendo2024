@@ -264,13 +264,13 @@ public class RobotContainer
 
 
 
-    /* intake */
+    /* amp */
     armController.leftTrigger().onTrue(new BasicToAmpCommand(armWristSub));
     // driverController.leftTrigger().onTrue(new InstantCommand(() -> intakeSub.intakeNote(5)));
     
     //driverController.leftBumper().onTrue( new TimedIntakeSetPowerCommand(intakeSub, 10, 1.5));
     
-    // /* outtake */
+    // /* hold */
     armController.rightTrigger().onTrue(new SequentialCommandGroup(
       new TimedIntakeSetPowerCommand(intakeSub, 10, 0.75),
       new BasicToHoldCommand(armWristSub),
@@ -294,7 +294,7 @@ public class RobotContainer
 
     */
 
-    // Source
+    /* Source */
     
     // armController.y().onTrue(new SequentialCommandGroup(
     //   new InstantCommand(() -> armWristSub.goToPosition(Height.SOURCE)),
@@ -320,7 +320,7 @@ public class RobotContainer
     ));
     */
     
-    // Amp
+    /* preclimb */
     //armController.b().onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.AMP)));
     armController.b().onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.PRECLIMB)));
    
@@ -339,6 +339,8 @@ public class RobotContainer
     //   new InstantCommand(() -> armWristSub.goToPosition(Height.GROUND)),
     //   new IntakingCommand(intakeSub, 8)
     //   ));
+    
+    /* ground, intake, hold */
     armController.a().onTrue(new SequentialCommandGroup(
       new BasicToGroundCommand(armWristSub),
       new IntakingCommand(intakeSub, 12),
@@ -431,11 +433,4 @@ public class RobotContainer
     armWristSub.setAllBrake(brake);
   }
 
-  public void setRelArmPos(double position) {
-    armWristSub.setRelArmPos(position);
-  }
-
-  public double getAbsArmPos() {
-    return armWristSub.getAbsArmPos();
-  }
 } 

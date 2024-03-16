@@ -82,7 +82,12 @@ public class ClimbSubsystem extends SubsystemBase {
    * @return the encoder position in revolutions
    */
   public double getLeftPosition() {
-    return leftEncoder.getPosition();
+    try {
+      return leftEncoder.getPosition();
+    } catch (NullPointerException e) {
+      e.printStackTrace();
+    }
+    return 0;
   }
 
   /**
@@ -90,7 +95,12 @@ public class ClimbSubsystem extends SubsystemBase {
    * @return the encoder position in revolutions
    */
   public double getRightPosition() {
-    return rightEncoder.getPosition();
+    try {
+      return rightEncoder.getPosition();
+    } catch (NullPointerException e) {
+      e.printStackTrace();
+    }
+    return 0;
   }
 
   /**
@@ -136,7 +146,12 @@ public class ClimbSubsystem extends SubsystemBase {
    * @return the state of the limit switch
    */
   public boolean getLeftLimitSwitch() {
-    return !leftLimitSwitch.get();
+    try {
+      return !leftLimitSwitch.get();
+    } catch (NullPointerException e) {
+      e.printStackTrace();
+    }
+    return false; //cuz running down is better than running up
   }
 
   /**
@@ -144,7 +159,12 @@ public class ClimbSubsystem extends SubsystemBase {
    * @return the state of the limit switch
    */
   public boolean getRightLimitSwitch() {
-    return !rightLimitSwitch.get();
+    try {
+      return !rightLimitSwitch.get();
+    } catch (NullPointerException e) {
+      e.printStackTrace();
+    }
+    return false; //cuz running down is better than running up
   }
 
   /**

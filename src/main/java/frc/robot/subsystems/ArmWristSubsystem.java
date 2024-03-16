@@ -228,7 +228,13 @@ public class ArmWristSubsystem extends SubsystemBase{
    * @return the state of the limit switch
    */
   public boolean getLowerLimSwitch() {
-    return !lowerHardLimSwitch.get();
+    try {
+        return !lowerHardLimSwitch.get();
+    } catch (NullPointerException e) {
+        e.printStackTrace();
+    }
+    return true;
+    
   }
 
   public void setExtVoltage(double voltage) {
@@ -243,7 +249,12 @@ public class ArmWristSubsystem extends SubsystemBase{
    * @return the relative position of the extension
    */
   public double getExtRelPos() {
-    return extRelEncoder.getPosition();
+    try {
+        return extRelEncoder.getPosition();
+    } catch (NullPointerException e) {
+        e.printStackTrace();
+    }
+    return 20;
   }
 
   /**
@@ -318,7 +329,12 @@ public class ArmWristSubsystem extends SubsystemBase{
         // Logger.recordOutput("Arm/AbsCurrentPos", armEncoder.getPosition());
         // Logger.recordOutput("Arm/RelCurrentPos", armRelEncoder.getPosition());
 
-        return armEncoder.getPosition();
+        try {
+            return armEncoder.getPosition();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+        return 0.3;
     }
 
     public void updateRelArmPos() {
@@ -333,13 +349,23 @@ public class ArmWristSubsystem extends SubsystemBase{
     */
     public double getArmRelPos() {
         // Logger.recordOutput("Arm/RelCurrentPos", armRelEncoder.getPosition());
-        return armRelEncoder.getPosition();
+        try {
+            return armRelEncoder.getPosition();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+        return getAbsArmPos();
     }
 
     public double getAbsWristPos(){
         // Logger.recordOutput("Wrist/CurrentPos", wristEncoder.getPosition());
 
-        return wristEncoder.getPosition();
+        try { 
+            return wristEncoder.getPosition();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+        return 0.5;
     }
  
     
@@ -1091,7 +1117,7 @@ public class ArmWristSubsystem extends SubsystemBase{
             } else if (pos == Height.PRECLIMB) {
                 lastHeight = Height.AMP;
 
-                setArmWristExtGoal(armHardLowerLimit + Constants.Arm.offsetToAmpFromGround - 0.05, 
+                setArmWristExtGoal(armHardLowerLimit + Constants.Arm.offsetToAmpFromGround - 0.15, 
                                 wristHardLowerLimit + Constants.Wrist.offsetToAmpFromGround + 0.25, 
                                 extHardLowerLimit - 5);
 
