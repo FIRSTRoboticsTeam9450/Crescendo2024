@@ -4,8 +4,11 @@
 
 package frc.robot.subsystems;
 
+import au.grapplerobotics.LaserCan;
+import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -22,11 +25,14 @@ public class LimelightSubsystem extends SubsystemBase {
 
   boolean ampMode;
 
+  MedianFilter median;
+
   public LimelightSubsystem(IntakeSubsystem intake) {
     axon = new Servo(0);
     SmartDashboard.putNumber("set axon angle", 180);
     setAxonAngle(180);
     this.intake = intake;
+    median = new MedianFilter(3);
   }
 
   /**
@@ -87,9 +93,11 @@ public class LimelightSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-
-    if (intake.getLaserDistance() < 15) {
-      if (table.getEntry("pipeline").getInteger(-1) == 1) {
+    //double medianValue = median.calculate(intake.getLaserDistance());
+    double medianValue = 0;
+    SmartDashboard.putNumber("laser distance", medianValue);
+    if (medianValue < 12) {
+      if (table.getEntry("pipeline").getInteger(-1) == 1 || DriverStation.isAutonomous()) {
         NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(0);
         axon.setAngle(180);
         ampMode = true;

@@ -5,6 +5,7 @@ import java.util.function.BooleanSupplier;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -73,7 +74,6 @@ public class AlignSource2 extends Command {
             noTagStart = true;
             lSubsystem.setAxonAngle(107);
         }
-
     }
 
     @Override
@@ -133,7 +133,10 @@ public class AlignSource2 extends Command {
 
             double axonPower = servoController.calculate(table.getEntry("ty").getDouble(0));
             MathUtil.clamp(axonPower, -1, 1);
-            lSubsystem.setAxonAngle(lSubsystem.getAxonAngle() - axonPower);
+            if (lSubsystem.getAxonAngle()  == 107 && table.getEntry("ty").getDouble(0) > 20) {
+                lSubsystem.resetAngle();
+            }
+            //lSubsystem.setAxonAngle(lSubsystem.getAxonAngle() - axonPower);
 
             yawController.setP(0.05);
             if (lSubsystem.isInAmpMode()) {
@@ -152,6 +155,10 @@ public class AlignSource2 extends Command {
             yawPower = MathUtil.clamp(yawPower, -5, 5);
             xPower = MathUtil.clamp(xPower, -1, 1);
             zPower = MathUtil.clamp(zPower, -1, 1);
+
+            if (robotPose[0] < -2) {
+                xPower = 0;
+            }
 
             if (lSubsystem.isInAmpMode()) {
                 drive.drive(new Translation2d(-zPower, xPower), -yawPower, false);

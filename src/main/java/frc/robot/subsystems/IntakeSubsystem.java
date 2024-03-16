@@ -118,15 +118,13 @@ public class IntakeSubsystem extends SubsystemBase {
 
   /* Laser Methods */
   public double getLaserDistance() {
-    try {
-      return laser.getMeasurement().distance_mm;
-    } catch (NullPointerException e) {
-      e.printStackTrace();
+    measurement = laser.getMeasurement();
+
+    if (measurement != null && measurement.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT) {
+      return measurement.distance_mm;
     }
-    return 100;
+    return 10000;
   }
-
-
   
   /* Intake Methods */
   public void intakeNotes(double voltage) {
