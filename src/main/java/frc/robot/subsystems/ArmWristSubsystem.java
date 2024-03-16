@@ -527,7 +527,7 @@ public class ArmWristSubsystem extends SubsystemBase{
         //     updateRelArmPos();
         // }
         // System.out.println(armRelEncoder.getVelocity());
-        if (Math.abs(armRelEncoder.getVelocity()) <= 0.01) {
+        if (Math.abs(armRelEncoder.getVelocity()) <= 30) {
             updateRelArmPos();
             // System.out.println("UPDATED ARM" + " Abs = " + getAbsArmPos() + " Rel = " + getArmRelPos());
         } 
@@ -1117,7 +1117,7 @@ public class ArmWristSubsystem extends SubsystemBase{
             } else if (pos == Height.PRECLIMB) {
                 lastHeight = Height.AMP;
 
-                setArmWristExtGoal(armHardLowerLimit + Constants.Arm.offsetToAmpFromGround - 0.15, 
+                setArmWristExtGoal(armHardLowerLimit + Constants.Arm.offsetToAmpFromGround - 0.1, 
                                 wristHardLowerLimit + Constants.Wrist.offsetToAmpFromGround + 0.25, 
                                 extHardLowerLimit - 5);
 
