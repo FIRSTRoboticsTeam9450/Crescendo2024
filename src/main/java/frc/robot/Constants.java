@@ -93,7 +93,7 @@ public final class Constants
     public static final double ampArmAngle = 115;
 
     public static final double offsetToAmpFromGround = 0.456;
-    public static final double offsetToAmpFromSource_Hold = 0.406;
+    public static final double offsetToAmpFromSource_Hold = 0.386;
     public static final double offsetToStraightOutPos = 0.125;//0.195
     public static final double offsetToGround = 0.091592;//0.0856
     public static final double offsetToHold = 0.03745; // 0.035
@@ -115,7 +115,7 @@ public final class Constants
     public static final double zeroTics = 0.73;
 
     public static final double offsetToAmpFromGround = 0.5/0.69 * -75 + 10; // -0.5
-    public static final double offsetToAmpFromSource_Hold = 0.409/0.69 * -75; // -0.409
+    public static final double offsetToAmpFromSource_Hold = 0.409/0.69 * -75 - 6; // -0.409
     /**Not updated */
     public static final double offsetToGroundFromHold = 0;
     public static final double offsetToGround = 0.287/0.69 * -75; // -0.287
