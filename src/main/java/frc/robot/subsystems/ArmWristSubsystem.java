@@ -1,6 +1,9 @@
 package frc.robot.subsystems;
 import com.revrobotics.CANSparkBase.IdleMode;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.function.DoubleSupplier;
 
 import org.littletonrobotics.junction.Logger;
@@ -100,8 +103,8 @@ public class ArmWristSubsystem extends SubsystemBase{
     /* Limit Switch */
     DigitalInput lowerHardLimSwitch;
     
-
     
+
     private boolean runStuff = true;
 
      // extension all the way in kg 0.12(0.89 for ext) 0.19 middle(0.47 for ext pos) and 0.24(0.145 for ext) full extended
@@ -492,6 +495,11 @@ public class ArmWristSubsystem extends SubsystemBase{
         double error = armAbsTarget - getArmRelPos();
         // double pidValue = calculateRotationPID();
         double pidValue = (error) * 60;
+        
+        // the complicated BigDecimal is to limit to 3 decimal places
+        BigDecimal limDecimalPlaces = new BigDecimal(armAbsTarget).setScale(3, RoundingMode.HALF_UP);
+        
+        
         Logger.recordOutput("Arm/PIDValue", pidValue);
         Logger.recordOutput("Arm/maxVoltage", maxArmVoltage);
         Logger.recordOutput("Arm/armTarget", armAbsTarget);
@@ -506,13 +514,14 @@ public class ArmWristSubsystem extends SubsystemBase{
         // since the rel encoder is off from the abs differently from climb and store positions, we only look at climb
         // so if we are goign to the climb pos, and the error is within an amount, and the abs and rel are sufficiently off,
         // then updateRelArmPos
-        if (armAbsTarget == 0.461 && Math.abs(getAbsArmPos() - getArmRelPos()) > 0.01619 && Math.abs(error) < 0.01) {
+        
+        if (limDecimalPlaces.doubleValue() == 0.461 && Math.abs(getAbsArmPos() - getArmRelPos()) > 0.01619 && Math.abs(error) < 0.01) {
             updateRelArmPos();
-        } else if (armAbsTarget == 0.461 && Math.abs(error) < 0.01 && armRelEncoder.getVelocity() < 10) { // update every time going to climb pos
-            System.out.println("UPDATED ARM");
+        } else if (limDecimalPlaces.doubleValue() == 0.461 && Math.abs(error) < 0.006 && Math.abs(armRelEncoder.getVelocity()) < 10) { // update every time going to climb pos
+            // System.out.println("UPDATED ARM");
             updateRelArmPos();
         }
-
+        // System.out.println("Arm Abs Target: " + limDecimalPlaces.doubleValue() + " Math.abs(error): " + Math.abs(error) + " Velocity: " + Math.abs(armRelEncoder.getVelocity()));
     }
     public double calculateRotationFF(){
         // if(extensionTarget == 30){
