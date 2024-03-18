@@ -508,6 +508,9 @@ public class ArmWristSubsystem extends SubsystemBase{
         // then updateRelArmPos
         if (armAbsTarget == 0.461 && Math.abs(getAbsArmPos() - getArmRelPos()) > 0.01619 && Math.abs(error) < 0.01) {
             updateRelArmPos();
+        } else if (armAbsTarget == 0.461 && Math.abs(error) < 0.01 && armRelEncoder.getVelocity() < 10) { // update every time going to climb pos
+            System.out.println("UPDATED ARM");
+            updateRelArmPos();
         }
 
     }
