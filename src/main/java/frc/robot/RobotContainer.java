@@ -192,7 +192,7 @@ public class RobotContainer
                 () -> Math.abs(driverController.getRawAxis(4)) < OperatorConstants.RIGHT_X_DEADBAND ? 0.0 : driverController.getRawAxis(4), 
                 true,
                 () -> driverController.getHID().getRightBumper(),
-                () -> driverController.getHID().axisGreaterThan(2, 0.2, new EventLoop()).getAsBoolean() /* left trigger */);
+                () -> driverController.getHID().getLeftBumper());
 
 
     TeleopDrive closedFieldRel = new TeleopDrive(
@@ -202,7 +202,7 @@ public class RobotContainer
                 () -> Math.abs(driverController.getRawAxis(4)) < OperatorConstants.RIGHT_X_DEADBAND ? 0.0 : driverController.getRawAxis(4), 
                 true,
                 () -> driverController.getHID().getRightBumper(),
-                () -> driverController.getHID().axisGreaterThan(2, 0.2, new EventLoop()).getAsBoolean() /* left trigger */);
+                () -> driverController.getHID().getLeftBumper());
 
                 // driverController.axisGreaterThan(2, 0.2).getAsBoolean()
 /* 
@@ -394,7 +394,7 @@ public class RobotContainer
 
     driverController.x().onTrue(new AutoClimbCommand(climbSub, armWristSub));
 
-    driverController.leftBumper().whileTrue(new AlignSource2(drivebase, driverXbox, servo));
+    driverController.leftTrigger().whileTrue(new AlignSource2(drivebase, driverXbox, servo));
 
 
   }
