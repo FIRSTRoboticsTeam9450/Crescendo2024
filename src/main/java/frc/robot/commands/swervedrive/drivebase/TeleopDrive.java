@@ -57,7 +57,7 @@ public class TeleopDrive extends Command
   @Override
   public void initialize()
   {
-      speedModifier = 1.0;
+      speedModifier = 0.8;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
