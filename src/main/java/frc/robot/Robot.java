@@ -166,9 +166,8 @@ public class Robot extends LoggedRobot
   }
 
   @Override
-  public void teleopInit()
-  {
-    // This makes sure that the autonomous stops running when
+  public void autonomousExit() {
+     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
@@ -176,6 +175,17 @@ public class Robot extends LoggedRobot
     {
       m_autonomousCommand.cancel();
     }
+
+    // reset gyro
+    m_robotContainer.drivebase.zeroGyro();
+
+  }
+
+
+  @Override
+  public void teleopInit()
+  {
+   
 
     //new BasicToSourceCommand(m_robotContainer.armWristSub).schedule();
     (new InstantCommand(() -> m_robotContainer.armWristSub.goToPosition(Height.PRECLIMB))).schedule();
