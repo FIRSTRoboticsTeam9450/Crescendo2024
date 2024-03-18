@@ -93,8 +93,9 @@ public class LimelightSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    //double medianValue = median.calculate(intake.getLaserDistance());
-    double medianValue = 0;
+    double medianValue = median.calculate(intake.getLaserDistance());
+    //double medianValue = 0;
+
     SmartDashboard.putNumber("laser distance", medianValue);
     if (medianValue < 12) {
       if (table.getEntry("pipeline").getInteger(-1) == 1 || DriverStation.isAutonomous()) {

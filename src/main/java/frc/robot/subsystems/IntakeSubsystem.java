@@ -62,7 +62,7 @@ public class IntakeSubsystem extends SubsystemBase {
     // Optionally initialise the settings of the LaserCAN, if you haven't already done so in GrappleHook
     try {
       laser.setRangingMode(LaserCan.RangingMode.LONG);
-      laser.setRegionOfInterest(new LaserCan.RegionOfInterest(8, 8, 16, 16));
+      laser.setRegionOfInterest(new LaserCan.RegionOfInterest(1, 1, 1, 1));
       laser.setTimingBudget(LaserCan.TimingBudget.TIMING_BUDGET_33MS);
     } catch (ConfigurationFailedException e) {
       System.out.println("Laser configuration failed! " + e);

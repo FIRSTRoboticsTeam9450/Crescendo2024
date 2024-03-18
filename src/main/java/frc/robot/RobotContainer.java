@@ -385,7 +385,7 @@ public class RobotContainer
 
     driverController.b().onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.TRAP)));
 
-    driverController.y().onTrue(new ParallelCommandGroup(new TimedIntakeSetPowerCommand(intakeSub, 10, 0.75), new WaitCommand(0).andThen(new InstantCommand(() -> armWristSub.goToPosition(Height.PRECLIMB)))));
+    driverController.y().onTrue(new ParallelCommandGroup(new TimedIntakeSetPowerCommand(intakeSub, 12, 0.75), new WaitCommand(0.1).andThen(new InstantCommand(() -> armWristSub.goToPosition(Height.PRECLIMB)))));
 
     
 
