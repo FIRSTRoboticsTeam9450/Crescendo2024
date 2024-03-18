@@ -176,8 +176,6 @@ public class Robot extends LoggedRobot
       m_autonomousCommand.cancel();
     }
 
-    // reset gyro
-    m_robotContainer.drivebase.zeroGyro();
 
   }
 
