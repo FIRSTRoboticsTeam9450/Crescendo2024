@@ -1114,7 +1114,7 @@ public class ArmWristSubsystem extends SubsystemBase{
             } else if (pos == Height.PRECLIMB) {
                 lastHeight = Height.AMP;
 
-                setArmWristExtGoal(armHardLowerLimit + Constants.Arm.offsetToAmpFromGround - 0.1, 
+                setArmWristExtGoal(armHardLowerLimit + Constants.Arm.offsetToClimb, 
                                 wristHardLowerLimit + Constants.Wrist.offsetToAmpFromGround + 0.25, 
                                 extHardLowerLimit - 5);
 

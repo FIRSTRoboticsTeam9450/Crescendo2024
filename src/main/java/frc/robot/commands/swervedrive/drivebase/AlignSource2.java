@@ -42,13 +42,16 @@ public class AlignSource2 extends Command {
     LimelightSubsystem lSubsystem;
 
     Rotation3d originalHeading;
+
+    boolean auto;
     
-    public AlignSource2(SwerveSubsystem drive, XboxController controller, LimelightSubsystem lSubsystem) {
+    public AlignSource2(SwerveSubsystem drive, XboxController controller, LimelightSubsystem lSubsystem, boolean auto) {
         this.drive = drive;
         addRequirements(drive);
         timer = new Timer();
         this.controller = controller;
         this.lSubsystem = lSubsystem;
+        this.auto = auto;
     }
 
     @Override
@@ -72,7 +75,9 @@ public class AlignSource2 extends Command {
 
         if (table.getEntry("tid").getDouble(-1) == -1) {
             noTagStart = true;
-            lSubsystem.setAxonAngle(107);
+            if (!lSubsystem.isInAmpMode()) {
+                lSubsystem.setAxonAngle(107);
+            }
         }
     }
 
@@ -81,9 +86,6 @@ public class AlignSource2 extends Command {
         SmartDashboard.putBoolean("No tag", noTagStart);
         if (noTagStart) {
             drive.drive(new Translation2d(0, 0), 0, false);
-            if (lSubsystem.isInAmpMode()) {
-                return;
-            }
         }
 
         double yawPower = 0;
@@ -93,7 +95,9 @@ public class AlignSource2 extends Command {
         // Check if it can see any tags
         if (table.getEntry("tid").getDouble(-1) == -1) {
             drive.drive(new Translation2d(0, 0), 0, false);
-            controller.setRumble(RumbleType.kBothRumble, 1);
+            if (controller != null) {
+                controller.setRumble(RumbleType.kBothRumble, 1);
+            }
             /*
             if (justLost) {
                 if (amp) {
@@ -126,7 +130,9 @@ public class AlignSource2 extends Command {
             */
             
         } else {
-            controller.setRumble(RumbleType.kBothRumble, 0);
+            if (controller != null) {
+                controller.setRumble(RumbleType.kBothRumble, 0);
+            }
 
             tagPose = table.getEntry("targetpose_robotspace").getDoubleArray(tagPose);
             robotPose = table.getEntry("botpose_targetspace").getDoubleArray(tagPose);
@@ -142,7 +148,11 @@ public class AlignSource2 extends Command {
             if (lSubsystem.isInAmpMode()) {
                 yawController.setSetpoint(0);
                 xController.setSetpoint(0.12);
-                zController.setSetpoint(-0.8);
+                if (auto) {
+                    zController.setSetpoint(-0.5);
+                } else {
+                    zController.setSetpoint(-0.8);
+                }
             } else {
                 yawController.setSetpoint(0);
                 xController.setSetpoint(-0.22);
@@ -175,8 +185,8 @@ public class AlignSource2 extends Command {
     @Override
     public boolean isFinished() {
         if (yawController.getPositionError() < 1 && xController.getPositionError() < 0.05 && zController.getPositionError() < 0.05 && timer.get() > 1) {
-            //drive.drive(new Translation2d(0, 0), 0, false);
-            return false;
+            drive.drive(new Translation2d(0, 0), 0, false);
+            return true;
         }
         return false;
     }
@@ -184,7 +194,9 @@ public class AlignSource2 extends Command {
     @Override
     public void end(boolean interrupted) {
         drive.drive(new Translation2d(0, 0), 0, true);
-        controller.setRumble(RumbleType.kBothRumble, 0);
+        if (controller != null) {
+            controller.setRumble(RumbleType.kBothRumble, 0);
+        }
         lSubsystem.resetAngle();
     }
 
