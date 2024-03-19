@@ -305,7 +305,8 @@ public class RobotContainer
       new BasicToSourceCommand(armWristSub),
       new IntakingCommand(intakeSub, 8),
       new InstantCommand(() -> armWristSub.goToPosition(Height.PRECLIMB)),
-      new InstantCommand(() -> armWristSub.changeHeight(Height.PRECLIMB))
+      new InstantCommand(() -> armWristSub.changeHeight(Height.PRECLIMB)),
+      new InstantCommand(() -> armWristSub.runAndResetExtEncoder())
     ));
    
     //driverController.rightTrigger().onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.SOURCE)));
