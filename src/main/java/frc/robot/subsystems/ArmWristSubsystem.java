@@ -54,7 +54,7 @@ public class ArmWristSubsystem extends SubsystemBase{
     //----
     
 
-    public double armHardLowerLimit = 0.105;//0.08;
+    public double armHardLowerLimit = 0.154;//0.105
     private double armHardUpperLimit = 0.7;//0.51;
     public double wristHardLowerLimit = 0.234; //      0.141
     private double wristHardUpperLimit = 0.8; //    0.7785
@@ -331,7 +331,7 @@ public class ArmWristSubsystem extends SubsystemBase{
     public double getAbsArmPos(){
         // Logger.recordOutput("Arm/AbsCurrentPos", armEncoder.getPosition());
         // Logger.recordOutput("Arm/RelCurrentPos", armRelEncoder.getPosition());
-
+        SmartDashboard.putNumber("Arm Abs Pos", armEncoder.getPosition());
         try {
             return armEncoder.getPosition();
         } catch (NullPointerException e) {
@@ -996,12 +996,12 @@ public class ArmWristSubsystem extends SubsystemBase{
     private boolean ampPos;
     public void goToPosition(Height pos) {
         if (pos == Height.CLIMB || pos == Height.TRAP) {
-            setMaxArmVoltage(4);
+            setMaxArmVoltage(3); // 4
             if (pos == Height.CLIMB) {
                 pos = Height.HOLD;
             }
         } else {
-            setMaxArmVoltage(6);
+            setMaxArmVoltage(3); // 6
         }
       
         if(pause && reachPos){
