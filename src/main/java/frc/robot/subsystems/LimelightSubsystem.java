@@ -30,9 +30,9 @@ public class LimelightSubsystem extends SubsystemBase {
   public LimelightSubsystem(IntakeSubsystem intake) {
     axon = new Servo(0);
     SmartDashboard.putNumber("set axon angle", 180);
-    setAxonAngle(180);
     this.intake = intake;
     median = new MedianFilter(3);
+    resetAngle();
   }
 
   /**
@@ -83,7 +83,7 @@ public class LimelightSubsystem extends SubsystemBase {
   }
 
   public void resetAngle() {
-    if (intake.getLaserDistance() < 15) {
+    if (intake.getLaserDistance() < 50) {
       axon.setAngle(180);
     } else {
       axon.setAngle(130);
@@ -97,7 +97,7 @@ public class LimelightSubsystem extends SubsystemBase {
     //double medianValue = 0;
 
     SmartDashboard.putNumber("laser distance", medianValue);
-    if (medianValue < 12) {
+    if (medianValue < 50) {
       if (table.getEntry("pipeline").getInteger(-1) == 1 || DriverStation.isAutonomous()) {
         NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(0);
         axon.setAngle(180);

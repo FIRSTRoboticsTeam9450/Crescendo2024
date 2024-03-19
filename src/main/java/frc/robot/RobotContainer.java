@@ -136,6 +136,7 @@ public class RobotContainer
 
     Command outtake = new TimedIntakeSetPowerCommand(intakeSub, 10, 0.75);
     Command resetExt = new InstantCommand(() -> armWristSub.runAndResetExtEncoder());
+    Command align = new AlignSource2(drivebase, null, servo, true);
     // Command sweep = new SweepCommand(drivebase);
 
     // NamedCommands.registerCommand("ArmStart", armStart);
@@ -143,7 +144,8 @@ public class RobotContainer
     NamedCommands.registerCommand("ArmGround", armGround);
     NamedCommands.registerCommand("ArmAmp", armAmp);
     NamedCommands.registerCommand("Outtake", outtake);  
-    NamedCommands.registerCommand("ResetExt", resetExt);  
+    NamedCommands.registerCommand("ResetExt", resetExt); 
+    NamedCommands.registerCommand("AlignAmp", align); 
     // NamedCommands.registerCommand("Sweep", sweep);
     // speedModify = () ->  driverController.leftTrigger().getAsBoolean(); // accounts for buttons.run() overrun issue by caching value
 
@@ -394,7 +396,7 @@ public class RobotContainer
 
     driverController.x().onTrue(new AutoClimbCommand(climbSub, armWristSub));
 
-    driverController.leftTrigger().whileTrue(new AlignSource2(drivebase, driverXbox, servo));
+    driverController.leftTrigger().whileTrue(new AlignSource2(drivebase, driverXbox, servo, false));
 
 
   }
@@ -408,7 +410,7 @@ public class RobotContainer
   public Command getAutonomousCommand()
   {
     // An example command will be run in autonomous
-    return drivebase.getAutonomousCommand("BlueTwoNote", true, true);
+    return drivebase.getAutonomousCommand("TestAlign", true, true);
   }
 
   public void setDriveMode()
