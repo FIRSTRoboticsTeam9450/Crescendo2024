@@ -59,7 +59,7 @@ public class ArmWristSubsystem extends SubsystemBase{
     public double wristHardLowerLimit = 0.234; //      0.141
     private double wristHardUpperLimit = 0.8; //    0.7785
     public double extHardLowerLimit = 0; // 0.749
-    private double extHardUpperLimit = -75; // 0.059
+    private double extHardUpperLimit = -75 / 2.0833; // 0.059
 
     private double armAbsTarget = armHardLowerLimit + Constants.Arm.offsetToClimb;//0.485;  //.453
     private double wristTarget = 0.387;
@@ -253,6 +253,8 @@ public class ArmWristSubsystem extends SubsystemBase{
    */
   public double getExtRelPos() {
     try {
+        
+        Logger.recordOutput("Extension/ExtPos", extRelEncoder.getPosition());
         return extRelEncoder.getPosition();
     } catch (NullPointerException e) {
         e.printStackTrace();
@@ -268,7 +270,7 @@ public class ArmWristSubsystem extends SubsystemBase{
    */
     public void runAndResetExtEncoder() {
         runAndResetExt = true;
-        setExtVoltage(5);
+        setExtVoltage(3);
     }
 
     
@@ -290,7 +292,7 @@ public class ArmWristSubsystem extends SubsystemBase{
         double voltage = MathUtil.clamp(calculateExtensionPID(), -12.0, 12.0);
         double maxExtensionVoltage = 12.0;
 
-        Logger.recordOutput("Extension/maxVoltage", maxArmVoltage);
+        Logger.recordOutput("Extension/maxVoltage", maxExtensionVoltage);
 
         
         // SmartDashboard.putNumber("Extension Percent", percentOutput);

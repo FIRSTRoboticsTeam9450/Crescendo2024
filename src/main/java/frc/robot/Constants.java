@@ -108,7 +108,7 @@ public final class Constants
     public static final double wristHardLowerLimit = 0.234; //      0.141
     public static final double wristHardUpperLimit = 0.8; //    0.7785
     public static final double extHardLowerLimit = 0; // 0.749
-    public static final double extHardUpperLimit = -75; // 0.059
+    public static final double extHardUpperLimit = -75 / 2.0833; // 0.059
   }
 
   public static class Extension{
@@ -116,13 +116,13 @@ public final class Constants
     public static final double maxExtensionTics = 0.06; 
     public static final double zeroTics = 0.73;
 
-    public static final double offsetToAmpFromGround = 0.5/0.69 * -75 + 20; // -0.5
-    public static final double offsetToAmpFromSource_Hold = 0.409/0.69 * -75 + 6; // -0.409
+    public static final double offsetToAmpFromGround = (0.5/0.69 * -75 + 20) / 2.0833; // -0.5
+    public static final double offsetToAmpFromSource_Hold = (0.409/0.69 * -75 + 6) / 2.0833; // -0.409
     /**Not updated */
     public static final double offsetToGroundFromHold = 0;
-    public static final double offsetToGround = 0.287/0.69 * -75; // -0.287
-    public static final double offsetToHold = 0.02/0.69 * -75; // -0.02
-    public static final double offsetToSource = 0.2/0.69 * -75 + 5; // -0.2
+    public static final double offsetToGround = 0.287/0.69 * -75 / 2.0833; // -0.287
+    public static final double offsetToHold = 0.02/0.69 * -75 / 2.0833; // -0.02
+    public static final double offsetToSource = (0.2/0.69 * -75 + 5) / 2.0833; // -0.2
     
   }
 

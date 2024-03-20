@@ -17,10 +17,10 @@ public class ExtensionSubsystem extends SubsystemBase{
     
     private Constants.Height lastHeight = Constants.Height.HOLD;
 
-    private double extensionTarget = 0.72;
+    private double extensionTarget = 0.72 / 2.0833;
 
-    private double extHardLowerLimit = 0.749; 
-    private double extHardUpperLimit = 0.059;
+    private double extHardLowerLimit = 0.749 / 2.0833; 
+    private double extHardUpperLimit = 0.059 / 2.0833;
     //Technically starting pos 14.5 INCHES DIFFERENCE  
     private double hardLowerLimit = 0.7; // all the way retracted 0.918
     private double hardUpperLimit = 0.1; // all the way extended 0.15
