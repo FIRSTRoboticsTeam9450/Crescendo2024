@@ -116,7 +116,7 @@ public final class Constants
     public static final double maxExtensionTics = 0.06; 
     public static final double zeroTics = 0.73;
 
-    public static final double offsetToAmpFromGround = 0.5/0.69 * -75 + 10; // -0.5
+    public static final double offsetToAmpFromGround = 0.5/0.69 * -75 + 20; // -0.5
     public static final double offsetToAmpFromSource_Hold = 0.409/0.69 * -75 + 6; // -0.409
     /**Not updated */
     public static final double offsetToGroundFromHold = 0;

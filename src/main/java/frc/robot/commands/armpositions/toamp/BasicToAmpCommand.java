@@ -31,23 +31,24 @@ public class BasicToAmpCommand extends Command {
       armWrist.setArmWristExtGoal(Constants.ArmPositions.armHardLowerLimit + Constants.Arm.offsetToAmpFromGround, 
                                 Constants.ArmPositions.wristHardLowerLimit + Constants.Wrist.offsetToAmpFromGround, 
                                 Constants.ArmPositions.extHardLowerLimit - 5);
+      System.out.println("GROUND");
 
     }else if(armWrist.getHeight() == Height.SOURCE){
       armWrist.setArmWristExtGoal(Constants.ArmPositions.armHardLowerLimit + Constants.Arm.offsetToAmpFromGround, 
     Constants.ArmPositions.wristHardLowerLimit + Constants.Wrist.offsetToAmpFromSource_Hold, 
     Constants.ArmPositions.extHardLowerLimit + Constants.Extension.offsetToAmpFromSource_Hold);
-
+      System.out.println("SOURCE");
     finished = true;
 
-    }else if(armWrist.getHeight() == Height.HOLD){
+    }else if(armWrist.getHeight() == Height.HOLD || armWrist.getHeight() == Height.AMP){
       armWrist.setArmWristGoal(Constants.ArmPositions.armHardLowerLimit + Constants.Arm.offsetToAmpFromGround, 
       Constants.ArmPositions.wristHardLowerLimit + Constants.Wrist.offsetToAmpFromSource_Hold);
-
+      System.out.println("HOLD");
     }else{
       armWrist.setArmWristExtGoal(Constants.ArmPositions.armHardLowerLimit + Constants.Arm.offsetToAmpFromGround, 
       Constants.ArmPositions.wristHardLowerLimit + Constants.Wrist.offsetToAmpFromSource_Hold, 
       Constants.ArmPositions.extHardLowerLimit + Constants.Extension.offsetToAmpFromSource_Hold);
-
+      System.out.println("IDEK");
       finished = true;
 
     }
@@ -60,19 +61,22 @@ public class BasicToAmpCommand extends Command {
   public void execute() {
     if(armWrist.getHeight() == Height.GROUND){
       if (Math.abs(armWrist.getAbsArmPos() - armWrist.newGetAbsArmTarget()) < 0.15) {
-        armWrist.setExtensionGoal(Constants.ArmPositions.extHardLowerLimit + Constants.Extension.offsetToAmpFromGround);
+        armWrist.setExtensionGoal(Constants.ArmPositions.extHardLowerLimit + Constants.Extension.offsetToAmpFromGround - 24);
+        System.out.println("GROUND 2");
         finished = true;
       }
     }
     
-    if(armWrist.getHeight() == Height.HOLD){
+    if(armWrist.getHeight() == Height.HOLD || armWrist.getHeight() == Height.AMP){
       if(Math.abs(armWrist.getAbsArmPos() - armWrist.newGetAbsArmTarget()) < 0.15){
 
         //Need to figure out a way to keep track of whether intaken from amp or source
         if(armWrist.getWasSourceIntake()){
           armWrist.setExtensionGoal(Constants.ArmPositions.extHardLowerLimit + Constants.Extension.offsetToAmpFromSource_Hold - 16);
+          System.out.println("SOURCE 2");
         }else{
           armWrist.setExtensionGoal(Constants.ArmPositions.extHardLowerLimit + Constants.Extension.offsetToAmpFromGround - 24);
+          System.out.println("GROUND 3");
         }
         
         finished = true;

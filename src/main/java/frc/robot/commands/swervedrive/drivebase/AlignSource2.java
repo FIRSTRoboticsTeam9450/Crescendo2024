@@ -149,7 +149,7 @@ public class AlignSource2 extends Command {
                 yawController.setSetpoint(0);
                 xController.setSetpoint(0.12);
                 if (auto) {
-                    zController.setSetpoint(-0.5);
+                    zController.setSetpoint(-0.7);
                 } else {
                     zController.setSetpoint(-0.8);
                 }
@@ -198,6 +198,11 @@ public class AlignSource2 extends Command {
             controller.setRumble(RumbleType.kBothRumble, 0);
         }
         lSubsystem.resetAngle();
+
+        if (auto) {
+            drive.resetOdometry(new Pose2d(new Translation2d(14.68, 7.4), new Rotation2d(-Math.PI / 2)));
+            System.out.println(drive.getPose());
+        }
     }
 
 }

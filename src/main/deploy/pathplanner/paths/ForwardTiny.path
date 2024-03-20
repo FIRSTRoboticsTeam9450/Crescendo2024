@@ -4,24 +4,24 @@
     {
       "anchor": {
         "x": 1.85,
-        "y": 7.65
+        "y": 7.4
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.8499999999999996,
-        "y": 7.65
+        "x": 1.85,
+        "y": 7.5
       },
       "isLocked": false,
-      "linkedName": "AmpScore"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 4.08,
-        "y": 7.65
+        "x": 1.85,
+        "y": 7.55
       },
       "prevControl": {
-        "x": 3.08,
-        "y": 7.65
+        "x": 1.85,
+        "y": 7.45
       },
       "nextControl": null,
       "isLocked": false,

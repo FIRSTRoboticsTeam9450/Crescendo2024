@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 2,
-      "y": 2
+      "x": 0.37,
+      "y": 7.1078702443630295
     },
     "rotation": 0
   },
@@ -18,6 +18,12 @@
           }
         },
         {
+          "type": "path",
+          "data": {
+            "pathName": "LeftStartToAmpAlign"
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "AlignAmp"
@@ -27,6 +33,78 @@
           "type": "named",
           "data": {
             "name": "ArmAmp"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ForwardTiny"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Outtake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "AmpToCloseNoteBlue"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ArmUp"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "CloseNoteToAmpBlue"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AlignAmp"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ArmAmp"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ForwardTiny"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Outtake"
           }
         }
       ]

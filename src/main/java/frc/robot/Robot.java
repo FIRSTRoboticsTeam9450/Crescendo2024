@@ -176,6 +176,8 @@ public class Robot extends LoggedRobot
       m_autonomousCommand.cancel();
     }
 
+    System.out.println(m_robotContainer.drivebase.getPose());
+
 
   }
 
