@@ -95,15 +95,15 @@ public final class Constants
     public static final double offsetToAmpFromGround = 0.416;
     public static final double offsetToAmpFromSource_Hold = 0.386;
     public static final double offsetToStraightOutPos = 0.125;//0.195
-    public static final double offsetToGround = 0.091592;//0.0856
-    public static final double offsetToHold = 0.03745; // 0.035
+    public static final double offsetToGround = 0.106592;//0.0856
+    public static final double offsetToHold = 0.05545 /* 3/4 inch from plate!! */; // 0.035
     public static final double offsetToSource = 0.2601; //0.255
 
     public static final double offsetToClimb = 0.356;
   }
 
   public static class ArmPositions{
-    public static final double armHardLowerLimit = 0.105;//0.08;
+    public static final double armHardLowerLimit = 0.12455;//0.08;
     public static final double armHardUpperLimit = 0.7;//0.51;
     public static final double wristHardLowerLimit = 0.234; //      0.141
     public static final double wristHardUpperLimit = 0.8; //    0.7785

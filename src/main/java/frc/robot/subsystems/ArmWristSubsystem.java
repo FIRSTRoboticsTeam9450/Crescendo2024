@@ -54,14 +54,14 @@ public class ArmWristSubsystem extends SubsystemBase{
     //----
     
 
-    public double armHardLowerLimit = 0.154;//0.105
+    public double armHardLowerLimit = 0.12455;//0.105
     private double armHardUpperLimit = 0.7;//0.51;
     public double wristHardLowerLimit = 0.234; //      0.141
     private double wristHardUpperLimit = 0.8; //    0.7785
     public double extHardLowerLimit = 0; // 0.749
     private double extHardUpperLimit = -75; // 0.059
 
-    private double armAbsTarget = armHardLowerLimit + Constants.Arm.offsetToAmpFromGround - 0.05;//0.485;  //.453
+    private double armAbsTarget = armHardLowerLimit + Constants.Arm.offsetToClimb;//0.485;  //.453
     private double wristTarget = 0.387;
     public double extensionTarget = 0;
 
@@ -494,10 +494,10 @@ public class ArmWristSubsystem extends SubsystemBase{
         }
         double error = armAbsTarget - getArmRelPos();
         // double pidValue = calculateRotationPID();
-        double pidValue = (error) * 60;
+        double pidValue = (error) * 55;
         
         // the complicated BigDecimal is to limit to 3 decimal places
-        BigDecimal limDecimalPlaces = new BigDecimal(armAbsTarget).setScale(3, RoundingMode.HALF_UP);
+        BigDecimal limDecimalPlaces = new BigDecimal(armAbsTarget).setScale(5, RoundingMode.HALF_UP);
         
         
         Logger.recordOutput("Arm/PIDValue", pidValue);
@@ -515,9 +515,9 @@ public class ArmWristSubsystem extends SubsystemBase{
         // so if we are goign to the climb pos, and the error is within an amount, and the abs and rel are sufficiently off,
         // then updateRelArmPos
         
-        if (limDecimalPlaces.doubleValue() == 0.461 && Math.abs(getAbsArmPos() - getArmRelPos()) > 0.01619 && Math.abs(error) < 0.01) {
+        if (limDecimalPlaces.doubleValue() == (armHardLowerLimit + Constants.Arm.offsetToClimb) && Math.abs(getAbsArmPos() - getArmRelPos()) > 0.01619 && Math.abs(error) < 0.01) {
             updateRelArmPos();
-        } else if (limDecimalPlaces.doubleValue() == 0.461 && Math.abs(error) < 0.006 && Math.abs(armRelEncoder.getVelocity()) < 10) { // update every time going to climb pos
+        } else if (limDecimalPlaces.doubleValue() == (armHardLowerLimit + Constants.Arm.offsetToClimb) && Math.abs(error) < 0.006 && Math.abs(armRelEncoder.getVelocity()) < 10) { // update every time going to climb pos
             // System.out.println("UPDATED ARM");
             updateRelArmPos();
         }
@@ -996,12 +996,12 @@ public class ArmWristSubsystem extends SubsystemBase{
     private boolean ampPos;
     public void goToPosition(Height pos) {
         if (pos == Height.CLIMB || pos == Height.TRAP) {
-            setMaxArmVoltage(3); // 4
+            setMaxArmVoltage(4); // 4
             if (pos == Height.CLIMB) {
                 pos = Height.HOLD;
             }
         } else {
-            setMaxArmVoltage(3); // 6
+            setMaxArmVoltage(6); // 6
         }
       
         if(pause && reachPos){
