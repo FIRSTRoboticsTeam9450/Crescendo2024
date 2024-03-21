@@ -97,8 +97,8 @@ public class LimelightSubsystem extends SubsystemBase {
     //double medianValue = 0;
 
     SmartDashboard.putNumber("laser distance", medianValue);
-    if (medianValue < 50) {
-      if (table.getEntry("pipeline").getInteger(-1) == 1 || DriverStation.isAutonomous()) {
+    if (medianValue < 50  || DriverStation.isAutonomous()) {
+      if (table.getEntry("pipeline").getInteger(-1) == 1) {
         NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(0);
         axon.setAngle(180);
         ampMode = true;

@@ -83,6 +83,11 @@ public class AlignSource2 extends Command {
 
     @Override
     public void execute() {
+
+        if (auto) {
+            lSubsystem.setAxonAngle(180);
+        }
+
         SmartDashboard.putBoolean("No tag", noTagStart);
         if (noTagStart) {
             drive.drive(new Translation2d(0, 0), 0, false);
@@ -199,7 +204,7 @@ public class AlignSource2 extends Command {
         }
         lSubsystem.resetAngle();
 
-        if (auto) {
+        if (auto && !interrupted) {
             drive.resetOdometry(new Pose2d(new Translation2d(14.68, 7.4), new Rotation2d(-Math.PI / 2)));
             System.out.println(drive.getPose());
         }
