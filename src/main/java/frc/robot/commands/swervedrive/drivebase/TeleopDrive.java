@@ -90,9 +90,9 @@ public class TeleopDrive extends Command
     double yVelocity   = -Math.signum(vY.getAsDouble()) * Math.abs(Math.pow(vY.getAsDouble(), 2)) * speedModifier;
     // double angVelocity = -Math.pow(omega.getAsDouble(), 3) * speedModifier;
 
-    // SmartDashboard.putNumber("vX", xVelocity);
-    // SmartDashboard.putNumber("vY", yVelocity);
-    // SmartDashboard.putNumber("omega", angVelocity);
+    SmartDashboard.putNumber("vX", xVelocity);
+    SmartDashboard.putNumber("vY", yVelocity);
+    SmartDashboard.putNumber("omega", angVelocity);
     
 /*   
     Logger.recordOutput("SwerveStates/ControllerInputLog/TeleopDrive/x", xVelocity * SwerveSubsystem.maximumSpeed);

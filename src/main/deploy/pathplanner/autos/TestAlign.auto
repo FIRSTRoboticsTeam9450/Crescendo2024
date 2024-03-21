@@ -62,7 +62,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "AmpToCloseNoteBlue"
+            "pathName": "AmpToCloseNoteAlign"
           }
         },
         {
@@ -72,9 +72,15 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "ResetExt"
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "CloseNoteToAmpBlue"
+            "pathName": "CloseNoteToAmpAlign"
           }
         },
         {
@@ -98,13 +104,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "ForwardTiny"
+            "pathName": "ForwardABitLessTiny"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "Outtake"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ArmStore"
           }
         }
       ]

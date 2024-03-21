@@ -136,7 +136,7 @@ public class RobotContainer
 
     Command outtake = new TimedIntakeSetPowerCommand(intakeSub, 10, 0.75);
     Command resetExt = new InstantCommand(() -> armWristSub.runAndResetExtEncoder());
-    Command align = new AlignSource2(drivebase, null, servo, true);
+    Command align = new AlignSource2(drivebase, null, servo, true).withTimeout(2);
     Command armUp = new InstantCommand(() -> armWristSub.goToPosition(Height.PRECLIMB));
     // Command sweep = new SweepCommand(drivebase);
 
@@ -394,8 +394,8 @@ public class RobotContainer
 
     
 
-    driverController.rightTrigger().onFalse(new InstantCommand(() -> armWristSub.setExtensionGoal(armWristSub.extensionTarget - 12)));
-    driverController.pov(270).onFalse(new InstantCommand(() -> armWristSub.setExtensionGoal(armWristSub.extensionTarget + 12)));
+    driverController.rightTrigger().onFalse(new InstantCommand(() -> armWristSub.setExtensionGoal(armWristSub.extensionTarget - 12 / 2.083)));
+    driverController.pov(270).onFalse(new InstantCommand(() -> armWristSub.setExtensionGoal(armWristSub.extensionTarget + 12 / 2.083)));
 
     driverController.x().onTrue(new AutoClimbCommand(climbSub, armWristSub));
 

@@ -45,7 +45,7 @@ public class ArmWristSubsystem extends SubsystemBase{
     public double wristHardLowerLimit = 0.234; //      0.141
     public double extHardLowerLimit = 0; // 0.749
 
-    private double armAbsTarget = armHardLowerLimit + Constants.Arm.offsetToClimb;//0.485;  //.453
+    private double armAbsTarget = armHardLowerLimit + Constants.Arm.offsetToPreClimb;//0.485;  //.453
     private double wristTarget = 0.387;
     public double extensionTarget = 0;
 
@@ -459,9 +459,9 @@ public class ArmWristSubsystem extends SubsystemBase{
         // so if we are goign to the climb pos, and the error is within an amount, and the abs and rel are sufficiently off,
         // then updateRelArmPos
         
-        if (limDecimalPlaces.doubleValue() == (armHardLowerLimit + Constants.Arm.offsetToClimb) && Math.abs(getAbsArmPos() - getArmRelPos()) > 0.01619 && Math.abs(error) < 0.01) {
+        if (limDecimalPlaces.doubleValue() == (armHardLowerLimit + Constants.Arm.offsetToPreClimb) && Math.abs(getAbsArmPos() - getArmRelPos()) > 0.01619 && Math.abs(error) < 0.01) {
             updateRelArmPos();
-        } else if (limDecimalPlaces.doubleValue() == (armHardLowerLimit + Constants.Arm.offsetToClimb) && Math.abs(error) < 0.006 && Math.abs(armRelEncoder.getVelocity()) < 10) { // update every time going to climb pos
+        } else if (limDecimalPlaces.doubleValue() == (armHardLowerLimit + Constants.Arm.offsetToPreClimb) && Math.abs(error) < 0.006 && Math.abs(armRelEncoder.getVelocity()) < 10) { // update every time going to climb pos
             // System.out.println("UPDATED ARM");
             updateRelArmPos();
         }
@@ -779,15 +779,15 @@ public class ArmWristSubsystem extends SubsystemBase{
             } else if (pos == Height.PRECLIMB) {
                 lastHeight = Height.AMP;
 
-                setArmWristExtGoal(armHardLowerLimit + Constants.Arm.offsetToClimb, 
-                                wristHardLowerLimit + Constants.Wrist.offsetToAmpFromGround + 0.25, 
-                                extHardLowerLimit - 5);
+                setArmWristExtGoal(armHardLowerLimit + Constants.Arm.offsetToPreClimb, 
+                                wristHardLowerLimit + Constants.Wrist.offsetToPreClimbFromGround, 
+                                Constants.Extension.offsetToPreClimb);
 
             } else if (pos == Height.TRAP) {
                 lastHeight = Height.AMP;
-                setArmWristExtGoal(armHardLowerLimit + Constants.Arm.offsetToAmpFromGround - 0.02, 
-                                wristHardLowerLimit + Constants.Wrist.offsetToAmpFromGround, 
-                                extHardLowerLimit + Constants.Extension.offsetToAmpFromGround - 12);
+                setArmWristExtGoal(armHardLowerLimit + Constants.Arm.offsetToTrapFromGround, 
+                                wristHardLowerLimit + Constants.Wrist.offsetToTrapFromGround, 
+                                extHardLowerLimit + Constants.Extension.offsetToTrapFromGround);
             }
             
             

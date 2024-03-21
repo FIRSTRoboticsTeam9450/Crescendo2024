@@ -1,0 +1,70 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.85,
+        "y": 7.55
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.9000000000000001,
+        "y": 7.4633974596215555
+      },
+      "isLocked": false,
+      "linkedName": "AmpScore"
+    },
+    {
+      "anchor": {
+        "x": 2.4370791327585035,
+        "y": 7.235477151855846
+      },
+      "prevControl": {
+        "x": 2.3458869822409927,
+        "y": 7.276513619588726
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "CloseNote"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "ArmToGround",
+      "waypointRelativePos": 0.35,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "ArmGround"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 0.25,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 120.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -25.24052926478683,
+    "rotateFast": true
+  },
+  "reversed": false,
+  "folder": "NewPaths",
+  "previewStartingState": {
+    "rotation": -90.0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}
