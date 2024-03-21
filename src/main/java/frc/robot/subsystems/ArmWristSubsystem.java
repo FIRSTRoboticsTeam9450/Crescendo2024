@@ -3,7 +3,6 @@ import com.revrobotics.CANSparkBase.IdleMode;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.DecimalFormat;
 import java.util.function.DoubleSupplier;
 
 import org.littletonrobotics.junction.Logger;
@@ -15,23 +14,16 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkAbsoluteEncoder;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
-import com.revrobotics.SparkLimitSwitch;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.Robot;
 import frc.robot.commands.ExtensionCommand;
 
 
@@ -48,34 +40,22 @@ public class ArmWristSubsystem extends SubsystemBase{
     private Height lastHeight = Height.PRECLIMB;
     private boolean wasSourceIntake = true;
 
-    
-    //Extension Limiter ----
-    private double radiusX, radiusY, extensionLength, totalextensionX, totalextensionY, theta;
-    //----
-    
 
     public double armHardLowerLimit = 0.12455;//0.105
-    private double armHardUpperLimit = 0.7;//0.51;
     public double wristHardLowerLimit = 0.234; //      0.141
-    private double wristHardUpperLimit = 0.8; //    0.7785
     public double extHardLowerLimit = 0; // 0.749
-    private double extHardUpperLimit = -75 / 2.0833; // 0.059
 
     private double armAbsTarget = armHardLowerLimit + Constants.Arm.offsetToClimb;//0.485;  //.453
     private double wristTarget = 0.387;
     public double extensionTarget = 0;
 
-    private double armStraightUp = 0.46;
-    private double armBalanced = 0.36;
-    private double armPurpenGround = 0.206;
-    private double armFFWhenPurpen = 0.42;
-
-    private double maxArmVoltage = 6; //9
-
     private boolean ampToGround = false;
     private boolean groundToAmp = false;
     private boolean holdToSource = false;
     private boolean holdToAmp = false;
+
+    private double maxArmVoltage = 6; //9
+
     
     boolean wristBrakeToggle;
     boolean wristPIDRun;
@@ -110,7 +90,6 @@ public class ArmWristSubsystem extends SubsystemBase{
      // extension all the way in kg 0.12(0.89 for ext) 0.19 middle(0.47 for ext pos) and 0.24(0.145 for ext) full extended
     // Equation for this is ffVal = -0.16134 * ExtPos + 0.26427
     DoubleSupplier armFFkg = () -> 0.065;
-    private ArmFeedforward armFF = new ArmFeedforward(0, 0.065,0); //0.027, 0.00001 => halfway is 0.013505
     public SimpleMotorFeedforward wristFeedForward = new SimpleMotorFeedforward(0.00001, 0.00003, 0.00001); 
 
     
@@ -375,25 +354,6 @@ public class ArmWristSubsystem extends SubsystemBase{
         return 0.5;
     }
  
-    
-    
-    /**
-     * For equation derivation, see {@link https://www.desmos.com/calculator/ecg3didfiz}
-     * @return returns a linear modifier from 1 to 1.4375 to multiply the armFF equation by to account for extension
-     */
-    public double updateArmFF_extension(){
-        //return (-0.16134 * extPosition + armFFkg.getAsDouble());
-        // return -0.56966 * getExtensionAbsPosition() + 1.39876302083; // old b value was 1.52295
-        double slope = (1.4375 - 1) / (extHardUpperLimit);
-        return slope * getExtRelPos() + (1 - slope * extHardLowerLimit);
-    }
-    
-
-    // cosine equation FF, see https://www.desmos.com/calculator/ygpschqwqe
-    public double getFFEquationVoltage() {
-        
-        return  armFFWhenPurpen * updateArmFF_extension() * Math.cos((2*Math.PI/((armBalanced - armPurpenGround)*4)) * (getAbsArmPos() /* change to rel pos */ - armPurpenGround)); 
-    } 
 
     
     public void setArmVoltage(double voltage){
@@ -408,17 +368,6 @@ public class ArmWristSubsystem extends SubsystemBase{
 
     public void setMaxArmVoltage(double voltage) {
         maxArmVoltage = voltage;
-    }
-
-    public void downManual(){
-        armAbsTarget -= 0.01;
-
-        //wrist.setGoal(2.57 - armAbsTarget);
-    }
-    public void upManual(){
-        armAbsTarget += 0.01;
-
-        //wrist.setGoal(2.57 - armAbsTarget);
     }
 
     public void setArmGoal(double target) {
@@ -481,13 +430,6 @@ public class ArmWristSubsystem extends SubsystemBase{
         //} 
     }
 
-    /**
-     * Be careful with this...
-     */
-    // public void resetProfiledArmPID() {
-    //     armPid.reset(getArmRelPos());
-    // }
-
 
     
     public void updateRotationOutput () {
@@ -524,23 +466,6 @@ public class ArmWristSubsystem extends SubsystemBase{
             updateRelArmPos();
         }
         // System.out.println("Arm Abs Target: " + limDecimalPlaces.doubleValue() + " Math.abs(error): " + Math.abs(error) + " Velocity: " + Math.abs(armRelEncoder.getVelocity()));
-    }
-    public double calculateRotationFF(){
-        // if(extensionTarget == 30){
-        //     return armExtendedFF.calculate(getArmPosition(), armPid.getSetpoint().velocity);
-        // }
-
-        //return armFF.calculate(getArmPosition(), armPid.getSetpoint().velocity);
-        //return armFF.calculate(getAbsArmPos(), armPid.getSetpoint().velocity);
-        if (getAbsArmPos() >= 0.46) {
-            return -armFF.calculate(getArmRelPos(), 0);
-        } else {
-            return armFF.calculate(getArmRelPos(), 0);
-        }
-    }
-    
-    private double convertToVolts(double percentOutput){
-        return percentOutput * /*Robot.getInstance().getVoltage()*/ 12;
     }
 
 
@@ -623,18 +548,15 @@ public class ArmWristSubsystem extends SubsystemBase{
         
     }
 
+/* *Could be used in future
     public void toggleWrist() {
         wristPIDRun = !wristPIDRun;
     }
     public void toggleArm() {
         armPIDRun = !armPIDRun;
     }
+*/
 
-
-    public double getWristPos() { return wrist.getEncoder().getPosition(); }
-    public void stopWrist() { wrist.stopMotor(); }
-    public void toggleWristBrake() { wrist.setIdleMode(wristBrakeToggle ? IdleMode.kBrake : IdleMode.kCoast); wristBrakeToggle = !wristBrakeToggle; }
-    
 
 
 
@@ -649,222 +571,7 @@ public class ArmWristSubsystem extends SubsystemBase{
  */
 
 
-
    
-
-
-
-    // @Override
-    // public void periodic(){
-    
-                
-    //     theta = (((Constants.Arm.intakeArmAngle - Constants.Arm.ampArmAngle)/(Constants.Arm.intakeArmTics - Constants.Arm.ampArmTics)) * getAbsArmPos()) + (Constants.Arm.intakeArmAngle - (((Constants.Arm.intakeArmAngle - Constants.Arm.ampArmAngle)/(Constants.Arm.intakeArmTics - Constants.Arm.ampArmTics)) * Constants.Arm.intakeArmTics));
-    //     radiusX = Constants.Arm.armLength - Math.abs((getAbsWristPos() - Constants.Wrist.straightWristTics) / ((Constants.Wrist.upWristTics-Constants.Wrist.straightWristTics)/(Constants.Wrist.straightWristInches-Constants.Wrist.upWristInches))) + Constants.Wrist.straightWristInches;
-    //     radiusY = radiusX + 1;
-    //     extensionLength = (Constants.Extension.maxExtensionInches / (Constants.Extension.maxExtensionTics - Constants.Extension.zeroTics)) * getExtRelPos() - (Constants.Extension.zeroTics * (Constants.Extension.maxExtensionInches/(Constants.Extension.maxExtensionTics - Constants.Extension.zeroTics)));
-    //     totalextensionX = ((radiusX + extensionLength) * Math.abs(Math.cos(theta))) - Constants.Chassis.pivotToFront;
-    //     totalextensionY = ((radiusY + extensionLength) * Math.sin(theta));
-    //     SmartDashboard.putNumber("totalExtensionX", totalextensionX);
-    //     SmartDashboard.putNumber("totalExtensionY", totalextensionY);
-    //     SmartDashboard.putNumber("extensionLength", extensionLength);
-    //     SmartDashboard.putNumber("radiusX", radiusX);
-    //     SmartDashboard.putNumber("theta", theta);
-    //     SmartDashboard.putNumber("Wrist Extension", (-Math.abs((getAbsWristPos() - Constants.Wrist.straightWristTics) / ((Constants.Wrist.upWristTics-Constants.Wrist.straightWristTics)/(Constants.Wrist.straightWristInches-Constants.Wrist.upWristInches))) + Constants.Wrist.straightWristInches));
-
-    //     SmartDashboard.putBoolean("extension switch", extensionMotor.getForwardLimitSwitch(SparkLimitSwitch.Type.kNormallyClosed).isPressed());
-
-    //     // used for gotoPositio nmethod
-    //     reachPos = Math.abs(getAbsArmPos() - this.armAbsTarget) > 0.08  
-    //     && Math.abs(getExtRelPos() - this.extensionTarget) > 3
-    //     && Math.abs(getAbsWristPos() - this.wristTarget) > 0.08;
-
-
-    //     if(runStuff){
-    //         if(armPIDRun){
-    //             if (isClimbing) {
-    //                 updateArmClimbPID();
-    //             } else {
-    //                 updateRotationOutput();
-
-    //             }
-    //         }else{
-    //             //armFrontMotor.setVoltage(0);
-    //         }
-           
-    //         if (wristPIDRun) {
-    //                 updateWristPos();
-                
-    //         }
-
-          
-    //         /* <------- below is logic for hold to ground and ground to hold positions --------> */
-            
-    //         // during ground to hold pos, we want extension and wrist to move at the same time as arm when arm goes
-    //         // to straight pos, but not when we go from hold to ground, so this if statement is outside the 
-    //         // arm error limiter if statement beneath this if statement
-    //         if (lastHeight == Height.GROUND && !wristPIDRun) {
-    //                 if (!runAndResetExt) {
-    //                     updateExtensionOutput();
-    //                 }
-                    
-    //                 updateWristPos();
-    //         }
-
-    //         //Implemented - Krish
-    //         if (ampToGround) {
-    //             if (Math.abs(getAbsArmPos() - armAbsTarget) < 0.2) {
-    //                 setExtensionGoal(extHardLowerLimit + Constants.Extension.offsetToGround);
-    //                 ampToGround = false;
-    //             }
-    //         }
-
-    //         //Implemented - Krish
-    //         if (groundToAmp) {
-    //             if (Math.abs(getAbsArmPos() - armAbsTarget) < 0.2) {
-    //                 setExtensionGoal(extHardLowerLimit + Constants.Extension.offsetToAmpFromGround);
-    //                 groundToAmp = false;
-    //             }
-    //         }
-
-    //         //Implemented - Krish
-    //         if (holdToSource) {
-    //             if (Math.abs(getAbsArmPos() - armAbsTarget) < 0.1) {
-    //                 setExtensionGoal(extHardLowerLimit + Constants.Extension.offsetToSource);
-    //                 holdToSource = false;
-    //             }
-    //         }
-
-    //         //Implemented - Krish
-    //         if (holdToAmp) {
-    //             if (Math.abs(getAbsArmPos() - armAbsTarget) < 0.1) {
-    //                 setExtensionGoal(extHardLowerLimit + Constants.Extension.offsetToAmpFromSource_Hold);
-    //                 holdToAmp = false;
-    //             }
-    //         }
-
-    //         // to start wrist movement after moving up a bit b/c wrist kinda slow lol (runs when going
-    //         // from hold to ground pos and the arm is part way up from its first arm pos)
-    //         if (lastHeight == Height.HOLD && !wristPIDRun && Math.abs(getAbsArmPos() - armAbsTarget) < 0.75) {
-    //             updateWristPos();
-    //         }
-
-    //         // runs extension after arm error is certain amount... the wristPIDRun logic in the first
-    //         // if statment is to make a smaller error range for when going from hold to ground and vice versa
-    //         if(Math.abs(getAbsArmPos() - armAbsTarget) < (wristPIDRun ? 0.4 : 0.01)){
-    //             if (lastHeight == Height.HOLD && !wristPIDRun && Math.abs(getAbsWristPos() - wristTarget) < 0.1) {
-    //                 // changes to actual arm goal after the first arm goal was reached sufficiently
-    //                 setArmGoal(armHardLowerLimit + Constants.Arm.offsetToGround);
-    //                 // toggles wristPIDRun so tht the other if statment will use old error range, and so 
-    //                 // that this if statement wont be entered again
-    //                 wristPIDRun = true;
-    //                 lastHeight = Height.GROUND;
-    //             } else if (lastHeight == Height.GROUND && !wristPIDRun) {
-    //                 // changes to actual arm goal after the first arm goal was reached sufficiently
-    //                 setArmGoal(armHardLowerLimit + Constants.Arm.offsetToHold);
-    //                 // toggles wristPIDRun so tht the other if statment will use old error range, and so 
-    //                 // that this if statement wont be entered again]\[]
-    //                 wristPIDRun = true;
-    //                 lastHeight = Height.HOLD;
-    //             }
-                
-    //             // runs extension after error is certain range
-    //             if (!runAndResetExt) {
-    //                     updateExtensionOutput();
-    //             }
-                
-    //         }
-            
-
-        
-    //     }else{
-    //         setArmVoltage(0);
-    //         wrist.setVoltage(0);
-    //     }
-    //     //SmartDashboard.putNumber("LeftPosition", getLeftPosition());
-    //     SmartDashboard.putNumber("Arm Position", getAbsArmPos());
-    //     SmartDashboard.putNumber("Arm Target", armAbsTarget);
-    //     SmartDashboard.putNumber("Wrist Pos", getAbsWristPos());
-    //     SmartDashboard.putBoolean("Wrist is Brake", wrist.getIdleMode() == IdleMode.kBrake ? true : false);
-    //     SmartDashboard.putNumber("Arm Actual Voltage", armFrontMotor.getOutputCurrent()*0.6);
-    //     SmartDashboard.putNumber("ArmFF kg", armFF.kg);
-    //     SmartDashboard.putNumber("FF Equation Value", getFFEquationVoltage());
-    //     SmartDashboard.putBoolean("Wrist Enabled", wristPIDRun);
-    //     SmartDashboard.putBoolean("Arm Enabled", armPIDRun);
-    //     SmartDashboard.putNumber("Wrist Target", wristTarget);
-    //     SmartDashboard.putNumber("Extension Target", extensionTarget);
-    //     if (SmartDashboard.getNumber("Change Extension Is Brake", 1) == 1) {
-    //         extensionMotor.setIdleMode(IdleMode.kBrake);
-    //     } else {
-    //         extensionMotor.setIdleMode(IdleMode.kCoast);
-    //     }
-
-    //     armFFkg = () -> SmartDashboard.getNumber("Change ArmFF", 0.065);
-    //     if (SmartDashboard.getNumber("Change Arm Is Brake", 1) == 1) {
-    //         armFrontMotor.setIdleMode(IdleMode.kBrake);
-    //     } else {
-    //         armFrontMotor.setIdleMode(IdleMode.kCoast);
-    //     }
-    //     if (SmartDashboard.getNumber("Change Wrist Is Brake", 1) == 1) {
-    //         wrist.setIdleMode(IdleMode.kBrake);
-    //     } else {
-    //         wrist.setIdleMode(IdleMode.kCoast);
-    //     }
-        
-    //    // wristTarget = SmartDashboard.getNumber("Change Wrist Target", 0.68);
-    //     //armAbsTarget = SmartDashboard.getNumber("Change Arm Target", armAbsTarget);
-
-
-
-    //     //SmartDashboard.putNumber("Wrist Error", wrist.getPositionError());
-    //     //SmartDashboard.putNumber("Position Error", rotation.getPositionError());
-        
-    //     //SmartDashboard.putNumber("Wrist Position", getWristPosition());
-    //     //SmartDashboard.putNumber("Arm current", rightMotor.getOutputCurrent());
-         
-
-
-    //     // if toggle is true, run motor [toward lowerHardLimit]
-    //     if (runAndResetExt) {   
-    //         setExtVoltage(5); 
-            
-            
-    //     }
-    //     /* Stops motor and resets encoder after limit switch reached */
-    //     if (getLowerLimSwitch()) {
-    //         extensionMotor.stopMotor();
-    //         extRelEncoder.setPosition(0);
-    //         runAndResetExt = false;
-    //     }
-    
-    
-    //     SmartDashboard.putNumber("Ext Rel Pos", getExtRelPos());
-        
-    // }  
-    
-    
-
-
-    // public void example(){
-    //     Shuffleboard.getTab("Arm")
-    //     .add("Arm P value", p)
-    //     .withSize(2, 1)
-    //     .withWidget(BuiltInWidgets.kNumberSlider)
-    //     .withProperties(Map.of("Min", 0, "Max", 0.025))
-    //     .getEntry();
-        
-    // }
-    
-
-    public void anEmptyMethod() {
-        // for testing
-    }
-    // public double getLeftRotPos() {
-    //     return leftMotor.getEncoder().getPosition() ;
-    // }
-
-    public double convertToRads(double angle) {
-        return angle/360*2*Math.PI;
-    }
 
     // --------------------------------------------------------------
 
@@ -931,51 +638,7 @@ public class ArmWristSubsystem extends SubsystemBase{
 
         }
     
-            
 
-        
-                
-            
-        // SmartDashboard.putBoolean("extension switch", extensionMotor.getForwardLimitSwitch(SparkLimitSwitch.Type.kNormallyClosed).isPressed());
-        // SmartDashboard.putNumber("Arm Position", getAbsArmPos());
-        // SmartDashboard.putNumber("Arm Target", armAbsTarget);
-        //SmartDashboard.putString("Last Height", getHeight().toString());
-        // SmartDashboard.putNumber("Wrist Pos", getAbsWristPos());
-        // SmartDashboard.putBoolean("Wrist is Brake", wrist.getIdleMode() == IdleMode.kBrake ? true : false);
-        // SmartDashboard.putNumber("Arm Actual Voltage", armFrontMotor.getOutputCurrent()*0.6);
-        // SmartDashboard.putNumber("ArmFF kg", armFF.kg);
-        // SmartDashboard.putNumber("FF Equation Value", getFFEquationVoltage());
-        // SmartDashboard.putBoolean("Wrist Enabled", wristPIDRun);
-        // SmartDashboard.putBoolean("Arm Enabled", armPIDRun);
-        // SmartDashboard.putNumber("Wrist Target", wristTarget);
-        // SmartDashboard.putNumber("Extension Target", extensionTarget);
-
-        /* 
-        if (SmartDashboard.getNumber("Change Extension Is Brake", 1) == 1) {
-            extensionMotor.setIdleMode(IdleMode.kBrake);
-        } else {
-            extensionMotor.setIdleMode(IdleMode.kCoast);
-        }
-
-        // armFFkg = () -> SmartDashboard.getNumber("Change ArmFF", 0.065);
-        if (SmartDashboard.getNumber("Change Arm Is Brake", 1) == 1) {
-            armFrontMotor.setIdleMode(IdleMode.kBrake);
-            armBackMotor.setIdleMode(IdleMode.kBrake);
-        } else {
-            armFrontMotor.setIdleMode(IdleMode.kCoast);
-            armBackMotor.setIdleMode(IdleMode.kCoast);
-
-        }
-        if (SmartDashboard.getNumber("Change Wrist Is Brake", 1) == 1) {
-            wrist.setIdleMode(IdleMode.kBrake);
-        } else {
-            wrist.setIdleMode(IdleMode.kCoast);
-        }
-        
-        */
-
-        
-       
         // SmartDashboard.putNumber("Max Arm Voltage", maxArmVoltage);
         SmartDashboard.putNumber("Arm Rel Position", getArmRelPos());
         SmartDashboard.putNumber("Ratio Abs/Rel arm", getAbsArmPos() / getArmRelPos());
