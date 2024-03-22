@@ -41,6 +41,7 @@ public class Robot extends LoggedRobot
 
   private RobotContainer m_robotContainer;
   private Timer disabledTimer;
+  private boolean runnable;
 
   public Robot()
   {
@@ -115,8 +116,8 @@ public class Robot extends LoggedRobot
   {
     m_robotContainer.setDriveBrake(true);
     m_robotContainer.setArmWristExtBrake(true);
-    disabledTimer.reset();
-    disabledTimer.start();
+    disabledTimer.restart();
+    runnable = true;
   }
 
   @Override
@@ -124,11 +125,13 @@ public class Robot extends LoggedRobot
   {
     
 
-    if (disabledTimer.hasElapsed(Constants.Drivebase.WHEEL_LOCK_TIME))
+    if (disabledTimer.hasElapsed(Constants.Drivebase.WHEEL_LOCK_TIME) && runnable)
     {
       m_robotContainer.setDriveBrake(false);
+      m_robotContainer.setArmWristExtBrake(false);
       //m_robotContainer.setArmWristExtBrake(false);
       disabledTimer.stop();
+      runnable = false;
     } 
 
     

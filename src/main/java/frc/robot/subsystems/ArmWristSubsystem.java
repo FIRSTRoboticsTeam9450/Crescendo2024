@@ -86,6 +86,7 @@ public class ArmWristSubsystem extends SubsystemBase{
     
 
     private boolean runStuff = true;
+    private boolean runRotation = true;
 
      // extension all the way in kg 0.12(0.89 for ext) 0.19 middle(0.47 for ext pos) and 0.24(0.145 for ext) full extended
     // Equation for this is ffVal = -0.16134 * ExtPos + 0.26427
@@ -179,7 +180,7 @@ public class ArmWristSubsystem extends SubsystemBase{
 
         //goToPosition(Height.SOURCE);
         runAndResetExtEncoder();
-        setRelArmPos(armEncoder.getPosition());
+        updateRelArmPos();
 
         SmartDashboard.putNumber("Change Arm Target", armAbsTarget);
         SmartDashboard.putNumber("Change Wrist Target", Constants.midWristPos);
@@ -231,14 +232,10 @@ public class ArmWristSubsystem extends SubsystemBase{
    * @return the relative position of the extension
    */
   public double getExtRelPos() {
-    try {
-        
-        Logger.recordOutput("Extension/ExtPos", extRelEncoder.getPosition());
-        return extRelEncoder.getPosition();
-    } catch (NullPointerException e) {
-        e.printStackTrace();
-    }
-    return 20;
+   
+    Logger.recordOutput("Extension/ExtPos", extRelEncoder.getPosition());
+    return extRelEncoder.getPosition();
+   
   }
 
   /**
@@ -310,15 +307,11 @@ public class ArmWristSubsystem extends SubsystemBase{
         
 
     public double getAbsArmPos(){
-        // Logger.recordOutput("Arm/AbsCurrentPos", armEncoder.getPosition());
-        // Logger.recordOutput("Arm/RelCurrentPos", armRelEncoder.getPosition());
+        Logger.recordOutput("Arm/AbsCurrentPos", armEncoder.getPosition());
         SmartDashboard.putNumber("Arm Abs Pos", armEncoder.getPosition());
-        try {
-            return armEncoder.getPosition();
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-        }
-        return 0.3;
+        
+        return armEncoder.getPosition();
+        
     }
 
     public void updateRelArmPos() {
@@ -333,25 +326,19 @@ public class ArmWristSubsystem extends SubsystemBase{
     */
     public double getArmRelPos() {
         
-        try {
-            Logger.recordOutput("Arm/RelCurrentPos", armRelEncoder.getPosition());
-            return armRelEncoder.getPosition();
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-        }
-        return getAbsArmPos();
+        
+        Logger.recordOutput("Arm/RelCurrentPos", armRelEncoder.getPosition());
+        return armRelEncoder.getPosition();
+       
     }
 
     public double getAbsWristPos(){
 
-        try { 
-            Logger.recordOutput("Wrist/CurrentPos", wristEncoder.getPosition());
 
-            return wristEncoder.getPosition();
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-        }
-        return 0.5;
+        Logger.recordOutput("Wrist/CurrentPos", wristEncoder.getPosition());
+
+        return wristEncoder.getPosition();
+      
     }
  
 
@@ -449,9 +436,22 @@ public class ArmWristSubsystem extends SubsystemBase{
         Logger.recordOutput("Arm/armTarget", armAbsTarget);
 
         if (Math.abs(pidValue) < maxArmVoltage) { //10 volts good for tele
-            setArmVoltage(pidValue);
+            if (Math.abs(getArmRelPos()) < 0.1) {
+                setArmVoltage(0);
+                System.out.println("POSITION LESS THAN 0.1");
+            } else {
+                setArmVoltage(pidValue);
+            }
+            
         } else {
-            setArmVoltage(maxArmVoltage * Math.signum(pidValue));
+            if (Math.abs(getArmRelPos()) < 0.1) {
+                setArmVoltage(0);
+                System.out.println("POSITION LESS THAN 0.1");
+
+            } else {
+                setArmVoltage(maxArmVoltage * Math.signum(pidValue));
+            }
+            
         }
 
         // basically if the difference between the abs and rel pos is enough, we know chain probably slipped
@@ -616,6 +616,7 @@ public class ArmWristSubsystem extends SubsystemBase{
         if (isClimbing) {
             updateArmClimbPID();
         } else {
+            
             updateRotationOutput();
             updateWristPos();
             
