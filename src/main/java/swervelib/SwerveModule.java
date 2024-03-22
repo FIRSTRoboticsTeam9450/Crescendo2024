@@ -344,8 +344,12 @@ public class SwerveModule
       driveMotor.set(percentOutput);
     } else
     {
-      driveMotor.setReference(velocity, driveMotorFeedforward.calculate(velocity));
-      desiredState.speedMetersPerSecond = velocity;
+      if (Math.abs(desiredState.speedMetersPerSecond) <= 0.005) {
+        driveMotor.set(0);
+      } else {
+        driveMotor.setReference(velocity, driveMotorFeedforward.calculate(velocity));
+        desiredState.speedMetersPerSecond = velocity;
+      }
       // Logger.recordOutput("SwerveStates/ControllerInputLog/SwerveModule/desiredDrvVel", velocity);
       
     }
