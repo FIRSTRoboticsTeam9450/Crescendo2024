@@ -97,7 +97,7 @@ public final class Constants
     public static final double offsetToStraightOutPos = 0.125;//0.195
     public static final double offsetToGround = 0.102;//0.0856
     public static final double offsetToHold = 0.05545 /* 3/4 inch from plate!! */; // 0.035
-    public static final double offsetToSource = 0.2601; //0.255
+    public static final double offsetToSource = 0.2701; //0.255
 
     public static final double offsetToPreClimb = 0.356;
 
@@ -118,13 +118,13 @@ public final class Constants
     public static final double maxExtensionTics = 0.06; 
     public static final double zeroTics = 0.73;
 
-    public static final double offsetToAmpFromGround = (0.5/0.69 * -75 + 20 - 24) / 2.0833; // -0.5
+    public static final double offsetToAmpFromGround = (0.5/0.69 * -75 + 20 - 24) / 2.0833 + 1; // -0.5
     public static final double offsetToAmpFromSource_Hold = (0.409/0.69 * -75 + 6 - 16) / 2.0833; // -0.409
     /**Not updated */
     public static final double offsetToGroundFromHold = 0;
     public static final double offsetToGround = 0.287/0.69 * -75 / 2.0833; // -0.287
     public static final double offsetToHold = 0.02/0.69 * -75 / 2.0833; // -0.02
-    public static final double offsetToSource = (0.2/0.69 * -75 + 5) / 2.0833; // -0.2
+    public static final double offsetToSource = (0.2/0.69 * -75 + 5 + 4) / 2.0833; // -0.2
     
     public static final double offsetToTrapFromGround = (0.5/0.69 * -75 + 20 - 24 - 12) / 2.0833; // -0.5
 
