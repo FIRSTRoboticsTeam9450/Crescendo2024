@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems;
 
-import au.grapplerobotics.LaserCan;
 import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -95,6 +94,11 @@ public class LimelightSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
     double medianValue = median.calculate(intake.getLaserDistance());
     //double medianValue = 0;
+
+    if (DriverStation.isAutonomous()) {
+      NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(0);
+      ampMode = true;
+    }
 
     SmartDashboard.putNumber("laser distance", medianValue);
     if (medianValue < 50  || DriverStation.isAutonomous()) {

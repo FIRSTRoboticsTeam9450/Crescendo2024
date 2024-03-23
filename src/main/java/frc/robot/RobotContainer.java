@@ -48,7 +48,6 @@ import frc.robot.subsystems.ArmWristSubsystem;
 import frc.robot.subsystems.ExtensionSubsystem;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.LaserSubsystem;
 import frc.robot.subsystems.LimelightSubsystem;
 import frc.robot.subsystems.LimitSwitchSubsystem;
 import frc.robot.subsystems.WristSubsystem;
@@ -75,7 +74,7 @@ public class RobotContainer
   public final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                          "swerve/vortex"));
                                                                          
-  private final IntakeSubsystem intakeSub = new IntakeSubsystem();
+  public final IntakeSubsystem intakeSub = new IntakeSubsystem();
   //private final ExtensionSubsystem extSub = new ExtensionSubsystem();
   //private final ArmSubsystem armSub = new ArmSubsystem(extSub);
   //private final WristSubsystem wristSub = new WristSubsystem();
@@ -96,7 +95,7 @@ public class RobotContainer
   // CommandJoystick driverController   = new CommandJoystick(3]\[]);//(OperatorConstants.DRIVER_CONTROLLER_PORT);
   XboxController driverXbox = new XboxController(0);
   private double speedModifier = 0.67; //0.5
-  //private final SendableChooser<String> autoChooser;
+  private final SendableChooser<String> autoChooser;
   private BooleanSupplier speedModify;
   public boolean driveEnabled = true;
   /**
@@ -108,21 +107,18 @@ public class RobotContainer
     //autoChooser = AutoBuilder.buildAutoChooser();
     //autoChooser = new SendableChooser<Command>();
 
-    /*
+    
     autoChooser = new SendableChooser<String>();
-    autoChooser.addOption("(either) No Preload Exit Starting", "ExitStarting");
-    autoChooser.addOption("Blue 3 Notes", "BlueThreeNote");
-    autoChooser.addOption("Red 3 Notes", "RedThreeNote");
-    autoChooser.addOption("Blue 2 Note + Far Grab", "BlueTwoNote");
-    autoChooser.addOption("Red 2 Note + Far Grab", "RedTwoNote");
-    autoChooser.addOption("Blue Preload + Far Score", "BlueAmpFar");
-    autoChooser.addOption("Red Preload + Far Score", "RedAmpFar");
-    autoChooser.addOption("(either) Preload Only", "BluePreload");
-    autoChooser.setDefaultOption("Red 3 Notes", "RedThreeNote");
-    */
+    autoChooser.addOption("Drive Forward (no scoring)", "ExitStarting");
+    autoChooser.addOption("Preload Only", "PreloadScoreAlign");
+    autoChooser.addOption("Preload + Center", "PreloadGrabCenter");
+    autoChooser.addOption("Preload + Close", "TwoNoteAlign");
+
+    autoChooser.setDefaultOption("Preload + Close", "TwoNoteAlign");
+    
 
 
-    //SmartDashboard.putData("Auto Chooser", autoChooser);
+    SmartDashboard.putData("Auto Chooser", autoChooser);
 
     Command armStore = new BasicToHoldCommand(armWristSub);
     Command armAmp = new BasicToAmpCommand(armWristSub);
@@ -413,7 +409,7 @@ public class RobotContainer
   public Command getAutonomousCommand()
   {
     // An example command will be run in autonomous
-    return drivebase.getAutonomousCommand("TestAlign", true, true);
+    return drivebase.getAutonomousCommand(autoChooser.getSelected(), true, true);
   }
 
   public void setDriveMode()

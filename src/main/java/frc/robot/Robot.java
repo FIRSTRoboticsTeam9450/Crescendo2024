@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
@@ -143,9 +144,13 @@ public class Robot extends LoggedRobot
   @Override
   public void autonomousInit()
   {
+    m_robotContainer.intakeSub.initLaser();
+
     m_robotContainer.climbSub.enablePid(false);
     m_robotContainer.setDriveBrake(true);
     m_robotContainer.setArmWristExtBrake(true);
+
+    NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(0);
     
     try {
       m_autonomousCommand = m_robotContainer.getAutonomousCommand();
@@ -188,7 +193,7 @@ public class Robot extends LoggedRobot
   @Override
   public void teleopInit()
   {
-   
+    m_robotContainer.intakeSub.initLaser();
 
     //new BasicToSourceCommand(m_robotContainer.armWristSub).schedule();
     (new InstantCommand(() -> m_robotContainer.armWristSub.goToPosition(Height.PRECLIMB))).schedule();

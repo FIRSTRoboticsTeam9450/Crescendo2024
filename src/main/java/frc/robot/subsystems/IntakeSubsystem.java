@@ -57,9 +57,14 @@ public class IntakeSubsystem extends SubsystemBase {
     isIntaking = false;
 
 
-    laser = new LaserCan(Constants.laserId);
 
     // Optionally initialise the settings of the LaserCAN, if you haven't already done so in GrappleHook
+
+  }
+
+  public void initLaser() {
+    laser = new LaserCan(Constants.laserId);
+
     try {
       laser.setRangingMode(LaserCan.RangingMode.LONG);
       laser.setRegionOfInterest(new LaserCan.RegionOfInterest(8, 8, 4, 4));
@@ -118,6 +123,9 @@ public class IntakeSubsystem extends SubsystemBase {
 
   /* Laser Methods */
   public double getLaserDistance() {
+    if (laser == null) {
+      return 10000;
+    }
     measurement = laser.getMeasurement();
 
     if (measurement != null && measurement.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT) {

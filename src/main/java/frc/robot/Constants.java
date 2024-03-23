@@ -137,7 +137,7 @@ public final class Constants
     public static final double straightWristInches = 8;
     public static final double upWristInches = 2;
 
-    public static final double offsetToAmpFromGround = 0.137;
+    public static final double offsetToAmpFromGround = 0.137 + 0.12;
     public static final double offsetToAmpFromSource_Hold = 0.02;
     /**Not updated */
     public static final double offsetToGroundFromHold = 0;

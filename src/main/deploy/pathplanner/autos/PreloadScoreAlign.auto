@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.37,
-      "y": 7.1078702443630295
+      "x": 1.6482855267015404,
+      "y": 7.147833417849517
     },
-    "rotation": 0
+    "rotation": -90.0
   },
   "command": {
     "type": "sequential",
@@ -60,69 +60,15 @@
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "AmpToCloseNoteAlign"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ArmUp"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ResetExt"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "CloseNoteToAmpAlign"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "AlignAmp"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ArmAmp"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.5
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "ForwardABitLessTiny"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Outtake"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.5
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "ArmStore"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ExitStartingAlign2"
           }
         }
       ]

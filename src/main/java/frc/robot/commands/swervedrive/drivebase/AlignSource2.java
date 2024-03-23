@@ -14,6 +14,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -189,7 +190,7 @@ public class AlignSource2 extends Command {
 
     @Override
     public boolean isFinished() {
-        if (yawController.getPositionError() < 1 && xController.getPositionError() < 0.05 && zController.getPositionError() < 0.05 && timer.get() > 1) {
+        if (yawController.getPositionError() < 0.1 && xController.getPositionError() < 0.05 && zController.getPositionError() < 0.05 && timer.get() > 1) {
             drive.drive(new Translation2d(0, 0), 0, false);
             return true;
         }
@@ -205,7 +206,15 @@ public class AlignSource2 extends Command {
         lSubsystem.resetAngle();
 
         if (auto && !interrupted) {
-            drive.resetOdometry(new Pose2d(new Translation2d(14.68, 7.4), new Rotation2d(-Math.PI / 2)));
+            var alliance = DriverStation.getAlliance();
+            if (alliance.isPresent() ? alliance.get() == DriverStation.Alliance.Red : false) {
+                drive.resetOdometry(new Pose2d(new Translation2d(14.68, 7.4), new Rotation2d(-Math.PI / 2)));
+                System.out.println("RED");
+            } else {
+                System.out.println("BLUE");
+                drive.resetOdometry(new Pose2d(new Translation2d(1.85, 7.4), new Rotation2d(-Math.PI / 2)));
+            }
+            System.out.println("AHHHHH");
             System.out.println(drive.getPose());
         }
     }

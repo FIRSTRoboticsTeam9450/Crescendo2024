@@ -3,37 +3,43 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.85,
-        "y": 7.65
+        "x": 7.861252448483544,
+        "y": 7.55
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9000000000000001,
-        "y": 7.563397459621556
+        "x": 7.043244264424471,
+        "y": 7.439979197870614
       },
       "isLocked": false,
-      "linkedName": "AmpScore"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.36,
-        "y": 7.2
+        "x": 1.784620224044719,
+        "y": 7.673695821887493
       },
       "prevControl": {
-        "x": 2.268807849482489,
-        "y": 7.24103646773288
+        "x": 2.3591735914195437,
+        "y": 7.683434014554862
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "CloseNote"
+      "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.25,
+      "rotationDegrees": -90.0,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "ArmToGround",
-      "waypointRelativePos": 0.35,
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.0,
       "command": {
         "type": "parallel",
         "data": {
@@ -41,7 +47,7 @@
             {
               "type": "named",
               "data": {
-                "name": "ArmGround"
+                "name": "ArmStore"
               }
             }
           ]
@@ -50,20 +56,20 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 0.25,
+    "maxVelocity": 4.0,
     "maxAcceleration": 3.0,
-    "maxAngularVelocity": 120.0,
+    "maxAngularVelocity": 180.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -25.24052926478683,
-    "rotateFast": true
+    "rotation": -90.0,
+    "rotateFast": false
   },
   "reversed": false,
   "folder": "NewPaths",
   "previewStartingState": {
-    "rotation": -90.0,
+    "rotation": 0.0,
     "velocity": 0
   },
   "useDefaultConstraints": false
