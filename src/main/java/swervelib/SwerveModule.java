@@ -7,6 +7,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants.OperatorConstants;
+import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import swervelib.encoders.SwerveAbsoluteEncoder;
 import swervelib.math.SwerveMath;
 import swervelib.motors.SwerveMotor;
@@ -109,7 +111,7 @@ public class SwerveModule
    */
   private       boolean                synchronizeEncoderQueued = false;
 
-
+  public double speedCutoff;
   /**
    * Construct the swerve module and initialize the swerve module motors and absolute encoder.
    *
@@ -121,6 +123,8 @@ public class SwerveModule
   public SwerveModule(int moduleNumber, SwerveModuleConfiguration moduleConfiguration,
                       SimpleMotorFeedforward driveFeedforward)
   {
+    // based on controller's deadband values with same filter in TeleopDrive multiplied by speedModifier of 0.8
+    speedCutoff = Math.abs(Math.pow(OperatorConstants.LEFT_X_DEADBAND, 2) * 0.8 * SwerveSubsystem.maximumSpeed); 
     //    angle = 0;
     //    speed = 0;
     //    omega = 0;
@@ -344,8 +348,10 @@ public class SwerveModule
       driveMotor.set(percentOutput);
     } else
     {
-      if (Math.abs(desiredState.speedMetersPerSecond) <= 0.005) {
+      // If statement to try to get rid of the drift
+      if (Math.abs(desiredState.speedMetersPerSecond) <= speedCutoff) { 
         driveMotor.set(0);
+        desiredState.speedMetersPerSecond = velocity;
       } else {
         driveMotor.setReference(velocity, driveMotorFeedforward.calculate(velocity));
         desiredState.speedMetersPerSecond = velocity;
