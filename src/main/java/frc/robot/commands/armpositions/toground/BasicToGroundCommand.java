@@ -32,7 +32,8 @@ public class BasicToGroundCommand extends Command {
     armWrist.setWasSourceIntake(false);
 
     if(armWrist.getHeight() == Height.AMP){
-      armWrist.setArmWristExtGoal(Constants.ArmPositions.armHardLowerLimit + Constants.Arm.offsetToGround, 
+      // added an extra 0.02 because when going from amp to ground can cause some values being a bit off
+      armWrist.setArmWristExtGoal(Constants.ArmPositions.armHardLowerLimit + Constants.Arm.offsetToGround + 0.013, 
                                 Constants.ArmPositions.wristHardLowerLimit + Constants.Wrist.offsetToGround, 
                                 Constants.ArmPositions.extHardLowerLimit + Constants.Extension.offsetToGround);
 
@@ -66,7 +67,7 @@ public class BasicToGroundCommand extends Command {
   @Override
   public void execute() {
     if(armWrist.getHeight() == Height.AMP){
-      if (Math.abs(armWrist.getAbsArmPos() - armWrist.newGetAbsArmTarget()) < 0.05) {
+      if (Math.abs(armWrist.getArmRelPos() - armWrist.newGetAbsArmTarget()) < 0.05) {
         armWrist.setExtensionGoal(Constants.ArmPositions.extHardLowerLimit + Constants.Extension.offsetToGround);
         finished = true;
       }
@@ -77,12 +78,12 @@ public class BasicToGroundCommand extends Command {
     
 
     if(armWrist.getHeight() == Height.HOLD){
-      if (Math.abs(armWrist.getAbsArmPos() - armWrist.newGetAbsArmTarget()) < 0.05) {
+      if (Math.abs(armWrist.getArmRelPos() - armWrist.newGetAbsArmTarget()) < 0.05) {
         armWrist.setExtensionGoal(Constants.ArmPositions.extHardLowerLimit + Constants.Extension.offsetToGround);
         secondState = true;
       }
   
-      if(Math.abs(armWrist.getExtRelPos() - armWrist.getExtensionGoal()) < 3 && secondState) {
+      if(Math.abs(armWrist.getExtRelPos() - armWrist.getExtensionGoal()) < 1.5 && secondState) {
         armWrist.setArmGoal(Constants.ArmPositions.armHardLowerLimit + Constants.Arm.offsetToGround);
         finished = true;
       }

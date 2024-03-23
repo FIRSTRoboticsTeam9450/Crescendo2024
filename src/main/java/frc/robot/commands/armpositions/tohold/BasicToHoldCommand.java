@@ -62,12 +62,12 @@ public class BasicToHoldCommand extends Command {
   @Override
   public void execute() {
     if(armWrist.getHeight() == Height.GROUND){
-      if (Math.abs(armWrist.getAbsArmPos() - armWrist.newGetAbsArmTarget()) < 0.05) {
+      if (Math.abs(armWrist.getArmRelPos() - armWrist.newGetAbsArmTarget()) < 0.05) {
         armWrist.setExtensionGoal(Constants.ArmPositions.extHardLowerLimit + Constants.Extension.offsetToHold);
         secondState = true;
       }
   
-      if(Math.abs(armWrist.getExtRelPos() - armWrist.getExtensionGoal()) < 3 && secondState) {
+      if(Math.abs(armWrist.getExtRelPos() - armWrist.getExtensionGoal()) < 1.5 && secondState) {
         armWrist.setArmGoal(Constants.ArmPositions.armHardLowerLimit + Constants.Arm.offsetToHold);
         finished = true;
       }
@@ -78,7 +78,12 @@ public class BasicToHoldCommand extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    if (armWrist.getHeight() == Height.AMP) {
+      armWrist.setRelArmPos(armWrist.getAbsArmPos() - 0.00238);
+    }
+    System.out.println("ENTERED END METHOD");
     armWrist.changeHeight(Height.HOLD);
+    
   }
 
   // Returns true when the command should end.

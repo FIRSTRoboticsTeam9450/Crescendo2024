@@ -95,7 +95,7 @@ public final class Constants
     public static final double offsetToAmpFromGround = 0.416;
     public static final double offsetToAmpFromSource_Hold = 0.386;
     public static final double offsetToStraightOutPos = 0.125;//0.195
-    public static final double offsetToGround = 0.102;//0.0856
+    public static final double offsetToGround = 0.09;//0.102
     public static final double offsetToHold = 0.05545 /* 3/4 inch from plate!! */; // 0.035
     public static final double offsetToSource = 0.2701; //0.255
 

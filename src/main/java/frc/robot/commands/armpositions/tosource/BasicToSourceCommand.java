@@ -65,7 +65,7 @@ public class BasicToSourceCommand extends Command {
   @Override
   public void execute() {
     if(armWrist.getHeight() == Height.HOLD){
-      if(Math.abs(armWrist.getAbsArmPos() - armWrist.newGetAbsArmTarget()) < 0.05){
+      if(Math.abs(armWrist.getArmRelPos() - armWrist.newGetAbsArmTarget()) < 0.05){
         armWrist.setExtensionGoal(Constants.ArmPositions.extHardLowerLimit + Constants.Extension.offsetToSource);
   
         finished = true;
@@ -73,7 +73,6 @@ public class BasicToSourceCommand extends Command {
     }
     
   }
-
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
