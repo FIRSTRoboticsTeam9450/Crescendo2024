@@ -129,7 +129,7 @@ public class Robot extends LoggedRobot
     if (disabledTimer.hasElapsed(Constants.Drivebase.WHEEL_LOCK_TIME) && runnable)
     {
       m_robotContainer.setDriveBrake(false);
-      m_robotContainer.setArmWristExtBrake(false);
+      // m_robotContainer.setArmWristExtBrake(false);
       //m_robotContainer.setArmWristExtBrake(false);
       disabledTimer.stop();
       runnable = false;
@@ -152,7 +152,13 @@ public class Robot extends LoggedRobot
 
     NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(0);
     
+   
+
     try {
+       (new InstantCommand(() -> m_robotContainer.armWristSub.goToPosition(Height.PRECLIMB))).schedule();
+      (new InstantCommand(() -> m_robotContainer.armWristSub.runAndResetExtEncoder())).schedule();
+      m_robotContainer.armWristSub.changeHeight(Height.PRECLIMB);
+
       m_autonomousCommand = m_robotContainer.getAutonomousCommand();
     } catch (NullPointerException e) {
       e.printStackTrace();

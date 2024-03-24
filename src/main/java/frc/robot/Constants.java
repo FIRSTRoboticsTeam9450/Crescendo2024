@@ -107,8 +107,8 @@ public final class Constants
   public static class ArmPositions{
     public static final double armHardLowerLimit = 0.12455;//0.08;
     public static final double armHardUpperLimit = 0.7;//0.51;
-    public static final double wristHardLowerLimit = 0.234; //      0.141
-    public static final double wristHardUpperLimit = 0.8; //    0.7785
+    public static final double wristHardLowerLimit = 0.208; //      0.234
+    public static final double wristHardUpperLimit = 0.862; //    0.8
     public static final double extHardLowerLimit = 0; // 0.749
     public static final double extHardUpperLimit = -75 / 2.0833; // 0.059
   }

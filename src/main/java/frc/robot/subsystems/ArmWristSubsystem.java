@@ -42,7 +42,7 @@ public class ArmWristSubsystem extends SubsystemBase{
 
 
     public double armHardLowerLimit = 0.12455;//0.105
-    public double wristHardLowerLimit = 0.234; //      0.141
+    public double wristHardLowerLimit = 0.208; // 0.234
     public double extHardLowerLimit = 0; // 0.749
 
     private double armAbsTarget = armHardLowerLimit + Constants.Arm.offsetToPreClimb;//0.485;  //.453
@@ -438,7 +438,7 @@ public class ArmWristSubsystem extends SubsystemBase{
         if (Math.abs(pidValue) < maxArmVoltage) { //10 volts good for tele
             if (Math.abs(getArmRelPos()) < 0.1) {
                 setArmVoltage(0);
-                System.out.println("POSITION LESS THAN 0.1");
+                // System.out.println("POSITION LESS THAN 0.1");
             } else {
                 setArmVoltage(pidValue);
             }
@@ -446,7 +446,7 @@ public class ArmWristSubsystem extends SubsystemBase{
         } else {
             if (Math.abs(getArmRelPos()) < 0.1) {
                 setArmVoltage(0);
-                System.out.println("POSITION LESS THAN 0.1");
+                // System.out.println("POSITION LESS THAN 0.1");
 
             } else {
                 setArmVoltage(maxArmVoltage * Math.signum(pidValue));
