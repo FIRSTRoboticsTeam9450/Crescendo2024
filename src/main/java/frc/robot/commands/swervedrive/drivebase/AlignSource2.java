@@ -162,7 +162,7 @@ public class AlignSource2 extends Command {
             } else {
                 yawController.setSetpoint(0);
                 xController.setSetpoint(-0.22);
-                zController.setSetpoint(-0.5);
+                zController.setSetpoint(-0.3);
             }
             
             yawPower = yawController.calculate(robotPose[4]);
