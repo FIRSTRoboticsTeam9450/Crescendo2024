@@ -4,26 +4,18 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.AutoClimbCommand;
@@ -35,31 +27,15 @@ import frc.robot.commands.armpositions.toamp.BasicToAmpCommand;
 import frc.robot.commands.armpositions.toground.BasicToGroundCommand;
 import frc.robot.commands.armpositions.tohold.BasicToHoldCommand;
 import frc.robot.commands.armpositions.tosource.BasicToSourceCommand;
-import frc.robot.commands.swervedrive.drivebase.AbsoluteDrive;
-import frc.robot.commands.swervedrive.drivebase.AbsoluteFieldDrive;
-import frc.robot.commands.swervedrive.drivebase.AlignSource;
 import frc.robot.commands.swervedrive.drivebase.AlignSource2;
-import frc.robot.commands.swervedrive.drivebase.HeadingCorTeleopDrive;
-import frc.robot.commands.swervedrive.drivebase.SweepCommand;
-import frc.robot.commands.swervedrive.drivebase.AbsoluteDriveAdv;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
-import frc.robot.subsystems.ArmSubsystem;
-import frc.robot.subsystems.ArmWristSubsystem;
-import frc.robot.subsystems.ExtensionSubsystem;
-import frc.robot.subsystems.ClimbSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.LimelightSubsystem;
-import frc.robot.subsystems.LimitSwitchSubsystem;
-import frc.robot.subsystems.WristSubsystem;
-import frc.robot.subsystems.ArmWristSubsystem.Height;
+import frc.robot.subsystems.Climb;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Limelight;
+import frc.robot.subsystems.Examples.ArmWristSubsystem;
+import frc.robot.subsystems.Examples.ArmWristSubsystem.Height;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import java.io.File;
-import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
-
-import org.littletonrobotics.junction.Logger;
-
-import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 /**
@@ -74,14 +50,14 @@ public class RobotContainer
   public final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                          "swerve/vortex"));
                                                                          
-  public final IntakeSubsystem intakeSub = new IntakeSubsystem();
+  public final Intake intakeSub = new Intake();
   //private final ExtensionSubsystem extSub = new ExtensionSubsystem();
   //private final ArmSubsystem armSub = new ArmSubsystem(extSub);
   //private final WristSubsystem wristSub = new WristSubsystem();
   public final ArmWristSubsystem armWristSub = new ArmWristSubsystem();
   // public final LaserSubsystem laserSub = new LaserSubsystem();
-  public final LimelightSubsystem servo = new LimelightSubsystem(intakeSub);
-  public final ClimbSubsystem climbSub = new ClimbSubsystem();
+  public final Limelight servo = new Limelight(intakeSub);
+  public final Climb climbSub = new Climb();
   // private final LimitSwitchSubsystem extLimitSub = new LimitSwitchSubsystem();
  // private final ExtensionSubsystem extSub = new ExtensionSubsystem();
 
@@ -94,9 +70,7 @@ public class RobotContainer
   //CommandXboxController driverController = new CommandXboxController(0);
   // CommandJoystick driverController   = new CommandJoystick(3]\[]);//(OperatorConstants.DRIVER_CONTROLLER_PORT);
   XboxController driverXbox = new XboxController(0);
-  private double speedModifier = 0.67; //0.5
   private final SendableChooser<String> autoChooser;
-  private BooleanSupplier speedModify;
   public boolean driveEnabled = true;
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -147,6 +121,8 @@ public class RobotContainer
     // NamedCommands.registerCommand("Sweep", sweep);
     // speedModify = () ->  driverController.leftTrigger().getAsBoolean(); // accounts for buttons.run() overrun issue by caching value
 
+/*
+
     HeadingCorTeleopDrive drvHeadingCorr = new HeadingCorTeleopDrive(drivebase, 
                                                 () -> MathUtil.applyDeadband(driverController.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
                                                 () -> MathUtil.applyDeadband(driverController.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
@@ -162,26 +138,7 @@ public class RobotContainer
 () -> driverController.leftTrigger().getAsBoolean());
 
 
-
-
-
-
-    
-    // TeleopDrive simClosedFieldRel = new TeleopDrive(drivebase,
-    //                                                 () -> MathUtil.applyDeadband(driverController.getLeftY() ,
-    //                                                                              OperatorConstants.LEFT_Y_DEADBAND),
-    //                                                 () -> MathUtil.applyDeadband(driverController.getLeftX() ,
-    //                                                                              OperatorConstants.LEFT_X_DEADBAND),
-    //                                                 () -> MathUtil.applyDeadband(driverController.getRawAxis(4), 0.1), () -> true,
-    //                                              () -> driverController.getHID().getRightBumper(),
-    //                                               speedModify /* left trigger */);
-    // TeleopDrive closedFieldRel = new TeleopDrive(
-    //     drivebase,
-    //     () -> MathUtil.applyDeadband(driverController.getLeftY() , OperatorConstants.LEFT_Y_DEADBAND),
-    //     () -> MathUtil.applyDeadband(driverController.getLeftX() , OperatorConstants.LEFT_X_DEADBAND),
-    //     () -> MathUtil.applyDeadband(driverController.getRawAxis(4), 0.1), () -> true,
-    //     () -> driverController.getHID().getRightBumper(),
-    //     speedModify /* left trigger */); 
+*/
 
 
 

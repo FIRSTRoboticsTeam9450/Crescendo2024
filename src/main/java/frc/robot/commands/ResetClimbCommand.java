@@ -6,17 +6,17 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.subsystems.ClimbSubsystem;
+import frc.robot.subsystems.Climb;
 
 public class ResetClimbCommand extends Command {
   CommandXboxController controller;
-  ClimbSubsystem climb;
+  Climb climb;
 
   /**
    * Creates a new ResetClimbCommand
    * @param climb the ClimbSubsystem to be used
    */
-  public ResetClimbCommand(ClimbSubsystem climb) {
+  public ResetClimbCommand(Climb climb) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(climb);
     this.climb = climb;

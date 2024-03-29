@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems;
+package frc.robot.subsystems.Examples;
 
 import java.lang.invoke.ConstantBootstraps;
 
@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.commands.ExtensionCommand;
 import frc.robot.Constants;
 
-public class LimitSwitchSubsystem extends SubsystemBase {
+public class LimitSwitch extends SubsystemBase {
   DigitalInput lowerHardLimSwitch;
   RelativeEncoder extRelEncoder;
 
@@ -27,7 +27,7 @@ public class LimitSwitchSubsystem extends SubsystemBase {
   private double extHardUpperLimit = -75; // -75
 
   /** Creates a new LimitSwitchSubsystem. */
-  public LimitSwitchSubsystem() {
+  public LimitSwitch() {
     lowerHardLimSwitch = new DigitalInput(2);
     
 

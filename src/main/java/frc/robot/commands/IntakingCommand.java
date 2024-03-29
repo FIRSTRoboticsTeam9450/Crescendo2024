@@ -7,19 +7,19 @@ package frc.robot.commands;
 import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.ArmWristSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Examples.ArmWristSubsystem;
 
 public class IntakingCommand extends Command {
   /** Creates a new WristIntakeCommand. */
-  private IntakeSubsystem intake;
+  private Intake intake;
   private double intakeVoltage;
   private boolean ramp;
   boolean finished = false;
   private Timer timer = new Timer();
   MedianFilter median = new MedianFilter(3);
 
-  public IntakingCommand(IntakeSubsystem intake, double intakeVoltage){
+  public IntakingCommand(Intake intake, double intakeVoltage){
     // Use addRequirements() here to declare subsystem dependencies.
     this.intake = intake;
     this.intakeVoltage = intakeVoltage;

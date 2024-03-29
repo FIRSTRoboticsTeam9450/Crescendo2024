@@ -104,7 +104,7 @@ public final class Constants
     public static final double offsetToTrapFromGround = 0.396;
   }
 
-  public static class ArmPositions{
+  public static class MovementLimits{
     public static final double armHardLowerLimit = 0.12455;//0.08;
     public static final double armHardUpperLimit = 0.7;//0.51;
     public static final double wristHardLowerLimit = 0.208; //      0.234
@@ -155,8 +155,14 @@ public final class Constants
     HOLD,
     SOURCE,
     AMP,
-    GROUNDTOHOLD, //for ground to hold first arm position reached to prevent extension or wrist hitting robot
-    HOLDTOGROUND 
+    CLIMB,
+    PRECLIMB,
+    TRAP,
+  }
+
+  public static enum RobotState {
+    DEFAULT,
+    CLIMBING
   }
 
   //-----------------------------------------------------------------

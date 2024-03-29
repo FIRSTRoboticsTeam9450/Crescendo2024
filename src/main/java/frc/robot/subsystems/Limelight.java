@@ -11,14 +11,13 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.RobotContainer;
 
-public class LimelightSubsystem extends SubsystemBase {
+public class Limelight extends SubsystemBase {
   /** Creates a new LimelightSubsystem. */
   
   Servo axon;
 
-  IntakeSubsystem intake;
+  Intake intake;
 
   NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
 
@@ -26,7 +25,7 @@ public class LimelightSubsystem extends SubsystemBase {
 
   MedianFilter median;
 
-  public LimelightSubsystem(IntakeSubsystem intake) {
+  public Limelight(Intake intake) {
     axon = new Servo(0);
     SmartDashboard.putNumber("set axon angle", 180);
     this.intake = intake;

@@ -8,23 +8,19 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
-import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.robot.commands.armpositions.tosource.BasicToSourceCommand;
-import frc.robot.subsystems.ArmWristSubsystem.Height;
+import frc.robot.subsystems.Examples.ArmWristSubsystem.Height;
 
 import java.io.File;
 import java.io.IOException;
 
-import org.littletonrobotics.junction.LogDataReceiver;
-import org.littletonrobotics.junction.LogFileUtil;
+
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
-import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import swervelib.parser.SwerveParser;
@@ -43,6 +39,10 @@ public class Robot extends LoggedRobot
   private RobotContainer m_robotContainer;
   private Timer disabledTimer;
   private boolean runnable;
+
+  @SuppressWarnings("unused")
+  private PowerDistribution pdp;
+
 
   public Robot()
   {
@@ -67,7 +67,7 @@ public class Robot extends LoggedRobot
         // Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
         Logger.addDataReceiver(new WPILOGWriter("/home/lvuser/logs"));
         Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
-        new PowerDistribution(30, ModuleType.kRev); // Enables power distribution logging
+        this.pdp = new PowerDistribution(30, ModuleType.kRev); // Enables power distribution logging
     } else {
        /* 
         setUseTiming(false); // Run as fast as possible

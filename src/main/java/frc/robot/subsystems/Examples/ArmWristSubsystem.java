@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.Examples;
 import com.revrobotics.CANSparkBase.IdleMode;
 
 import java.math.BigDecimal;

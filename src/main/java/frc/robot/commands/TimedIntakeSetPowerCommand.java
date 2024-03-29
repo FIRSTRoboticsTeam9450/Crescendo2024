@@ -6,17 +6,16 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.ArmWristSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.Intake;
 
 public class TimedIntakeSetPowerCommand extends Command {
   /** Creates a new WristIntakeCommand. */
-  private IntakeSubsystem intake;
+  private Intake intake;
   private double voltage, seconds;
   private boolean finished;
   Timer time;
 
-  public TimedIntakeSetPowerCommand(IntakeSubsystem intake, double voltage, double seconds){
+  public TimedIntakeSetPowerCommand(Intake intake, double voltage, double seconds){
     // Use addRequirements() here to declare subsystem dependencies.
     this.intake = intake;
     this.voltage = voltage;

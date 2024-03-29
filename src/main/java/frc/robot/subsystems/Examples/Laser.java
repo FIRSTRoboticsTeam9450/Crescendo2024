@@ -2,19 +2,19 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems;
+package frc.robot.subsystems.Examples;
 
 import au.grapplerobotics.LaserCan;
 import au.grapplerobotics.ConfigurationFailedException;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-public class LaserSubsystem extends SubsystemBase {
+public class Laser extends SubsystemBase {
   private LaserCan laser;
   
   private LaserCan.Measurement measurement;
   /** Creates a new LaserSubsystem. */
-  public LaserSubsystem() {
+  public Laser() {
     laser = new LaserCan(0);
 
     // Optionally initialise the settings of the LaserCAN, if you haven't already done so in GrappleHook

@@ -11,17 +11,17 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
-import frc.robot.subsystems.ArmWristSubsystem;
-import frc.robot.subsystems.ExtensionSubsystem;
+import frc.robot.subsystems.Extension;
+import frc.robot.subsystems.Examples.ArmWristSubsystem;
 
 public class ExtensionCommand extends Command {
   /** Creates a new WristIntakeCommand. */
-  private ExtensionSubsystem extension;
+  private Extension extension;
   private double radiusX, radiusY, extensionLength, extensionTarget, totalextensionX, totalextensionY, theta;
   private ArmWristSubsystem armWristSub;
   private BooleanSupplier rightBumper;
   private boolean enabled = false;
-  public ExtensionCommand(ExtensionSubsystem extension, ArmWristSubsystem armWristSub, BooleanSupplier rightBumper, double extensionTarget){
+  public ExtensionCommand(Extension extension, ArmWristSubsystem armWristSub, BooleanSupplier rightBumper, double extensionTarget){
     // Use addRequirements() here to declare subsystem dependencies.
     this.extension = extension;
     this.extensionTarget = extensionTarget;
@@ -34,14 +34,13 @@ public class ExtensionCommand extends Command {
   @Override
   public void initialize() {
     if(rightBumper.getAsBoolean()){
-      extension.toggleRun();
       enabled = true;
     }
 
     theta = (((Constants.Arm.intakeArmAngle - Constants.Arm.ampArmAngle)/(Constants.Arm.intakeArmTics - Constants.Arm.ampArmTics)) * armWristSub.getAbsArmPos()) + (Constants.Arm.intakeArmAngle - (((Constants.Arm.intakeArmAngle - Constants.Arm.ampArmAngle)/(Constants.Arm.intakeArmTics - Constants.Arm.ampArmTics)) * Constants.Arm.intakeArmTics));
     radiusX = Constants.Arm.armLength - Math.abs((armWristSub.getAbsWristPos() - Constants.Wrist.straightWristTics) / ((Constants.Wrist.upWristTics-Constants.Wrist.straightWristTics)/(Constants.Wrist.straightWristInches-Constants.Wrist.upWristInches))) + Constants.Wrist.straightWristInches;
     radiusY = radiusX + 1;
-    extensionLength = (Constants.Extension.maxExtensionInches / (Constants.Extension.maxExtensionTics - Constants.Extension.zeroTics)) * extension.getExtensionAbsPosition() - (Constants.Extension.zeroTics * (Constants.Extension.maxExtensionInches/(Constants.Extension.maxExtensionTics - Constants.Extension.zeroTics)));
+    // extensionLength = (Constants.Extension.maxExtensionInches / (Constants.Extension.maxExtensionTics - Constants.Extension.zeroTics)) * extension.getExtensionAbsPosition() - (Constants.Extension.zeroTics * (Constants.Extension.maxExtensionInches/(Constants.Extension.maxExtensionTics - Constants.Extension.zeroTics)));
     totalextensionX = (radiusX * Math.abs(Math.cos(theta))) + extensionLength;
     totalextensionY = (radiusY * Math.sin(theta)) + extensionLength;
     
@@ -60,7 +59,7 @@ public class ExtensionCommand extends Command {
     theta = (((Constants.Arm.intakeArmAngle - Constants.Arm.ampArmAngle)/(Constants.Arm.intakeArmTics - Constants.Arm.ampArmTics)) * armWristSub.getAbsArmPos()) + (Constants.Arm.intakeArmAngle - (((Constants.Arm.intakeArmAngle - Constants.Arm.ampArmAngle)/(Constants.Arm.intakeArmTics - Constants.Arm.ampArmTics)) * Constants.Arm.intakeArmTics));
     radiusX = Constants.Arm.armLength - Math.abs((armWristSub.getAbsWristPos() - Constants.Wrist.straightWristTics) / ((Constants.Wrist.upWristTics-Constants.Wrist.straightWristTics)/(Constants.Wrist.straightWristInches-Constants.Wrist.upWristInches))) + Constants.Wrist.straightWristInches;
     radiusY = radiusX + 1;
-    extensionLength = (Constants.Extension.maxExtensionInches / (Constants.Extension.maxExtensionTics - Constants.Extension.zeroTics)) * extension.getExtensionAbsPosition() - (Constants.Extension.zeroTics * (Constants.Extension.maxExtensionInches/(Constants.Extension.maxExtensionTics - Constants.Extension.zeroTics)));
+    // extensionLength = (Constants.Extension.maxExtensionInches / (Constants.Extension.maxExtensionTics - Constants.Extension.zeroTics)) * extension.getExtensionAbsPosition() - (Constants.Extension.zeroTics * (Constants.Extension.maxExtensionInches/(Constants.Extension.maxExtensionTics - Constants.Extension.zeroTics)));
     totalextensionX = (radiusX * Math.abs(Math.cos(theta))) + extensionLength;
     totalextensionY = (radiusY * Math.sin(theta)) + extensionLength;
 
@@ -72,7 +71,6 @@ public class ExtensionCommand extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    if (enabled) { extension.toggleRun(); }
 
   }
 

@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.subsystems.LimelightSubsystem;
+import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 
 public class AlignSource2 extends Command {
@@ -40,13 +40,13 @@ public class AlignSource2 extends Command {
 
     XboxController controller;
 
-    LimelightSubsystem lSubsystem;
+    Limelight lSubsystem;
 
     Rotation3d originalHeading;
 
     boolean auto;
     
-    public AlignSource2(SwerveSubsystem drive, XboxController controller, LimelightSubsystem lSubsystem, boolean auto) {
+    public AlignSource2(SwerveSubsystem drive, XboxController controller, Limelight lSubsystem, boolean auto) {
         this.drive = drive;
         addRequirements(drive);
         timer = new Timer();

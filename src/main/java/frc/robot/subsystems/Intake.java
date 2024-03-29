@@ -6,7 +6,6 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkFlex;
-import com.revrobotics.CANSparkMax;
 
 import au.grapplerobotics.ConfigurationFailedException;
 import au.grapplerobotics.LaserCan;
@@ -19,7 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-public class IntakeSubsystem extends SubsystemBase {
+public class Intake extends SubsystemBase {
   /* Initializing Motors */
   CANSparkFlex intake = new CANSparkFlex(Constants.intakeId, MotorType.kBrushless);
   
@@ -41,7 +40,7 @@ public class IntakeSubsystem extends SubsystemBase {
   Timer rampDownTimer;
 
   /* Constructor -> creates new WristIntakeSubsystem */
-  public IntakeSubsystem() {
+  public Intake() {
     
     intake.setIdleMode(IdleMode.kBrake);
     intake.setSmartCurrentLimit(20);
@@ -186,6 +185,4 @@ public class IntakeSubsystem extends SubsystemBase {
                               // abs encoder (0.97, 0.399)
   // public void setWristPower(double power) { wrist.set(power); }
   
-  /* General Methods [Small] */
-  private double convertToVolts(double percentOutput){ return percentOutput * 12 /* Robot.getInstance().getVoltage() */ ;}
 }

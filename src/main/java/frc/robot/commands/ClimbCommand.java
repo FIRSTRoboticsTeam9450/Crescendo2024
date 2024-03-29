@@ -6,20 +6,20 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.ClimbSubsystem;
+import frc.robot.subsystems.Climb;
 
 /**
  * Sets the target position of the climbers
  */
 public class ClimbCommand extends Command {
   double target;
-  ClimbSubsystem subsystem;
+  Climb subsystem;
   /**
    * Creates a new climb command
    * @param subsystem the ClimbSubsystem to be used
    * @param target the desired setpoint (should be between 10 and 80 for safety)
    */
-  public ClimbCommand(ClimbSubsystem subsystem, double target) {
+  public ClimbCommand(Climb subsystem, double target) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(subsystem);
     this.subsystem = subsystem;

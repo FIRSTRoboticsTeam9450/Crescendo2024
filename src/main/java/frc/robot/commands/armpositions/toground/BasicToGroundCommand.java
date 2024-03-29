@@ -6,8 +6,8 @@ package frc.robot.commands.armpositions.toground;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
-import frc.robot.subsystems.ArmWristSubsystem;
-import frc.robot.subsystems.ArmWristSubsystem.Height;
+import frc.robot.subsystems.Examples.ArmWristSubsystem;
+import frc.robot.subsystems.Examples.ArmWristSubsystem.Height;
 
 public class BasicToGroundCommand extends Command {
   /** Creates a new WristIntakeCommand. */
@@ -33,26 +33,26 @@ public class BasicToGroundCommand extends Command {
 
     if(armWrist.getHeight() == Height.AMP){
       // added an extra 0.02 because when going from amp to ground can cause some values being a bit off
-      armWrist.setArmWristExtGoal(Constants.ArmPositions.armHardLowerLimit + Constants.Arm.offsetToGround + 0.013, 
-                                Constants.ArmPositions.wristHardLowerLimit + Constants.Wrist.offsetToGround, 
-                                Constants.ArmPositions.extHardLowerLimit + Constants.Extension.offsetToGround);
+      armWrist.setArmWristExtGoal(Constants.MovementLimits.armHardLowerLimit + Constants.Arm.offsetToGround + 0.013, 
+                                Constants.MovementLimits.wristHardLowerLimit + Constants.Wrist.offsetToGround, 
+                                Constants.MovementLimits.extHardLowerLimit + Constants.Extension.offsetToGround);
 
     }else if(armWrist.getHeight() == Height.SOURCE){
-      armWrist.setArmWristExtGoal(Constants.ArmPositions.armHardLowerLimit + Constants.Arm.offsetToGround, 
-    Constants.ArmPositions.wristHardLowerLimit + Constants.Wrist.offsetToGround, 
-    Constants.ArmPositions.extHardLowerLimit + Constants.Extension.offsetToGround);
+      armWrist.setArmWristExtGoal(Constants.MovementLimits.armHardLowerLimit + Constants.Arm.offsetToGround, 
+    Constants.MovementLimits.wristHardLowerLimit + Constants.Wrist.offsetToGround, 
+    Constants.MovementLimits.extHardLowerLimit + Constants.Extension.offsetToGround);
 
     finished = true;
 
     }else if(armWrist.getHeight() == Height.HOLD){
-      armWrist.setArmWristGoal(Constants.ArmPositions.armHardLowerLimit + Constants.Arm.offsetToStraightOutPos, 
-    Constants.ArmPositions.wristHardLowerLimit + Constants.Wrist.offsetToGround);
+      armWrist.setArmWristGoal(Constants.MovementLimits.armHardLowerLimit + Constants.Arm.offsetToStraightOutPos, 
+    Constants.MovementLimits.wristHardLowerLimit + Constants.Wrist.offsetToGround);
   
 
     }else{
-      armWrist.setArmWristExtGoal(Constants.ArmPositions.armHardLowerLimit + Constants.Arm.offsetToGround, 
-    Constants.ArmPositions.wristHardLowerLimit + Constants.Wrist.offsetToGround, 
-    Constants.ArmPositions.extHardLowerLimit + Constants.Extension.offsetToGround);
+      armWrist.setArmWristExtGoal(Constants.MovementLimits.armHardLowerLimit + Constants.Arm.offsetToGround, 
+    Constants.MovementLimits.wristHardLowerLimit + Constants.Wrist.offsetToGround, 
+    Constants.MovementLimits.extHardLowerLimit + Constants.Extension.offsetToGround);
 
       finished = true;
 
@@ -68,7 +68,7 @@ public class BasicToGroundCommand extends Command {
   public void execute() {
     if(armWrist.getHeight() == Height.AMP){
       if (Math.abs(armWrist.getArmRelPos() - armWrist.newGetAbsArmTarget()) < 0.05) {
-        armWrist.setExtensionGoal(Constants.ArmPositions.extHardLowerLimit + Constants.Extension.offsetToGround);
+        armWrist.setExtensionGoal(Constants.MovementLimits.extHardLowerLimit + Constants.Extension.offsetToGround);
         finished = true;
       }
     }
@@ -79,12 +79,12 @@ public class BasicToGroundCommand extends Command {
 
     if(armWrist.getHeight() == Height.HOLD){
       if (Math.abs(armWrist.getArmRelPos() - armWrist.newGetAbsArmTarget()) < 0.05) {
-        armWrist.setExtensionGoal(Constants.ArmPositions.extHardLowerLimit + Constants.Extension.offsetToGround);
+        armWrist.setExtensionGoal(Constants.MovementLimits.extHardLowerLimit + Constants.Extension.offsetToGround);
         secondState = true;
       }
   
       if(Math.abs(armWrist.getExtRelPos() - armWrist.getExtensionGoal()) < 1.5 && secondState) {
-        armWrist.setArmGoal(Constants.ArmPositions.armHardLowerLimit + Constants.Arm.offsetToGround);
+        armWrist.setArmGoal(Constants.MovementLimits.armHardLowerLimit + Constants.Arm.offsetToGround);
         finished = true;
       }
     }

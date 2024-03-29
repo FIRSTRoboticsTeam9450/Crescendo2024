@@ -6,8 +6,8 @@ package frc.robot.commands.armpositions.toamp;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
-import frc.robot.subsystems.ArmWristSubsystem;
-import frc.robot.subsystems.ArmWristSubsystem.Height;
+import frc.robot.subsystems.Examples.ArmWristSubsystem;
+import frc.robot.subsystems.Examples.ArmWristSubsystem.Height;
 
 public class BasicToAmpCommand extends Command {
   /** Creates a new WristIntakeCommand. */
@@ -28,26 +28,26 @@ public class BasicToAmpCommand extends Command {
     finished = false;
 
     if(armWrist.getHeight() == Height.GROUND){
-      armWrist.setArmWristExtGoal(Constants.ArmPositions.armHardLowerLimit + Constants.Arm.offsetToAmpFromGround, 
-                                Constants.ArmPositions.wristHardLowerLimit + Constants.Wrist.offsetToAmpFromGround, 
-                                Constants.ArmPositions.extHardLowerLimit);
+      armWrist.setArmWristExtGoal(Constants.MovementLimits.armHardLowerLimit + Constants.Arm.offsetToAmpFromGround, 
+                                Constants.MovementLimits.wristHardLowerLimit + Constants.Wrist.offsetToAmpFromGround, 
+                                Constants.MovementLimits.extHardLowerLimit);
       System.out.println("GROUND");
 
     }else if(armWrist.getHeight() == Height.SOURCE){
-      armWrist.setArmWristExtGoal(Constants.ArmPositions.armHardLowerLimit + Constants.Arm.offsetToAmpFromGround, 
-    Constants.ArmPositions.wristHardLowerLimit + Constants.Wrist.offsetToAmpFromSource_Hold, 
-    Constants.ArmPositions.extHardLowerLimit + Constants.Extension.offsetToAmpFromSource_Hold);
+      armWrist.setArmWristExtGoal(Constants.MovementLimits.armHardLowerLimit + Constants.Arm.offsetToAmpFromGround, 
+    Constants.MovementLimits.wristHardLowerLimit + Constants.Wrist.offsetToAmpFromSource_Hold, 
+    Constants.MovementLimits.extHardLowerLimit + Constants.Extension.offsetToAmpFromSource_Hold);
       System.out.println("SOURCE");
     finished = true;
 
     }else if(armWrist.getHeight() == Height.HOLD || armWrist.getHeight() == Height.AMP){
-      armWrist.setArmWristGoal(Constants.ArmPositions.armHardLowerLimit + Constants.Arm.offsetToAmpFromGround, 
-      Constants.ArmPositions.wristHardLowerLimit + Constants.Wrist.offsetToAmpFromSource_Hold);
+      armWrist.setArmWristGoal(Constants.MovementLimits.armHardLowerLimit + Constants.Arm.offsetToAmpFromGround, 
+      Constants.MovementLimits.wristHardLowerLimit + Constants.Wrist.offsetToAmpFromSource_Hold);
       System.out.println("HOLD");
     }else{
-      armWrist.setArmWristExtGoal(Constants.ArmPositions.armHardLowerLimit + Constants.Arm.offsetToAmpFromGround, 
-      Constants.ArmPositions.wristHardLowerLimit + Constants.Wrist.offsetToAmpFromSource_Hold, 
-      Constants.ArmPositions.extHardLowerLimit + Constants.Extension.offsetToAmpFromSource_Hold);
+      armWrist.setArmWristExtGoal(Constants.MovementLimits.armHardLowerLimit + Constants.Arm.offsetToAmpFromGround, 
+      Constants.MovementLimits.wristHardLowerLimit + Constants.Wrist.offsetToAmpFromSource_Hold, 
+      Constants.MovementLimits.extHardLowerLimit + Constants.Extension.offsetToAmpFromSource_Hold);
       System.out.println("IDEK");
       finished = true;
 
@@ -61,7 +61,7 @@ public class BasicToAmpCommand extends Command {
   public void execute() {
     if(armWrist.getHeight() == Height.GROUND){
       if (Math.abs(armWrist.getArmRelPos() - armWrist.newGetAbsArmTarget()) < 0.15) {
-        armWrist.setExtensionGoal(Constants.ArmPositions.extHardLowerLimit + Constants.Extension.offsetToAmpFromGround);
+        armWrist.setExtensionGoal(Constants.MovementLimits.extHardLowerLimit + Constants.Extension.offsetToAmpFromGround);
         System.out.println("GROUND 2");
         finished = true;
       }
@@ -72,10 +72,10 @@ public class BasicToAmpCommand extends Command {
 
         //Need to figure out a way to keep track of whether intaken from amp or source
         if(armWrist.getWasSourceIntake()){
-          armWrist.setExtensionGoal(Constants.ArmPositions.extHardLowerLimit + Constants.Extension.offsetToAmpFromSource_Hold);
+          armWrist.setExtensionGoal(Constants.MovementLimits.extHardLowerLimit + Constants.Extension.offsetToAmpFromSource_Hold);
           System.out.println("SOURCE 2");
         }else{
-          armWrist.setExtensionGoal(Constants.ArmPositions.extHardLowerLimit + Constants.Extension.offsetToAmpFromGround);
+          armWrist.setExtensionGoal(Constants.MovementLimits.extHardLowerLimit + Constants.Extension.offsetToAmpFromGround);
           System.out.println("GROUND 3");
         }
         

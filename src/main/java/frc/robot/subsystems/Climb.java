@@ -18,7 +18,7 @@ import com.revrobotics.RelativeEncoder;
 /**
  * Manages two climber modules with independent limit switches and PID controllers
  */
-public class ClimbSubsystem extends SubsystemBase {
+public class Climb extends SubsystemBase {
   CANSparkMax leftClimb;
   CANSparkMax rightClimb;
   RelativeEncoder leftEncoder;
@@ -35,7 +35,7 @@ public class ClimbSubsystem extends SubsystemBase {
   /**
    * Creates a new Climb subsystem
    */
-  public ClimbSubsystem() {
+  public Climb() {
     runPid = true;
 
     leftMotorVoltage = 0;

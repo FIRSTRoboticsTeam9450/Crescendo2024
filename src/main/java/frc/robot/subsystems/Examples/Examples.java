@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems;
+package frc.robot.subsystems.Examples;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -19,9 +19,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Robot;
 
-public class ExamplesSubsystem extends SubsystemBase {
+public class Examples extends SubsystemBase {
   /** Creates a new ExamplesSubsystem. */
-  public ExamplesSubsystem() {}
+  public Examples() {}
 
   // Making a motor a absolute encoder
   // if absolute encoder plugged into cansparkmax:
