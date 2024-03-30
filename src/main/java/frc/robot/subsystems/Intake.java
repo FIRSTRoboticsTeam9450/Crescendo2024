@@ -58,10 +58,6 @@ public class Intake extends SubsystemBase {
 
 
     // Optionally initialise the settings of the LaserCAN, if you haven't already done so in GrappleHook
-
-  }
-
-  public void initLaser() {
     laser = new LaserCan(Constants.laserId);
 
     try {

@@ -150,14 +150,18 @@ public final class Constants
     public static final double offsetToPreClimbFromGround = 0.367;
 
   }
-  public static enum Height{
+  public static enum ScoringPos{
     GROUND,
-    HOLD,
+    STORE,
     SOURCE,
     AMP,
     CLIMB,
-    PRECLIMB,
     TRAP,
+  }
+
+  public static enum IntakeState {
+    HAS_NOTE,
+    NO_NOTE
   }
 
   public static enum RobotState {
