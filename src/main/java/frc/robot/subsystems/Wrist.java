@@ -96,13 +96,21 @@ public class Wrist extends SubsystemBase {
 
     }
 
-    public void setTarget(double target) {
-        this.target = target;
+    private double convertToRot(double angle) {
+        return angle * Constants.NewWrist.RotateConversionFactor + Constants.NewWrist.AbsEncoderShift;
 
     }
 
-    public double getTarget() {
-        return target;
+    private double convertToDeg(double rot){
+        return (1/Constants.NewWrist.RotateConversionFactor) * (rot - Constants.NewWrist.AbsEncoderShift);
+    }
+
+    public void setTarget(double target) {
+        this.target = convertToRot(target);
+    }
+
+    public double getTarget(){
+        return convertToDeg(target);
     }
 
     public void setState(Constants.RobotState state) {

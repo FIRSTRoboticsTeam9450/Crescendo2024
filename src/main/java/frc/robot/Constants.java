@@ -129,6 +129,47 @@ public final class Constants
     public static final double offsetToTrapFromGround = (0.5/0.69 * -75 + 20 - 24 - 12) / 2.0833; // -0.5
 
     public static final double offsetToPreClimb = -5;
+
+
+
+
+  }
+  public static class NewExtension{
+    // in inches
+    public static final double groundExtPosition = 4;
+    public static final double storeExtPosition = 0;
+    public static final double sourceExtPosition = 4;
+    public static final double ampExtPosition = 6;
+    public static final double trapExtPosition = 13;
+    public static final double climbExtPosition = 0;
+
+  }
+   public static class NewArm{
+    // In degrees
+    public static final double groundArmPosition = 70;
+    public static final double storeArmPosition = 50;
+    public static final double sourceArmPosition = 135;
+    public static final double ampArmPosition = 220;
+    public static final double trapArmPosition = 165;
+    public static final double climbArmPosition = 180;
+
+    //converst from rotations to degrees
+    public static final double RotateConversionFactor = (1/360);
+    public static final double AbsEncoderShift = -0.0809;
+
+  }
+   public static class NewWrist{
+    // In degrees
+    public static final double groundWristPosition = 150;
+    public static final double storeWristPosition = 250;
+    public static final double sourceWristPosition = 180;
+    public static final double ampWristPosition = 100;
+    public static final double trapWristPosition = 100;
+    public static final double climbWristPosition = 180;
+
+    //converst from rotations to degrees
+    public static final double RotateConversionFactor = (1/360);
+    public static final double AbsEncoderShift = -0.0809;
   }
 
   public static class Wrist{
@@ -151,6 +192,7 @@ public final class Constants
 
   }
   public static enum ScoringPos{
+    NONE,
     GROUND,
     STORE,
     SOURCE,

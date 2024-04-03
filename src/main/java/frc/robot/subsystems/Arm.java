@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import java.lang.constant.ConstantDescs;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
@@ -110,12 +111,21 @@ public class Arm extends SubsystemBase {
         motorBack.setVoltage(voltage);
     }
 
+    private double convertToRot(double angle) {
+        return angle * Constants.NewArm.RotateConversionFactor + Constants.NewArm.AbsEncoderShift;
+
+    }
+
+    private double convertToDeg(double rot){
+        return (1/Constants.NewArm.RotateConversionFactor) * (rot - Constants.NewArm.AbsEncoderShift);
+    }
+
     public void setTarget(double target) {
-        this.target = target;
+        this.target = convertToRot(target);
     }
 
     public double getTarget(){
-        return target;
+        return convertToDeg(target);
     }
 
     public void setState(Constants.RobotState state) {
