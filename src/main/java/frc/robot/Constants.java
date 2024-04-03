@@ -143,6 +143,8 @@ public final class Constants
     public static final double trapExtPosition = 13;
     public static final double climbExtPosition = 0;
 
+    public static final double convertToInches = 4.7244;
+
   }
    public static class NewArm{
     // In degrees
@@ -154,7 +156,7 @@ public final class Constants
     public static final double climbArmPosition = 180;
 
     //converst from rotations to degrees
-    public static final double RotateConversionFactor = (1/360);
+    public static final double RotateConversionFactor = (1.0/360);
     public static final double AbsEncoderShift = -0.0809;
 
   }
@@ -168,8 +170,9 @@ public final class Constants
     public static final double climbWristPosition = 180;
 
     //converst from rotations to degrees
-    public static final double RotateConversionFactor = (1/360);
+    public static final double RotateConversionFactor = (1.0/360);
     public static final double AbsEncoderShift = -0.0809;
+    public static final double gearRation = 1/1.2;
   }
 
   public static class Wrist{

@@ -116,11 +116,20 @@ public class Extension extends SubsystemBase {
 
     public void setTarget(double target) {
 
-        this.target = target;
+        this.target = convertToTics(target);
     }
 
     public double getTarget() {
-        return target;
+        return convertToInches(target);
+    }
+
+    private double convertToTics(double inches) {
+        return inches * (1/Constants.NewExtension.convertToInches);
+
+    }
+
+    private double convertToInches(double tics){
+        return tics * Constants.NewExtension.convertToInches;
     }
 
     public void updatePID() {

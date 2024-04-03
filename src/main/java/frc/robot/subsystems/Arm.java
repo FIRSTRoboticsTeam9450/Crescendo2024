@@ -98,10 +98,9 @@ public class Arm extends SubsystemBase {
     }
 
     private double getAbsPos(){
-        
-        
-        return currentAbsPos;
-        
+
+        return currentAbsPos; 
+              
     }
 
     public void setVoltage(double voltage){
