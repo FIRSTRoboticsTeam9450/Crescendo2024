@@ -236,11 +236,50 @@ public class Scoring extends SubsystemBase {
     }
 
     /* Limiter Logic */
-    //TODO: do conversion for extension in inches
     // add limit code 
     public void limit(){
+        double armAngle = arm.getRelPos(); // get the current arm angle
+        double extLength = ext.getRelPos(); // get the current extension length
+        double wristAngle = wrist.getAbsPos(); // get the current wrist angle
 
+        // if the ext amt is within error amt for max ext
+        // optional version that accounts for final index if you want to look 1 angle ahead: limits[(int) Math.round(armAngle) - 45 + 1 > 235 ? 235 : armAngle - 45 + 1][4]
+        if (Math.abs(Math.abs(extLength) - Math.abs(limits[(int) Math.round(armAngle) - 45][4])) < 0.1) { // arm angle increments by 1 but starts by 45, so take armAngle - 45 to get proper row
+            // extension is at the limit, so stop ext
+            ext.toggleExt(false); // stop ext
+            System.out.println("EXTENSION STOPPED");
+
+            // if the wrist amt is outside of the limits
+            if (Math.abs(Math.abs(wristAngle) - Math.abs(limits[(int) Math.round(armAngle) - 45][1])) < 0.01) { 
+                // wrist is at the limit, so stop wrist
+                wrist.toggleWrist(false); // stop wrist
+                System.out.println("WRIST STOPPED");
+            } else {
+                wrist.toggleWrist(true); // resume wrist
+            }
+
+
+        } else if (Math.abs(Math.abs(extLength) - Math.abs(limits[(int) Math.round(armAngle) - 45][4])) < 0.1) { // if the ext amt is within error amt for min ext
+            
+        } else {
+            ext.toggleExt(true); // resume ext
+        }
+
+        
+
+
+
+        // if the arm amt is outside of the limits
+        if (Math.abs(Math.abs(wristAngle) - Math.abs(limits[(int) Math.round(armAngle) - 45][3])) < 0.1) { 
+            // arm is at the limit, so stop arm
+            arm.toggleArm(false); // stop arm
+            System.out.println("ARM STOPPED");
+        } else {
+            arm.toggleArm(true); // resume arm
+        }
     }
+    
+    
 
     private double[][] limits = new double[][]{
         //Arm Angle		Extension Min		Wrist Max		Wrist min		Extension max		Wrist Max		Wrist Min

@@ -17,15 +17,16 @@ import frc.robot.commands.ExtensionCommand;
 public class Extension extends SubsystemBase {
     /* Class Constants */
     private double target = Constants.MovementLimits.extHardLowerLimit + Constants.Extension.offsetToPreClimb;
-    boolean runAndReset;
+    private boolean runAndReset;
+    private boolean run = true;
 
     private CANSparkMax motor = new CANSparkMax(Constants.extensionId, MotorType.kBrushless);
 
     /* Ext Rel Encoder */
-    RelativeEncoder encoderRel;
+    private RelativeEncoder encoderRel;
 
     /* Limit Switch */
-    DigitalInput lowerHardLimSwitch;
+    private DigitalInput lowerHardLimSwitch;
 
     /* Enums */ 
     @SuppressWarnings("unused")
@@ -148,7 +149,12 @@ public class Extension extends SubsystemBase {
     @Override
     public void periodic() {
         if (!runAndReset) {
-            updatePID();
+            if (run) {
+                updatePID();
+            } else {
+                motor.stopMotor();
+            }
+            
         }
         
         
@@ -160,6 +166,11 @@ public class Extension extends SubsystemBase {
             runAndReset = false;
 
         }
+    }
+
+    /** changes the boolean for whether or not to run ext...if run == false, then stopMotor() is called */
+    public void toggleExt(boolean run) {
+        this.run = run;
     }
 
 }

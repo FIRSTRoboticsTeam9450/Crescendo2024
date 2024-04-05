@@ -19,15 +19,16 @@ import frc.robot.Constants;
 public class Wrist extends SubsystemBase {
     /* Class Constants */
     private double target = Constants.MovementLimits.wristHardLowerLimit + Constants.Wrist.offsetToSource;// 0.485;
+    private boolean run = true;
 
     /* Motor */
     private CANSparkFlex motor = new CANSparkFlex(Constants.wristId, MotorType.kBrushless);
 
     /* Absolute Encoder */
-    SparkAbsoluteEncoder encoderAbs = motor.getAbsoluteEncoder(Type.kDutyCycle);
+    private SparkAbsoluteEncoder encoderAbs = motor.getAbsoluteEncoder(Type.kDutyCycle);
 
     /* Wrist FF */ // constants kinda tuned, final tuning still needed
-    // public SimpleMotorFeedforward ff = new SimpleMotorFeedforward(0.00001, 0.00003, 0.00001);
+    // private SimpleMotorFeedforward ff = new SimpleMotorFeedforward(0.00001, 0.00003, 0.00001);
 
 
     /* Enums */ 
@@ -125,7 +126,17 @@ public class Wrist extends SubsystemBase {
 
     @Override
     public void periodic() {
+        if (run) {
+            updatePID();
+        } else {
+            motor.stopMotor();
+        }
+
         
-        updatePID();
+    }
+
+    /** changes the boolean for whether or not to run wrist...if run == false, then stopMotor() is called */
+    public void toggleWrist(boolean run) {
+        this.run = run;
     }
 }

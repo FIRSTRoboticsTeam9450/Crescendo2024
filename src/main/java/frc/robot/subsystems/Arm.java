@@ -24,8 +24,9 @@ import frc.robot.Constants;
 
 public class Arm extends SubsystemBase {
     private double target = Constants.MovementLimits.armHardLowerLimit + Constants.Arm.offsetToPreClimb;
-    double currentRelPos;
-    double currentAbsPos;
+    private double currentRelPos;
+    private double currentAbsPos;
+    private boolean run = true;
                                                                                                             
 
 
@@ -34,8 +35,8 @@ public class Arm extends SubsystemBase {
     private CANSparkMax motorBack = new CANSparkMax(Constants.armBackId, MotorType.kBrushless);
 
     /* Encoders */
-    SparkAbsoluteEncoder encoderAbs = motorFront.getAbsoluteEncoder(Type.kDutyCycle);
-    RelativeEncoder encoderRel;    
+    private SparkAbsoluteEncoder encoderAbs = motorFront.getAbsoluteEncoder(Type.kDutyCycle);
+    private RelativeEncoder encoderRel;    
 
     /* Enums */
     @SuppressWarnings("unused")
@@ -84,22 +85,23 @@ public class Arm extends SubsystemBase {
         setRelPos(getAbsPos());
     }
 
-    public void setRelPos(double position) {
+    private void setRelPos(double position) {
         encoderRel.setPosition(position);
     }
     
     /**
-    * @return the relative position of the arm
+    * @return the relative position of the arm in degrees
     */
     public double getRelPos() {
         
-        return currentRelPos;
+        return convertToDeg(currentRelPos);
        
     }
 
+    /** @return the absolute position of the arm in degrees */
     private double getAbsPos(){
 
-        return currentAbsPos; 
+        return convertToDeg(currentAbsPos); 
               
     }
 
@@ -119,10 +121,12 @@ public class Arm extends SubsystemBase {
         return (1/Constants.NewArm.RotateConversionFactor) * (rot - Constants.NewArm.AbsEncoderShift);
     }
 
-    public void setTarget(double target) {
-        this.target = convertToRot(target);
+    /** converts to and sets the position target for the arm */
+    public void setTarget(double targetInches) {
+        this.target = convertToRot(targetInches);
     }
 
+    /** @return the target of the arm in degrees */
     public double getTarget(){
         return convertToDeg(target);
     }
@@ -190,14 +194,25 @@ public class Arm extends SubsystemBase {
         SmartDashboard.putNumber("Arm Abs Pos", currentAbsPos);
         Logger.recordOutput("Arm/RelCurrentPos", currentRelPos);
 
-    
-        updatePID(currentAbsPos, currentRelPos);
+        if (run) {
+            updatePID(currentAbsPos, currentRelPos);    
+        } else {
+            motorBack.stopMotor();
+            motorFront.stopMotor();
+        }
+
+        
 
 
 
         SmartDashboard.putNumber("Arm Rel Position", getRelPos());
         SmartDashboard.putNumber("Ratio Abs/Rel arm", getAbsPos() / getRelPos());
         SmartDashboard.putNumber("Arm Setpoint", target);
+    }
+
+     /** changes the boolean for whether or not to run arm...if run == false, then stopMotor() is called */
+     public void toggleArm(boolean run) {
+        this.run = run;
     }
 
     
