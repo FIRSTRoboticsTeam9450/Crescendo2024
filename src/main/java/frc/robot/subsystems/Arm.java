@@ -48,6 +48,8 @@ public class Arm extends SubsystemBase {
     private PIDConstants currentPIDConstants = pidConstantsDefault;
 
     public Arm() {
+        System.out.println(encoderAbs.getAverageDepth());
+
         motorFront.restoreFactoryDefaults();
         motorBack.restoreFactoryDefaults();
         
@@ -60,8 +62,8 @@ public class Arm extends SubsystemBase {
         motorBack.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 300);
 
         /* motor idlemodes */
-        motorFront.setIdleMode(IdleMode.kBrake);
-        motorBack.setIdleMode(IdleMode.kBrake);
+        motorFront.setIdleMode(IdleMode.kCoast);
+        motorBack.setIdleMode(IdleMode.kCoast);
         
         /* encoders */
         encoderRel = motorBack.getEncoder();
