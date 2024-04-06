@@ -237,45 +237,70 @@ public class Scoring extends SubsystemBase {
 
     /* Limiter Logic */
     // add limit code 
+
+    //Hmmm maybe not yet(want to find shortest / fastest path kinda like a pathplanner thing?)
+    public void smartLimiter(){
+
+    }
     public void limit(){
         double armAngle = arm.getRelPos(); // get the current arm angle
         double extLength = ext.getRelPos(); // get the current extension length
         double wristAngle = wrist.getAbsPos(); // get the current wrist angle
+        if(Math.abs(armAngle) > Math.abs(limits[0][0]) && Math.abs(armAngle) < Math.abs(limits[190][0]) ){
 
-        // if the ext amt is within error amt for max ext
-        // optional version that accounts for final index if you want to look 1 angle ahead: limits[(int) Math.round(armAngle) - 45 + 1 > 235 ? 235 : armAngle - 45 + 1][4]
-        if (Math.abs(Math.abs(extLength) - Math.abs(limits[(int) Math.round(armAngle) - 45][4])) < 0.1) { // arm angle increments by 1 but starts by 45, so take armAngle - 45 to get proper row
-            // extension is at the limit, so stop ext
-            ext.toggleExt(false); // stop ext
-            System.out.println("EXTENSION STOPPED");
+            arm.toggleArm(true); // resume arm
 
-            // if the wrist amt is outside of the limits
-            if (Math.abs(Math.abs(wristAngle) - Math.abs(limits[(int) Math.round(armAngle) - 45][1])) < 0.01) { 
-                // wrist is at the limit, so stop wrist
-                wrist.toggleWrist(false); // stop wrist
-                System.out.println("WRIST STOPPED");
+            // if the ext amt is within error amt for max ext
+            // optional version that accounts for final index if you want to look 1 angle ahead: limits[(int) Math.round(armAngle) - 45 + 1 > 235 ? 235 : armAngle - 45 + 1][4]
+            // This part of the if statements basically checks if the extension is less than the max it can be at the current angle
+            // the inside part is the max and min code for the wrist limits
+            if (Math.abs(Math.abs(extLength) - Math.abs(limits[(int) Math.round(armAngle) - 45][4])) < 0.1) { // arm angle increments by 1 but starts by 45, so take armAngle - 45 to get proper index
+                // extension is at the limit, so stop ext
+                ext.toggleExt(false); // stop ext
+                System.out.println("EXTENSION STOPPED");
+
+                // if the wrist amt is outside of the limits
+                if (Math.abs(limits[(int) Math.round(armAngle) - 45][6]) < Math.abs(wristAngle) &&  Math.abs(wristAngle) < Math.abs(limits[(int) Math.round(armAngle) - 45][5])) { 
+                    // wrist is at the limit, so stop wrist
+                    wrist.toggleWrist(false); // stop wrist
+                    System.out.println("WRIST STOPPED");
+                } else {
+                    wrist.toggleWrist(true); // resume wrist
+                }
+
+            //This part of the if statement checks if the extension is greather than the mininum(or at the min ofc) it can be at its current angle
+            // This inside is the max and min angle of the wrist.
+            } else if (Math.abs(Math.abs(extLength) - Math.abs(limits[(int) Math.round(armAngle) - 45][1])) < 0.1) { // if the ext amt is within error amt for min ext
+                 ext.toggleExt(false); // stop ext
+                System.out.println("EXTENSION STOPPED");
+
+                // if the wrist amt is outside of the limits
+                if (Math.abs(limits[(int) Math.round(armAngle) - 45][3]) < Math.abs(wristAngle) &&  Math.abs(wristAngle) < Math.abs(limits[(int) Math.round(armAngle) - 45][2])) { 
+                    // wrist is at the limit, so stop wrist
+                    wrist.toggleWrist(false); // stop wrist
+                    System.out.println("WRIST STOPPED");
+                } else {
+                    wrist.toggleWrist(true); // resume wrist
+                }
             } else {
-                wrist.toggleWrist(true); // resume wrist
+                ext.toggleExt(true); // resume ext
             }
 
-
-        } else if (Math.abs(Math.abs(extLength) - Math.abs(limits[(int) Math.round(armAngle) - 45][4])) < 0.1) { // if the ext amt is within error amt for min ext
             
-        } else {
-            ext.toggleExt(true); // resume ext
-        }
-
-        
 
 
 
-        // if the arm amt is outside of the limits
-        if (Math.abs(Math.abs(wristAngle) - Math.abs(limits[(int) Math.round(armAngle) - 45][3])) < 0.1) { 
-            // arm is at the limit, so stop arm
+            // // if the arm amt is outside of the limits
+            // if (Math.abs(Math.abs(wristAngle) - Math.abs(limits[(int) Math.round(armAngle) - 45][3])) < 0.1) { 
+            //     // arm is at the limit, so stop arm
+            //     arm.toggleArm(false); // stop arm
+            //     System.out.println("ARM STOPPED");
+            // } else {
+            //     arm.toggleArm(true); // resume arm
+            // }
+        }else{
             arm.toggleArm(false); // stop arm
             System.out.println("ARM STOPPED");
-        } else {
-            arm.toggleArm(true); // resume arm
         }
     }
     
