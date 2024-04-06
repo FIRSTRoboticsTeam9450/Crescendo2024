@@ -22,6 +22,7 @@ import frc.robot.commands.AutoClimbCommand;
 import frc.robot.commands.ClimbCommand;
 import frc.robot.commands.IntakingCommand;
 import frc.robot.commands.ResetClimbCommand;
+import frc.robot.commands.ScoringCommand;
 import frc.robot.commands.TimedIntakeSetPowerCommand;
 import frc.robot.commands.armpositions.toamp.BasicToAmpCommand;
 import frc.robot.commands.armpositions.toground.BasicToGroundCommand;
@@ -32,6 +33,7 @@ import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
 import frc.robot.subsystems.Climb;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Limelight;
+import frc.robot.subsystems.Scoring;
 import frc.robot.subsystems.Examples.ArmWristSubsystem;
 import frc.robot.subsystems.Examples.ArmWristSubsystem.Height;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
@@ -46,6 +48,7 @@ import com.pathplanner.lib.auto.NamedCommands;
  */
 public class RobotContainer
 {
+  public final Scoring score = new Scoring();
 //   // The robot's subsystems and commands are defined here...
 //   public final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
 //                                                                          "swerve/vortex"));
@@ -65,7 +68,7 @@ public class RobotContainer
 //   // CommandJoystick rotationController = new CommandJoystick(1);
 //   // Replace with CommandPS4Controller or CommandJoystick if needed
 //   CommandXboxController driverController = new CommandXboxController(0);
-//   CommandXboxController armController = new CommandXboxController(1);
+     CommandXboxController armController = new CommandXboxController(1);
 //   CommandXboxController testingController = new CommandXboxController(2);
 //   //CommandXboxController driverController = new CommandXboxController(0);
 //   // CommandJoystick driverController   = new CommandJoystick(3]\[]);//(OperatorConstants.DRIVER_CONTROLLER_PORT);
@@ -77,6 +80,9 @@ public class RobotContainer
 //    */
    public RobotContainer()
    {
+  //score.setDefaultCommand(new InstantCommand(() -> score.goToPosition(Constants.ScoringPos.AMP)));
+
+  score.setDefaultCommand(new ScoringCommand(score, armController));
 
 //     //autoChooser = AutoBuilder.buildAutoChooser();
 //     //autoChooser = new SendableChooser<Command>();

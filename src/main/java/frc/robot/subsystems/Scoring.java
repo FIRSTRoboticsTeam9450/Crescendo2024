@@ -136,6 +136,15 @@ public class Scoring extends SubsystemBase {
         return lastState;
     }
 
+    public Extension getExtSub(){
+        return ext;
+    }
+    public Arm getArmSub(){
+        return arm;
+    }
+    public Wrist getWristSub(){
+        return wrist;
+    }
 
     
     /* Movement Logic */
