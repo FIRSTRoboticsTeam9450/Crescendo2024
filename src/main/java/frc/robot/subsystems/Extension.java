@@ -85,12 +85,12 @@ public class Extension extends SubsystemBase {
     }
 
     /**
-     * @return the relative position of the extension
+     * @return the positive relative position of the extension (normally negative)
      */
     public double getRelPos() {
 
         Logger.recordOutput("Extension/ExtPos", encoderRel.getPosition());
-        return encoderRel.getPosition();
+        return -encoderRel.getPosition();
 
     }
 
