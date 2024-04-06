@@ -86,7 +86,7 @@ public class Robot extends LoggedRobot
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
     
-    m_robotContainer.armWristSub.updateRelArmPos();
+    //m_robotContainer.armWristSub.updateRelArmPos();
     // Create a timer to disable motor brake a few seconds after disable.  This will let the robot stop
     // immediately when disabled, but then also let it be pushed more 
     disabledTimer = new Timer();
@@ -115,8 +115,8 @@ public class Robot extends LoggedRobot
   @Override
   public void disabledInit()
   {
-    m_robotContainer.setDriveBrake(true);
-    m_robotContainer.setArmWristExtBrake(true);
+    // m_robotContainer.setDriveBrake(true);
+    // m_robotContainer.setArmWristExtBrake(true);
     disabledTimer.restart();
     runnable = true;
   }
@@ -128,9 +128,9 @@ public class Robot extends LoggedRobot
 
     if (disabledTimer.hasElapsed(Constants.Drivebase.WHEEL_LOCK_TIME) && runnable)
     {
-      m_robotContainer.setDriveBrake(false);
-      // m_robotContainer.setArmWristExtBrake(false);
-      //m_robotContainer.setArmWristExtBrake(false);
+      // m_robotContainer.setDriveBrake(false);
+              // m_robotContainer.setArmWristExtBrake(false);
+              //m_robotContainer.setArmWristExtBrake(false);
       disabledTimer.stop();
       runnable = false;
     } 
@@ -145,23 +145,23 @@ public class Robot extends LoggedRobot
   public void autonomousInit()
   {
 
-    m_robotContainer.climbSub.enablePid(false);
-    m_robotContainer.setDriveBrake(true);
-    m_robotContainer.setArmWristExtBrake(true);
+    // m_robotContainer.climbSub.enablePid(false);
+    // m_robotContainer.setDriveBrake(true);
+    // m_robotContainer.setArmWristExtBrake(true);
 
     NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(0);
     
    
 
-    try {
-       (new InstantCommand(() -> m_robotContainer.armWristSub.goToPosition(Height.PRECLIMB))).schedule();
-      (new InstantCommand(() -> m_robotContainer.armWristSub.runAndResetExtEncoder())).schedule();
-      m_robotContainer.armWristSub.changeHeight(Height.PRECLIMB);
+    // try {
+    //    (new InstantCommand(() -> m_robotContainer.armWristSub.goToPosition(Height.PRECLIMB))).schedule();
+    //   (new InstantCommand(() -> m_robotContainer.armWristSub.runAndResetExtEncoder())).schedule();
+    //   m_robotContainer.armWristSub.changeHeight(Height.PRECLIMB);
 
-      m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-    } catch (NullPointerException e) {
-      e.printStackTrace();
-    }
+    //   m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    // } catch (NullPointerException e) {
+    //   e.printStackTrace();
+    // }
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null)
@@ -189,7 +189,7 @@ public class Robot extends LoggedRobot
       m_autonomousCommand.cancel();
     }
 
-    System.out.println(m_robotContainer.drivebase.getPose());
+    // System.out.println(m_robotContainer.drivebase.getPose());
 
 
   }
@@ -199,14 +199,13 @@ public class Robot extends LoggedRobot
   public void teleopInit()
   {
 
-    //new BasicToSourceCommand(m_robotContainer.armWristSub).schedule();
-    (new InstantCommand(() -> m_robotContainer.armWristSub.goToPosition(Height.PRECLIMB))).schedule();
-    (new InstantCommand(() -> m_robotContainer.armWristSub.runAndResetExtEncoder())).schedule();
-    m_robotContainer.armWristSub.changeHeight(Height.PRECLIMB);
-    m_robotContainer.setDriveMode();
-    m_robotContainer.setDriveBrake(true);
-    m_robotContainer.setArmWristExtBrake(true);
-    m_robotContainer.climbSub.enablePid(false);
+    // (new InstantCommand(() -> m_robotContainer.armWristSub.goToPosition(Height.PRECLIMB))).schedule();
+    // (new InstantCommand(() -> m_robotContainer.armWristSub.runAndResetExtEncoder())).schedule();
+    // m_robotContainer.armWristSub.changeHeight(Height.PRECLIMB);
+    // m_robotContainer.setDriveMode();
+    // m_robotContainer.setDriveBrake(true);
+    // m_robotContainer.setArmWristExtBrake(true);
+    // m_robotContainer.climbSub.enablePid(false);
   }
 
   /**

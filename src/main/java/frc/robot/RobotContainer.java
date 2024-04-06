@@ -46,348 +46,348 @@ import com.pathplanner.lib.auto.NamedCommands;
  */
 public class RobotContainer
 {
-  // The robot's subsystems and commands are defined here...
-  public final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
-                                                                         "swerve/vortex"));
+//   // The robot's subsystems and commands are defined here...
+//   public final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
+//                                                                          "swerve/vortex"));
                                                                          
-  public final Intake intakeSub = new Intake();
-  //private final ExtensionSubsystem extSub = new ExtensionSubsystem();
-  //private final ArmSubsystem armSub = new ArmSubsystem(extSub);
-  //private final WristSubsystem wristSub = new WristSubsystem();
-  public final ArmWristSubsystem armWristSub = new ArmWristSubsystem();
-  // public final LaserSubsystem laserSub = new LaserSubsystem();
-  public final Limelight servo = new Limelight(intakeSub);
-  public final Climb climbSub = new Climb();
-  // private final LimitSwitchSubsystem extLimitSub = new LimitSwitchSubsystem();
- // private final ExtensionSubsystem extSub = new ExtensionSubsystem();
+//   public final Intake intakeSub = new Intake();
+//   //private final ExtensionSubsystem extSub = new ExtensionSubsystem();
+//   //private final ArmSubsystem armSub = new ArmSubsystem(extSub);
+//   //private final WristSubsystem wristSub = new WristSubsystem();
+//   public final ArmWristSubsystem armWristSub = new ArmWristSubsystem();
+//   // public final LaserSubsystem laserSub = new LaserSubsystem();
+//   public final Limelight servo = new Limelight(intakeSub);
+//   public final Climb climbSub = new Climb();
+//   // private final LimitSwitchSubsystem extLimitSub = new LimitSwitchSubsystem();
+//  // private final ExtensionSubsystem extSub = new ExtensionSubsystem();
 
 
-  // CommandJoystick rotationController = new CommandJoystick(1);
-  // Replace with CommandPS4Controller or CommandJoystick if needed
-  CommandXboxController driverController = new CommandXboxController(0);
-  CommandXboxController armController = new CommandXboxController(1);
-  CommandXboxController testingController = new CommandXboxController(2);
-  //CommandXboxController driverController = new CommandXboxController(0);
-  // CommandJoystick driverController   = new CommandJoystick(3]\[]);//(OperatorConstants.DRIVER_CONTROLLER_PORT);
-  XboxController driverXbox = new XboxController(0);
-  private final SendableChooser<String> autoChooser;
-  public boolean driveEnabled = true;
-  /**
-   * The container for the robot. Contains subsystems, OI devices, and commands.
-   */
-  public RobotContainer()
-  {
+//   // CommandJoystick rotationController = new CommandJoystick(1);
+//   // Replace with CommandPS4Controller or CommandJoystick if needed
+//   CommandXboxController driverController = new CommandXboxController(0);
+//   CommandXboxController armController = new CommandXboxController(1);
+//   CommandXboxController testingController = new CommandXboxController(2);
+//   //CommandXboxController driverController = new CommandXboxController(0);
+//   // CommandJoystick driverController   = new CommandJoystick(3]\[]);//(OperatorConstants.DRIVER_CONTROLLER_PORT);
+//   XboxController driverXbox = new XboxController(0);
+//   private final SendableChooser<String> autoChooser;
+//   public boolean driveEnabled = true;
+//   /**
+//    * The container for the robot. Contains subsystems, OI devices, and commands.
+//    */
+   public RobotContainer()
+   {
 
-    //autoChooser = AutoBuilder.buildAutoChooser();
-    //autoChooser = new SendableChooser<Command>();
+//     //autoChooser = AutoBuilder.buildAutoChooser();
+//     //autoChooser = new SendableChooser<Command>();
 
     
-    autoChooser = new SendableChooser<String>();
-    autoChooser.addOption("Drive Forward (no scoring)", "ExitStarting");
-    autoChooser.addOption("Preload Only", "PreloadScoreAlign");
-    autoChooser.addOption("Preload + Center", "PreloadGrabCenter");
-    autoChooser.addOption("Preload + Close", "TwoNoteAlign");
+//     autoChooser = new SendableChooser<String>();
+//     autoChooser.addOption("Drive Forward (no scoring)", "ExitStarting");
+//     autoChooser.addOption("Preload Only", "PreloadScoreAlign");
+//     autoChooser.addOption("Preload + Center", "PreloadGrabCenter");
+//     autoChooser.addOption("Preload + Close", "TwoNoteAlign");
 
-    autoChooser.setDefaultOption("Preload + Close", "TwoNoteAlign");
-    
-
-
-    SmartDashboard.putData("Auto Chooser", autoChooser);
-
-    Command armStore = new BasicToHoldCommand(armWristSub);
-    Command armAmp = new BasicToAmpCommand(armWristSub);
-    Command armGround = new SequentialCommandGroup(
-      new BasicToGroundCommand(armWristSub),
-      new IntakingCommand(intakeSub, 12)
-    );
-    // Command armStart = new InstantCommand(() -> armWristSub.setArmWristExtGoal(armWristSub.armHardLowerLimit + Constants.Arm.offsetToAmpFromGround - 0.05, 
-    // armWristSub.wristHardLowerLimit + Constants.Wrist.offsetToSource, 
-    // armWristSub.extHardLowerLimit - 5));
-
-    Command outtake = new TimedIntakeSetPowerCommand(intakeSub, 10, 0.75);
-    Command resetExt = new InstantCommand(() -> armWristSub.runAndResetExtEncoder());
-    Command align = new AlignSource2(drivebase, null, servo, true).withTimeout(2);
-    Command armUp = new InstantCommand(() -> armWristSub.goToPosition(Height.PRECLIMB));
-    // Command sweep = new SweepCommand(drivebase);
-
-    // NamedCommands.registerCommand("ArmStart", armStart);
-    NamedCommands.registerCommand("ArmStore", armStore);
-    NamedCommands.registerCommand("ArmGround", armGround);
-    NamedCommands.registerCommand("ArmAmp", armAmp);
-    NamedCommands.registerCommand("Outtake", outtake);  
-    NamedCommands.registerCommand("ResetExt", resetExt); 
-    NamedCommands.registerCommand("AlignAmp", align);
-    NamedCommands.registerCommand("ArmUp", armUp);
-    // NamedCommands.registerCommand("Sweep", sweep);
-    // speedModify = () ->  driverController.leftTrigger().getAsBoolean(); // accounts for buttons.run() overrun issue by caching value
-
-/*
-
-    HeadingCorTeleopDrive drvHeadingCorr = new HeadingCorTeleopDrive(drivebase, 
-                                                () -> MathUtil.applyDeadband(driverController.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
-                                                () -> MathUtil.applyDeadband(driverController.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
-                                                () -> driverController.getRightX(), () -> driverController.getRightY(),
-                                                () -> driverController.rightBumper().getAsBoolean(),
-() -> driverController.leftTrigger().getAsBoolean());
-
-    HeadingCorTeleopDrive simDrvHeadingCorr = new HeadingCorTeleopDrive(drivebase, 
-                                                () -> MathUtil.applyDeadband(driverController.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
-                                                () -> MathUtil.applyDeadband(driverController.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
-                                                () -> driverController.getRightX(), () -> driverController.getRightY(), 
-                                                () -> driverController.rightBumper().getAsBoolean(),
-() -> driverController.leftTrigger().getAsBoolean());
-
-
-*/
-
-
-
-    TeleopDrive simClosedFieldRel = new TeleopDrive(
-                drivebase,
-                () -> Math.abs(driverController.getLeftY()) < OperatorConstants.LEFT_Y_DEADBAND ? 0.0 : driverController.getLeftY(),
-                () -> Math.abs(driverController.getLeftX()) < OperatorConstants.LEFT_X_DEADBAND ? 0.0 : driverController.getLeftX(),
-                () -> Math.abs(driverController.getRawAxis(4)) < OperatorConstants.RIGHT_X_DEADBAND ? 0.0 : driverController.getRawAxis(4), 
-                true,
-                () -> driverController.getHID().getRightBumper(),
-                () -> driverController.getHID().getLeftBumper());
-
-
-    TeleopDrive closedFieldRel = new TeleopDrive(
-                drivebase,
-                () -> Math.abs(driverController.getLeftY()) < OperatorConstants.LEFT_Y_DEADBAND ? 0.0 : driverController.getLeftY(),
-                () -> Math.abs(driverController.getLeftX()) < OperatorConstants.LEFT_X_DEADBAND ? 0.0 : driverController.getLeftX(),
-                () -> Math.abs(driverController.getRawAxis(4)) < OperatorConstants.RIGHT_X_DEADBAND ? 0.0 : driverController.getRawAxis(4), 
-                true,
-                () -> driverController.getHID().getRightBumper(),
-                () -> driverController.getHID().getLeftBumper());
-
-                // driverController.axisGreaterThan(2, 0.2).getAsBoolean()
-/* 
-    DoubleSupplier y = () -> driverController.getLeftY();
-    DoubleSupplier x = () -> driverController.getLeftX();
-    DoubleSupplier z = () -> driverController.getRawAxis(4);
-
-    Logger.recordOutput("SwerveStates/ControllerInputLog/RobotContainer/x", y.getAsDouble());
-    Logger.recordOutput("SwerveStates/ControllerInputLog/RobotContainer/y", x.getAsDouble());
-    Logger.recordOutput("SwerveStates/ControllerInputLog/RobotContainer/z", z.getAsDouble());
-*/
+//     autoChooser.setDefaultOption("Preload + Close", "TwoNoteAlign");
     
 
 
-    drivebase.setDefaultCommand(RobotBase.isSimulation() ? simClosedFieldRel : closedFieldRel);
+//     SmartDashboard.putData("Auto Chooser", autoChooser);
+
+//     Command armStore = new BasicToHoldCommand(armWristSub);
+//     Command armAmp = new BasicToAmpCommand(armWristSub);
+//     Command armGround = new SequentialCommandGroup(
+//       new BasicToGroundCommand(armWristSub),
+//       new IntakingCommand(intakeSub, 12)
+//     );
+//     // Command armStart = new InstantCommand(() -> armWristSub.setArmWristExtGoal(armWristSub.armHardLowerLimit + Constants.Arm.offsetToAmpFromGround - 0.05, 
+//     // armWristSub.wristHardLowerLimit + Constants.Wrist.offsetToSource, 
+//     // armWristSub.extHardLowerLimit - 5));
+
+//     Command outtake = new TimedIntakeSetPowerCommand(intakeSub, 10, 0.75);
+//     Command resetExt = new InstantCommand(() -> armWristSub.runAndResetExtEncoder());
+//     Command align = new AlignSource2(drivebase, null, servo, true).withTimeout(2);
+//     Command armUp = new InstantCommand(() -> armWristSub.goToPosition(Height.PRECLIMB));
+//     // Command sweep = new SweepCommand(drivebase);
+
+//     // NamedCommands.registerCommand("ArmStart", armStart);
+//     NamedCommands.registerCommand("ArmStore", armStore);
+//     NamedCommands.registerCommand("ArmGround", armGround);
+//     NamedCommands.registerCommand("ArmAmp", armAmp);
+//     NamedCommands.registerCommand("Outtake", outtake);  
+//     NamedCommands.registerCommand("ResetExt", resetExt); 
+//     NamedCommands.registerCommand("AlignAmp", align);
+//     NamedCommands.registerCommand("ArmUp", armUp);
+//     // NamedCommands.registerCommand("Sweep", sweep);
+//     // speedModify = () ->  driverController.leftTrigger().getAsBoolean(); // accounts for buttons.run() overrun issue by caching value
+
+// /*
+
+//     HeadingCorTeleopDrive drvHeadingCorr = new HeadingCorTeleopDrive(drivebase, 
+//                                                 () -> MathUtil.applyDeadband(driverController.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
+//                                                 () -> MathUtil.applyDeadband(driverController.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
+//                                                 () -> driverController.getRightX(), () -> driverController.getRightY(),
+//                                                 () -> driverController.rightBumper().getAsBoolean(),
+// () -> driverController.leftTrigger().getAsBoolean());
+
+//     HeadingCorTeleopDrive simDrvHeadingCorr = new HeadingCorTeleopDrive(drivebase, 
+//                                                 () -> MathUtil.applyDeadband(driverController.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
+//                                                 () -> MathUtil.applyDeadband(driverController.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
+//                                                 () -> driverController.getRightX(), () -> driverController.getRightY(), 
+//                                                 () -> driverController.rightBumper().getAsBoolean(),
+// () -> driverController.leftTrigger().getAsBoolean());
+
+
+// */
+
+
+
+//     TeleopDrive simClosedFieldRel = new TeleopDrive(
+//                 drivebase,
+//                 () -> Math.abs(driverController.getLeftY()) < OperatorConstants.LEFT_Y_DEADBAND ? 0.0 : driverController.getLeftY(),
+//                 () -> Math.abs(driverController.getLeftX()) < OperatorConstants.LEFT_X_DEADBAND ? 0.0 : driverController.getLeftX(),
+//                 () -> Math.abs(driverController.getRawAxis(4)) < OperatorConstants.RIGHT_X_DEADBAND ? 0.0 : driverController.getRawAxis(4), 
+//                 true,
+//                 () -> driverController.getHID().getRightBumper(),
+//                 () -> driverController.getHID().getLeftBumper());
+
+
+//     TeleopDrive closedFieldRel = new TeleopDrive(
+//                 drivebase,
+//                 () -> Math.abs(driverController.getLeftY()) < OperatorConstants.LEFT_Y_DEADBAND ? 0.0 : driverController.getLeftY(),
+//                 () -> Math.abs(driverController.getLeftX()) < OperatorConstants.LEFT_X_DEADBAND ? 0.0 : driverController.getLeftX(),
+//                 () -> Math.abs(driverController.getRawAxis(4)) < OperatorConstants.RIGHT_X_DEADBAND ? 0.0 : driverController.getRawAxis(4), 
+//                 true,
+//                 () -> driverController.getHID().getRightBumper(),
+//                 () -> driverController.getHID().getLeftBumper());
+
+//                 // driverController.axisGreaterThan(2, 0.2).getAsBoolean()
+// /* 
+//     DoubleSupplier y = () -> driverController.getLeftY();
+//     DoubleSupplier x = () -> driverController.getLeftX();
+//     DoubleSupplier z = () -> driverController.getRawAxis(4);
+
+//     Logger.recordOutput("SwerveStates/ControllerInputLog/RobotContainer/x", y.getAsDouble());
+//     Logger.recordOutput("SwerveStates/ControllerInputLog/RobotContainer/y", x.getAsDouble());
+//     Logger.recordOutput("SwerveStates/ControllerInputLog/RobotContainer/z", z.getAsDouble());
+// */
+    
+
+
+//     drivebase.setDefaultCommand(RobotBase.isSimulation() ? simClosedFieldRel : closedFieldRel);
     
     
     
-    // drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simDrvHeadingCorr : drvHeadingCorr);
+//     // drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simDrvHeadingCorr : drvHeadingCorr);
     
-    // driverController.rightTrigger().whileFalse();
-    // driverController.rightTrigger().whileTrue(closedFieldRelSlow);
-    // driverController.start().onTrue(new SequentialCommandGroup(new InstantCommand( () -> drivebase.), new InstantCommand( () -> resetDrive(/*closedFieldRel, simClosedFieldRel*/)).andThen(new WaitCommand(.2)),
+//     // driverController.rightTrigger().whileFalse();
+//     // driverController.rightTrigger().whileTrue(closedFieldRelSlow);
+//     // driverController.start().onTrue(new SequentialCommandGroup(new InstantCommand( () -> drivebase.), new InstantCommand( () -> resetDrive(/*closedFieldRel, simClosedFieldRel*/)).andThen(new WaitCommand(.2)),
     
-    /* reset drive?? */
-    driverController.start().onTrue(new SequentialCommandGroup(
-        new InstantCommand( () -> drivebase.removeDefaultCommand()), 
-        new InstantCommand( () -> drivebase.drive(new Translation2d(), drivebase.getTargetSpeeds(0, 0, drivebase.getHeading().getSin(), drivebase.getHeading().getCos()).omegaRadiansPerSecond, true)), 
-        new WaitCommand(0.2), 
-        new InstantCommand( () -> drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simClosedFieldRel : closedFieldRel))));
+//     /* reset drive?? */
+//     driverController.start().onTrue(new SequentialCommandGroup(
+//         new InstantCommand( () -> drivebase.removeDefaultCommand()), 
+//         new InstantCommand( () -> drivebase.drive(new Translation2d(), drivebase.getTargetSpeeds(0, 0, drivebase.getHeading().getSin(), drivebase.getHeading().getCos()).omegaRadiansPerSecond, true)), 
+//         new WaitCommand(0.2), 
+//         new InstantCommand( () -> drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simClosedFieldRel : closedFieldRel))));
                          
-    //                                 new InstantCommand( () -> drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simClosedFieldRel : closedFieldRel))));
+//     //                                 new InstantCommand( () -> drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simClosedFieldRel : closedFieldRel))));
 
-    // Configure the trigger bindings
-    configureBindings();
-  } // FR: 323.086, FL: 303.486
-  // 
+//     // Configure the trigger bindings
+//     configureBindings();
+//   } // FR: 323.086, FL: 303.486
+//   // 
 
-  /**
-   * Use this method to define your trigger->command mappings. Triggers can be created via the
-   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary predicate, or via the
-   * named factories in {@link edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for
-   * {@link CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller PS4}
-   * controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight joysticks}.
-   */
+//   /**
+//    * Use this method to define your trigger->command mappings. Triggers can be created via the
+//    * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary predicate, or via the
+//    * named factories in {@link edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for
+//    * {@link CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller PS4}
+//    * controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight joysticks}.
+//    */
 
-  private void configureBindings()
-  {
-    /* Reset Gyro is now built into drive commands!! (hit rightBumper) */
-    /* [same as halfing the drive speed (hold rightTrigger)]
+//   private void configureBindings()
+//   {
+//     /* Reset Gyro is now built into drive commands!! (hit rightBumper) */
+//     /* [same as halfing the drive speed (hold rightTrigger)]
 
 
-    //driverController.rightBumper().onTrue(new InstantCommand(drivebase::zeroGyro));
+//     //driverController.rightBumper().onTrue(new InstantCommand(drivebase::zeroGyro));
     
 
-    //new JoystickButton(driverXbox, 1).onTrue((new InstantCommand(drivebase::zeroGyro)));
-    //new JoystickButton(driverXbox, 3).onTrue(new InstantCommand(drivebase::addFakeVisionReading));
-//    new JoystickButton(driverXbox, 3).whileTrue(new RepeatCommand(new InstantCommand(drivebase::lock, drivebase)));
+//     //new JoystickButton(driverXbox, 1).onTrue((new InstantCommand(drivebase::zeroGyro)));
+//     //new JoystickButton(driverXbox, 3).onTrue(new InstantCommand(drivebase::addFakeVisionReading));
+// //    new JoystickButton(driverXbox, 3).whileTrue(new RepeatCommand(new InstantCommand(drivebase::lock, drivebase)));
 
 
 
-    /* amp */
-    armController.leftTrigger().onTrue(new BasicToAmpCommand(armWristSub));
-    // driverController.leftTrigger().onTrue(new InstantCommand(() -> intakeSub.intakeNote(5)));
+//     /* amp */
+//     armController.leftTrigger().onTrue(new BasicToAmpCommand(armWristSub));
+//     // driverController.leftTrigger().onTrue(new InstantCommand(() -> intakeSub.intakeNote(5)));
     
-    //driverController.leftBumper().onTrue( new TimedIntakeSetPowerCommand(intakeSub, 10, 1.5));
+//     //driverController.leftBumper().onTrue( new TimedIntakeSetPowerCommand(intakeSub, 10, 1.5));
     
-    // /* hold */
-    armController.rightTrigger().onTrue(new SequentialCommandGroup(
-      new TimedIntakeSetPowerCommand(intakeSub, 10, 0.75),
-      new BasicToHoldCommand(armWristSub),
-      new InstantCommand(() -> servo.setAxonAngle(130))
-    ));
+//     // /* hold */
+//     armController.rightTrigger().onTrue(new SequentialCommandGroup(
+//       new TimedIntakeSetPowerCommand(intakeSub, 10, 0.75),
+//       new BasicToHoldCommand(armWristSub),
+//       new InstantCommand(() -> servo.setAxonAngle(130))
+//     ));
 
-    //driverController.leftBumper().onFalse(new InstantCommand( () -> intakeSub.stopIntake() ));
+//     //driverController.leftBumper().onFalse(new InstantCommand( () -> intakeSub.stopIntake() ));
     
-    //driverController.rightBumper().onFalse(new InstantCommand( () -> wristIntake.stopIntake() ));
+//     //driverController.rightBumper().onFalse(new InstantCommand( () -> wristIntake.stopIntake() ));
 
    
-    /*
-    // New Source
+//     /*
+//     // New Source
 
-    armController.y().onTrue(new SequentialCommandGroup(
-      new InstantCommand(() -> armSub.goToPosition(Constants.Height.SOURCE)),
-      new InstantCommand(() -> extSub.goToPosition(Constants.Height.SOURCE)),
-      new InstantCommand(() -> wristSub.goToPosition(Constants.Height.SOURCE)),
-      new IntakingCommand(intakeSub, 5)
-    ));
+//     armController.y().onTrue(new SequentialCommandGroup(
+//       new InstantCommand(() -> armSub.goToPosition(Constants.Height.SOURCE)),
+//       new InstantCommand(() -> extSub.goToPosition(Constants.Height.SOURCE)),
+//       new InstantCommand(() -> wristSub.goToPosition(Constants.Height.SOURCE)),
+//       new IntakingCommand(intakeSub, 5)
+//     ));
 
-    */
+//     */
 
-    /* Source */
+//     /* Source */
     
-    // armController.y().onTrue(new SequentialCommandGroup(
-    //   new InstantCommand(() -> armWristSub.goToPosition(Height.SOURCE)),
-    //   new IntakingCommand(intakeSub, 5)
-    // ));
+//     // armController.y().onTrue(new SequentialCommandGroup(
+//     //   new InstantCommand(() -> armWristSub.goToPosition(Height.SOURCE)),
+//     //   new IntakingCommand(intakeSub, 5)
+//     // ));
 
-    armController.y().onTrue(new SequentialCommandGroup(
-      new BasicToSourceCommand(armWristSub),
-      new IntakingCommand(intakeSub, 8),
-      new InstantCommand(() -> armWristSub.goToPosition(Height.PRECLIMB)),
-      new InstantCommand(() -> armWristSub.changeHeight(Height.PRECLIMB)),
-      new InstantCommand(() -> armWristSub.runAndResetExtEncoder())
-    ));
+//     armController.y().onTrue(new SequentialCommandGroup(
+//       new BasicToSourceCommand(armWristSub),
+//       new IntakingCommand(intakeSub, 8),
+//       new InstantCommand(() -> armWristSub.goToPosition(Height.PRECLIMB)),
+//       new InstantCommand(() -> armWristSub.changeHeight(Height.PRECLIMB)),
+//       new InstantCommand(() -> armWristSub.runAndResetExtEncoder())
+//     ));
    
-    //driverController.rightTrigger().onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.SOURCE)));
+//     //driverController.rightTrigger().onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.SOURCE)));
 
-    /*
-    // New Amp
+//     /*
+//     // New Amp
 
-    armController.b().onTrue(new SequentialCommandGroup(
-      new InstantCommand(() -> armSub.goToPosition(Constants.Height.AMP)),
-      new InstantCommand(() -> extSub.goToPosition(Constants.Height.AMP)),
-      new InstantCommand(() -> wristSub.goToPosition(Constants.Height.AMP))
-    ));
-    */
+//     armController.b().onTrue(new SequentialCommandGroup(
+//       new InstantCommand(() -> armSub.goToPosition(Constants.Height.AMP)),
+//       new InstantCommand(() -> extSub.goToPosition(Constants.Height.AMP)),
+//       new InstantCommand(() -> wristSub.goToPosition(Constants.Height.AMP))
+//     ));
+//     */
     
-    /* preclimb */
-    //armController.b().onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.AMP)));
-    armController.b().onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.PRECLIMB)));
+//     /* preclimb */
+//     //armController.b().onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.AMP)));
+//     armController.b().onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.PRECLIMB)));
    
-   /*
-    //New Ground
-    armController.a().onTrue(new SequentialCommandGroup(
-      new InstantCommand(() -> armSub.goToPosition(Constants.Height.GROUND)),
-      new InstantCommand(() -> extSub.goToPosition(Constants.Height.GROUND)),
-      new InstantCommand(() -> wristSub.goToPosition(Constants.Height.GROUND)),
-      new IntakingCommand(intakeSub, 5)
-    ));
-    */
+//    /*
+//     //New Ground
+//     armController.a().onTrue(new SequentialCommandGroup(
+//       new InstantCommand(() -> armSub.goToPosition(Constants.Height.GROUND)),
+//       new InstantCommand(() -> extSub.goToPosition(Constants.Height.GROUND)),
+//       new InstantCommand(() -> wristSub.goToPosition(Constants.Height.GROUND)),
+//       new IntakingCommand(intakeSub, 5)
+//     ));
+//     */
 
-    // Ground
-    // armController.a().onTrue(new SequentialCommandGroup(
-    //   new InstantCommand(() -> armWristSub.goToPosition(Height.GROUND)),
-    //   new IntakingCommand(intakeSub, 8)
-    //   ));
+//     // Ground
+//     // armController.a().onTrue(new SequentialCommandGroup(
+//     //   new InstantCommand(() -> armWristSub.goToPosition(Height.GROUND)),
+//     //   new IntakingCommand(intakeSub, 8)
+//     //   ));
     
-    /* ground, intake, hold */
-    armController.a().onTrue(new SequentialCommandGroup(
-      new BasicToGroundCommand(armWristSub),
-      new IntakingCommand(intakeSub, 12),
-      new BasicToHoldCommand(armWristSub),
-      new InstantCommand(() -> servo.setAxonAngle(180))
-    ));
+//     /* ground, intake, hold */
+//     armController.a().onTrue(new SequentialCommandGroup(
+//       new BasicToGroundCommand(armWristSub),
+//       new IntakingCommand(intakeSub, 12),
+//       new BasicToHoldCommand(armWristSub),
+//       new InstantCommand(() -> servo.setAxonAngle(180))
+//     ));
         
     
-    /*
-    // New Holding
-    armController.x().onTrue(new SequentialCommandGroup(
-      new InstantCommand(() -> wristSub.goToPosition(Constants.Height.HOLD)),
-      new InstantCommand(() -> extSub.goToPosition(Constants.Height.HOLD)),
-      new InstantCommand(() -> armSub.goToPosition(Constants.Height.HOLD))
-    ));
-    */
+//     /*
+//     // New Holding
+//     armController.x().onTrue(new SequentialCommandGroup(
+//       new InstantCommand(() -> wristSub.goToPosition(Constants.Height.HOLD)),
+//       new InstantCommand(() -> extSub.goToPosition(Constants.Height.HOLD)),
+//       new InstantCommand(() -> armSub.goToPosition(Constants.Height.HOLD))
+//     ));
+//     */
 
-    // Holding Position
-    //armController.x().onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.HOLD)));
-    armController.x().onTrue(new BasicToHoldCommand(armWristSub));
+//     // Holding Position
+//     //armController.x().onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.HOLD)));
+//     armController.x().onTrue(new BasicToHoldCommand(armWristSub));
 
 
-    // Climber
-    armController.pov(180).onTrue(new ClimbCommand(climbSub, 0));
-    armController.pov(90).onTrue(new BasicToHoldCommand(armWristSub).andThen(new WaitCommand(0.5)).andThen(new ClimbCommand(climbSub, 90)));
-    armController.pov(0).onTrue(new ClimbCommand(climbSub, 90));
-    armController.pov(270).onTrue(new ClimbCommand(climbSub, 25));
+//     // Climber
+//     armController.pov(180).onTrue(new ClimbCommand(climbSub, 0));
+//     armController.pov(90).onTrue(new BasicToHoldCommand(armWristSub).andThen(new WaitCommand(0.5)).andThen(new ClimbCommand(climbSub, 90)));
+//     armController.pov(0).onTrue(new ClimbCommand(climbSub, 90));
+//     armController.pov(270).onTrue(new ClimbCommand(climbSub, 25));
 
-    armController.leftBumper().onTrue(new ResetClimbCommand(climbSub));
+//     armController.leftBumper().onTrue(new ResetClimbCommand(climbSub));
 
-    //armController.pov(0).onTrue(new ClimbCommand(climbSub, 10));
-    //armController.pov(180).onTrue(new ClimbCommand(climbSub, 80));
-    //armController.pov(90).onTrue(new ResetClimbCommand(climbSub));
-    //armController.pov(270).onTrue(new ClimbCommand(climbSub, 25));
-    armController.rightBumper().onTrue(new InstantCommand(() -> armWristSub.runAndResetExtEncoder()));
+//     //armController.pov(0).onTrue(new ClimbCommand(climbSub, 10));
+//     //armController.pov(180).onTrue(new ClimbCommand(climbSub, 80));
+//     //armController.pov(90).onTrue(new ResetClimbCommand(climbSub));
+//     //armController.pov(270).onTrue(new ClimbCommand(climbSub, 25));
+//     armController.rightBumper().onTrue(new InstantCommand(() -> armWristSub.runAndResetExtEncoder()));
 
-    driverController.a().onTrue(
-      new InstantCommand(() -> armWristSub.goToPosition(Height.PRECLIMB))
-      //.andThen(new ResetClimbCommand(climbSub)).andThen(new WaitCommand(1))
-      //.andThen(new ClimbCommand(climbSub, 90))
-      );
+//     driverController.a().onTrue(
+//       new InstantCommand(() -> armWristSub.goToPosition(Height.PRECLIMB))
+//       //.andThen(new ResetClimbCommand(climbSub)).andThen(new WaitCommand(1))
+//       //.andThen(new ClimbCommand(climbSub, 90))
+//       );
 
-    driverController.b().onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.TRAP)));
+//     driverController.b().onTrue(new InstantCommand(() -> armWristSub.goToPosition(Height.TRAP)));
 
-    driverController.y().onTrue(new ParallelCommandGroup(new TimedIntakeSetPowerCommand(intakeSub, 12, 0.75), new WaitCommand(0.1).andThen(new InstantCommand(() -> armWristSub.goToPosition(Height.PRECLIMB)))));
+//     driverController.y().onTrue(new ParallelCommandGroup(new TimedIntakeSetPowerCommand(intakeSub, 12, 0.75), new WaitCommand(0.1).andThen(new InstantCommand(() -> armWristSub.goToPosition(Height.PRECLIMB)))));
 
     
 
-    driverController.rightTrigger().onFalse(new InstantCommand(() -> armWristSub.setExtensionGoal(armWristSub.extensionTarget - 12 / 2.083)));
-    driverController.pov(270).onFalse(new InstantCommand(() -> armWristSub.setExtensionGoal(armWristSub.extensionTarget + 12 / 2.083)));
+//     driverController.rightTrigger().onFalse(new InstantCommand(() -> armWristSub.setExtensionGoal(armWristSub.extensionTarget - 12 / 2.083)));
+//     driverController.pov(270).onFalse(new InstantCommand(() -> armWristSub.setExtensionGoal(armWristSub.extensionTarget + 12 / 2.083)));
 
-    driverController.x().onTrue(new AutoClimbCommand(climbSub, armWristSub));
+//     driverController.x().onTrue(new AutoClimbCommand(climbSub, armWristSub));
 
-    driverController.leftTrigger().whileTrue(new AlignSource2(drivebase, driverXbox, servo, false));
+//     driverController.leftTrigger().whileTrue(new AlignSource2(drivebase, driverXbox, servo, false));
 
 
   }
 
 
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
-  public Command getAutonomousCommand()
-  {
-    // An example command will be run in autonomous
-    return drivebase.getAutonomousCommand(autoChooser.getSelected(), true, true);
-  }
+  // /**
+  //  * Use this to pass the autonomous command to the main {@link Robot} class.
+  //  *
+  //  * @return the command to run in autonomous
+  //  */
+  // public Command getAutonomousCommand()
+  // {
+  //   // An example command will be run in autonomous
+  //   return drivebase.getAutonomousCommand(autoChooser.getSelected(), true, true);
+  // }
 
-  public void setDriveMode()
-  {
-    //drivebase.setDefaultCommand();
-  }
+  // public void setDriveMode()
+  // {
+  //   //drivebase.setDefaultCommand();
+  // }
 
-  public void resetDrive(/*TeleopDrive closedFieldRel, TeleopDrive simClosedFieldRel*/) {
-    // drivebase.removeDefaultCommand();
+  // public void resetDrive(/*TeleopDrive closedFieldRel, TeleopDrive simClosedFieldRel*/) {
+  //   // drivebase.removeDefaultCommand();
     
-    // drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simClosedFieldRel : closedFieldRel);
-    drivebase.resetAngleMotors();
-  }
+  //   // drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simClosedFieldRel : closedFieldRel);
+  //   drivebase.resetAngleMotors();
+  // }
 
-  public void setDriveBrake(boolean brake)
-  {
-    drivebase.setMotorBrake(brake);
-  }
+  // public void setDriveBrake(boolean brake)
+  // {
+  //   drivebase.setMotorBrake(brake);
+  // }
 
-  public void setArmWristExtBrake(boolean brake) {
-    armWristSub.setAllBrake(brake);
-  }
+  // public void setArmWristExtBrake(boolean brake) {
+  //   armWristSub.setAllBrake(brake);
+  // }
 
 } 
