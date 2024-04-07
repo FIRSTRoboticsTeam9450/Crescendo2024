@@ -143,7 +143,9 @@ public final class Constants
     public static final double trapExtPosition = 13;
     public static final double climbExtPosition = 0;
 
-    public static final double convertToInches = 4.7244;
+    // 12 is for gear ratio
+    // might need to consider offset of 0.4
+    public static final double convertToInches = 4.7244/12;
 
   }
    public static class NewArm{
@@ -155,9 +157,11 @@ public final class Constants
     public static final double trapArmPosition = 165;
     public static final double climbArmPosition = 180;
 
-    //converst from rotations to degrees
+    /**converts from degrees to rotations */
     public static final double RotateConversionFactor = (1.0/360);
-    public static final double AbsEncoderShift = -0.0809;
+    public static final double AbsEncoderShift = 0.05;
+    // 180 -> 0.55 abs encoder
+    // 90 -> 0.2946 abs encoder
 
   }
    public static class NewWrist{
@@ -168,11 +172,12 @@ public final class Constants
     public static final double ampWristPosition = 100;
     public static final double trapWristPosition = 100;
     public static final double climbWristPosition = 180;
-
-    //converst from rotations to degrees
-    public static final double RotateConversionFactor = (1.0/360);
-    public static final double AbsEncoderShift = -0.0809;
-    public static final double gearRation = 1/1.2;
+    
+    public static final double gearRatio = 1.2/1;
+    /**converts from degrees to rotations */
+    public static final double RotateConversionFactor = -(gearRatio/360);
+    public static final double AbsEncoderShift = -1.157;
+    
   }
 
   public static class Wrist{

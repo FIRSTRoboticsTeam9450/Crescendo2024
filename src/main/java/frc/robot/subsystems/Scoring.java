@@ -265,44 +265,66 @@ public class Scoring extends SubsystemBase {
     public void limit(){
         double armAngle = arm.getRelPos(); // get the current arm angle
         double extLength = ext.getRelPos(); // get the current extension length
+        double extTarget = ext.getTarget();
         double wristAngle = wrist.getAbsPos(); // get the current wrist angle
+        double wristTarget = wrist.getTarget();
+
         // if arm angle is between max and min arm angles
         if(Math.abs(armAngle) > Math.abs(limits[0][ANGLEINDEX]) && Math.abs(armAngle) < Math.abs(limits[190][ANGLEINDEX]) ){ 
 
             arm.toggleArm(true); // resume arm
-
+            double currentExtMax = limits[(int) Math.round(armAngle) - 45][EXTENSIONMAXINDEX];
             // if the ext amt is within error amt for max ext
             // optional version that accounts for final index if you want to look 1 angle ahead: limits[(int) Math.round(armAngle) - 45 + 1 > 235 ? 235 : armAngle - 45 + 1][4]
             // This part of the if statements basically checks if the extension is less than the max it can be at the current angle
             // the inside part is the max and min code for the wrist limits
-            if (limits[(int) Math.round(armAngle) - 45][EXTENSIONMAXINDEX] - extLength < 0.1) { // arm angle increments by 1 but starts by 45, so take armAngle - 45 to get proper index
-                // extension is at the limit, so stop ext
-                ext.toggleExt(false); // stop ext
-                System.out.println("EXTENSION STOPPED (MAX)");
-
-                // if the wrist amt is outside of the limits
-                if (limits[(int) Math.round(armAngle) - 45][WRISTMININDEX2] + 2 /* 2 degree tolerance */ > wristAngle || wristAngle > limits[(int) Math.round(armAngle) - 45][WRISTMAXINDEX2] - 2) { 
-                    // wrist is at the limit, so stop wrist
+            if (currentExtMax - extLength < 0.1) { // arm angle increments by 1 but starts by 45, so take armAngle - 45 to get proper index
+                
+                // extension is at the limit, and target isn't in opposite direction
+                // so stop ext
+                if (extTarget > currentExtMax - 0.1) {
+                    ext.toggleExt(false); // stop ext
+                    System.out.println("EXTENSION STOPPED (MAX)");
+                }
+               
+                double currentWristMax = limits[(int) Math.round(armAngle) - 45][WRISTMAXINDEX2];
+                double currentWristMin = limits[(int) Math.round(armAngle) - 45][WRISTMININDEX2];
+                
+                // wrist is at the limit, and target isn't in opposite direction
+                // so stop wrist
+                if (currentWristMin + 2 /* 2 degree tolerance */ > wristAngle && wristTarget < currentWristMin + 2) {
+                    wrist.toggleWrist(false); // stop wrist
+                    System.out.println("WRIST STOPPED");
+                } else if (wristAngle > currentWristMax - 2 && wristTarget > currentWristMax + 2) {
                     wrist.toggleWrist(false); // stop wrist
                     System.out.println("WRIST STOPPED");
                 } else {
                     wrist.toggleWrist(true); // resume wrist
-                }
 
+                }
+                
             //This part of the if statement checks if the extension is greather than the mininum(or at the min ofc) it can be at its current angle
             // This inside is the max and min angle of the wrist.
             } else if (extLength - limits[(int) Math.round(armAngle) - 45][EXTENSIONMININDEX] < 0.1) { // if the ext amt is within error amt for min ext
                 ext.toggleExt(false); // stop ext
                 System.out.println("EXTENSION STOPPED (MIN)");
 
-                // if the wrist amt is outside of the limits
-                if (limits[(int) Math.round(armAngle) - 45][WRISTMININDEX2] + 2 /* 2 degree tolerance */ > wristAngle || wristAngle > limits[(int) Math.round(armAngle) - 45][WRISTMAXINDEX2] - 2) { 
-                    // wrist is at the limit, so stop wrist
+                double currentWristMax = limits[(int) Math.round(armAngle) - 45][WRISTMAXINDEX];
+                double currentWristMin = limits[(int) Math.round(armAngle) - 45][WRISTMININDEX];
+                
+                // wrist is at the limit, and target isn't in opposite direction
+                // so stop wrist
+                if (currentWristMin + 2 /* 2 degree tolerance */ > wristAngle && wristTarget < currentWristMin + 2) {
+                    wrist.toggleWrist(false); // stop wrist
+                    System.out.println("WRIST STOPPED");
+                } else if (wristAngle > currentWristMax - 2 && wristTarget > currentWristMax + 2) {
                     wrist.toggleWrist(false); // stop wrist
                     System.out.println("WRIST STOPPED");
                 } else {
                     wrist.toggleWrist(true); // resume wrist
+
                 }
+
 
             } else {
                 ext.toggleExt(true); // resume ext
@@ -510,5 +532,9 @@ public class Scoring extends SubsystemBase {
         {234,0,270,90,3.5,270,90},
         {235,0,270,90,3.5,270,90}
     };
+
+    public void updateArm() {
+        arm.updateRelPos();
+    }
   
 }

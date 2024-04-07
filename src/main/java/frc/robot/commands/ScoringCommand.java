@@ -27,10 +27,10 @@ public class ScoringCommand extends Command {
   @Override
   public void execute() {
     score.limit();
-    score.getArmSub().setVoltage(Math.abs(armController.getRightY()) * 10 > 3 ? Math.signum(armController.getRightY()) * 3 : armController.getRightY() * 10);
-    score.getExtSub().setVoltage(Math.abs(armController.getLeftY()) * 10 > 3 ? Math.signum(armController.getLeftX()) * 3 : armController.getLeftY() * 10);
+    if (armController.getLeftY() > 0.08) score.getExtSub().setVoltage(Math.abs(armController.getLeftY()) * 10 > 3 ? -Math.signum(armController.getLeftY()) * 3 : -armController.getLeftY() * 10);
+    if (armController.getRightY() > 0.08)    score.getArmSub().setVoltage(Math.abs(armController.getRightY()) * 10 > 3 ? Math.signum(armController.getRightY()) * 3 : armController.getRightY() * 10);
     score.getWristSub().setVoltage(Math.abs(armController.getRightTriggerAxis()) * 10 > 3 ? 3 : armController.getRightTriggerAxis() * 10);
-    score.getWristSub().setVoltage(Math.abs(armController.getLeftTriggerAxis()) * 10 > 3 ? -3 : armController.getRightTriggerAxis() * 10);
+    score.getWristSub().setVoltage(Math.abs(armController.getLeftTriggerAxis()) * 10 > 3 ? -3 : -armController.getRightTriggerAxis() * 10);
 
   }
 

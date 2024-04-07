@@ -17,7 +17,7 @@ import frc.robot.commands.ExtensionCommand;
 public class Extension extends SubsystemBase {
     /* Class Constants */
     private double target = Constants.MovementLimits.extHardLowerLimit + Constants.Extension.offsetToPreClimb;
-    private boolean runAndReset;
+    private boolean runAndReset = true;
     private boolean run = true;
 
     private CANSparkMax motor = new CANSparkMax(Constants.extensionId, MotorType.kBrushless);
@@ -89,8 +89,12 @@ public class Extension extends SubsystemBase {
      */
     public double getRelPos() {
 
-        Logger.recordOutput("Extension/ExtPos", encoderRel.getPosition());
-        return -encoderRel.getPosition();
+        Logger.recordOutput("Extension/ExtPos", -encoderRel.getPosition());
+        double inches = convertToInches(-encoderRel.getPosition());
+        Logger.recordOutput("Extension/ExtInches", inches);
+        Logger.recordOutput("Extension/ExtPos(converted)", convertToTics(inches));
+
+        return inches;
 
     }
 
@@ -148,7 +152,7 @@ public class Extension extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if (!runAndReset) {
+        if (true || !runAndReset) {
             if (run) {
                 updatePID();
             } else {

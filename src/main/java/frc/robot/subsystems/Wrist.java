@@ -52,7 +52,11 @@ public class Wrist extends SubsystemBase {
 
     public double getAbsPos() {
         Logger.recordOutput("Wrist/CurrentPos", encoderAbs.getPosition());
-        return encoderAbs.getPosition();
+        double angle = convertToDeg(encoderAbs.getPosition());
+        Logger.recordOutput("Wrist/CurrentAngle", angle);
+        // Logger.recordOutput("Wrist/CurrentPost(Converted)", convertToRot(angle));
+
+        return angle;
     }
 
     double oldVel = 0;
@@ -98,12 +102,13 @@ public class Wrist extends SubsystemBase {
     }
 
     private double convertToRot(double angle) {
-        return angle * Constants.NewWrist.RotateConversionFactor + Constants.NewWrist.AbsEncoderShift;
+        return angle * Constants.NewWrist.RotateConversionFactor - Constants.NewWrist.AbsEncoderShift;
 
     }
 
+    // 0.5648 straight out, 0.8497 straight down
     private double convertToDeg(double rot){
-        return (1/Constants.NewWrist.RotateConversionFactor) * (rot - Constants.NewWrist.AbsEncoderShift);
+        return (1/Constants.NewWrist.RotateConversionFactor) * (rot + Constants.NewWrist.AbsEncoderShift);
     }
 
     public void setTarget(double target) {

@@ -48,8 +48,6 @@ public class Arm extends SubsystemBase {
     private PIDConstants currentPIDConstants = pidConstantsDefault;
 
     public Arm() {
-        System.out.println(encoderAbs.getAverageDepth());
-
         motorFront.restoreFactoryDefaults();
         motorBack.restoreFactoryDefaults();
         
@@ -62,8 +60,8 @@ public class Arm extends SubsystemBase {
         motorBack.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 300);
 
         /* motor idlemodes */
-        motorFront.setIdleMode(IdleMode.kCoast);
-        motorBack.setIdleMode(IdleMode.kCoast);
+        motorFront.setIdleMode(IdleMode.kBrake);
+        motorBack.setIdleMode(IdleMode.kBrake);
         
         /* encoders */
         encoderRel = motorBack.getEncoder();
@@ -84,7 +82,7 @@ public class Arm extends SubsystemBase {
 
 
     public void updateRelPos() {
-        setRelPos(getAbsPos());
+        setRelPos(encoderAbs.getPosition());
     }
 
     private void setRelPos(double position) {
@@ -95,15 +93,22 @@ public class Arm extends SubsystemBase {
     * @return the relative position of the arm in degrees
     */
     public double getRelPos() {
-        
-        return convertToDeg(currentRelPos);
+        Logger.recordOutput("Arm/RelCurrentPos", encoderRel.getPosition());
+        double angle = convertToDeg(currentRelPos);
+        Logger.recordOutput("Arm/RelCurrentAngle", angle);
+
+        return angle;
        
     }
 
     /** @return the absolute position of the arm in degrees */
     private double getAbsPos(){
+        Logger.recordOutput("Arm/AbsCurrentPos", encoderAbs.getPosition());
+        double angle = convertToDeg(currentAbsPos);
+        Logger.recordOutput("Arm/AbsCurrentAngle", angle);
+        // Logger.recordOutput("Arm/ArmCurrentPos(Converted)", convertToRot(angle));
 
-        return convertToDeg(currentAbsPos); 
+        return angle;
               
     }
 
