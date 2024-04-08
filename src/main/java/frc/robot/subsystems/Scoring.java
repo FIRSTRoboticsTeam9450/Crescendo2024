@@ -36,6 +36,12 @@ public class Scoring extends SubsystemBase {
     private static final int WRISTMAXINDEX2 = 5;
     private static final int WRISTMININDEX2 = 6;
 
+    public double finalArmTarget = 180;
+    public double finalExtTarget = 1;
+    public double finalWristTarget = 180;
+    private static double tempArmTarget = 60;
+
+
 
     /* Ramping variables */
   // If you want to ramp intake
@@ -167,39 +173,101 @@ public class Scoring extends SubsystemBase {
         desiredArmAngle = Constants.Arm.groundArmPosition;
         desiredWristAngle = Constants.Wrist.groundWristPosition;
         desiredExtensionLength = Constants.Extension.groundExtPosition;
+        
+        finalArmTarget = desiredArmAngle;
+        finalExtTarget = desiredExtensionLength;
+        finalWristTarget = desiredWristAngle;
+        
+        // Sets the desired targets for each child subsystem
+        ext.setTarget(desiredExtensionLength);
+        arm.setTarget(desiredArmAngle);
+        wrist.setTarget(desiredWristAngle);
     }   
 
     private void goToStore() {
         desiredArmAngle = Constants.Arm.storeArmPosition;
         desiredWristAngle = Constants.Wrist.storeWristPosition;
         desiredExtensionLength = Constants.Extension.storeExtPosition;
+
+        finalArmTarget = desiredArmAngle;
+        finalExtTarget = desiredExtensionLength;
+        finalWristTarget = desiredWristAngle;
+        
+        // Sets the desired targets for each child subsystem
+        ext.setTarget(desiredExtensionLength);
+        arm.setTarget(desiredArmAngle);
+        wrist.setTarget(desiredWristAngle);
     }
     
     private void goToSource() {
         desiredArmAngle = Constants.Arm.sourceArmPosition;
         desiredWristAngle = Constants.Wrist.sourceWristPosition;
         desiredExtensionLength = Constants.Extension.sourceExtPosition;
+
+        finalArmTarget = desiredArmAngle;
+        finalExtTarget = desiredExtensionLength;
+        finalWristTarget = desiredWristAngle;
+        
+        // Sets the desired targets for each child subsystem
+        ext.setTarget(desiredExtensionLength);
+        arm.setTarget(desiredArmAngle);
+        wrist.setTarget(desiredWristAngle);
     }
 
     private void goToAmp() {
         desiredArmAngle = Constants.Arm.ampArmPosition;
         desiredWristAngle = Constants.Wrist.ampWristPosition;
         desiredExtensionLength = Constants.Extension.ampExtPosition;
+
+        finalArmTarget = desiredArmAngle;
+        finalExtTarget = desiredExtensionLength;
+        finalWristTarget = desiredWristAngle;
+
+        // Sets the desired targets for each child subsystem
+        ext.setTarget(desiredExtensionLength);
+        arm.setTarget(desiredArmAngle);
+        wrist.setTarget(desiredWristAngle);
     }
 
     private void goToClimb() {
         desiredArmAngle = Constants.Arm.climbArmPosition;
         desiredWristAngle = Constants.Wrist.climbWristPosition;
         desiredExtensionLength = Constants.Extension.climbExtPosition;
+
+        finalArmTarget = desiredArmAngle;
+        finalExtTarget = desiredExtensionLength;
+        finalWristTarget = desiredWristAngle;
+
+        // Sets the desired targets for each child subsystem
+        ext.setTarget(desiredExtensionLength);
+        arm.setTarget(desiredArmAngle);
+        wrist.setTarget(desiredWristAngle);
     }
 
     private void goToTrap() {
         desiredArmAngle = Constants.Arm.trapArmPosition;
         desiredWristAngle = Constants.Wrist.trapWristPosition;
         desiredExtensionLength = Constants.Extension.trapExtPosition;
+
+        finalArmTarget = desiredArmAngle;
+        finalExtTarget = desiredExtensionLength;
+        finalWristTarget = desiredWristAngle;
+
+        // Sets the desired targets for each child subsystem
+        ext.setTarget(desiredExtensionLength);
+        arm.setTarget(desiredArmAngle);
+        wrist.setTarget(desiredWristAngle);
     }
 
-    public void goToPosition(Constants.ScoringPos state) {
+    /** only run once per button press, or logic breaks */
+    public void goToPosition(Constants.ScoringPos nextState) {
+        if (!nextState.equals(this.state)) {
+            return; // so that button mashing 1 button wont break
+        }
+    
+        lastState = this.state;
+        this.state = nextState;
+
         switch (state) {
             case GROUND: 
                 goToGround();
@@ -228,6 +296,7 @@ public class Scoring extends SubsystemBase {
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
+        limit();
 
         // Updates the state for whether the intake took a note or not
         if (getLaserDistance() <= 10 /*mm*/ && getIntakeState() != Constants.IntakeState.HAS_NOTE) {
@@ -238,10 +307,6 @@ public class Scoring extends SubsystemBase {
             setStateRobotWhenIntaking(Constants.ScoringPos.SOURCE); // default state
         }
 
-        // Sets the desired targets for each child subsystem
-        ext.setTarget(desiredExtensionLength);
-        arm.setTarget(desiredArmAngle);
-        wrist.setTarget(desiredWristAngle);
        
 
 
@@ -265,7 +330,72 @@ public class Scoring extends SubsystemBase {
     public void smartLimiter(){
 
     }
+
     public void limit(){
+        double armAngle = arm.getAbsPos(); // get the current arm angle
+        double extLength = ext.getRelPos(); // get the current extension length
+        double wristAngle = wrist.getAbsPos(); // get the current wrist angle
+
+        double currentArmMax = Math.abs(limits[limits.length - 1][ANGLEINDEX]);
+        double currentArmMin = Math.abs(limits[0][ANGLEINDEX]);
+        
+        // for store to ground and vice versa, may not account for wrist mvmnt
+        if (state.equals(Constants.ScoringPos.GROUND)) {
+            if (lastState.equals(Constants.ScoringPos.STORE)) {
+                if (finalArmTarget != tempArmTarget) {
+                    finalArmTarget = tempArmTarget;
+                }
+            }
+            if (arm.finishedPID()) {
+                finalArmTarget = Constants.Arm.groundArmPosition;
+            }
+            
+        } else if (state.equals(Constants.ScoringPos.STORE)) {
+            if (lastState.equals(Constants.ScoringPos.GROUND)) {
+                if (finalArmTarget != tempArmTarget) {
+                    finalArmTarget = tempArmTarget;
+                }
+            }
+            if (arm.finishedPID()) {
+                finalArmTarget = Constants.Arm.storeArmPosition;
+            }
+        }
+        
+        
+        // if arm angle is between max and min arm angles
+        if(Math.abs(armAngle) > currentArmMin && Math.abs(armAngle) < currentArmMax ){ 
+
+            arm.toggleArm(true); // resume arm
+            double currentExtMax = limits[(int) Math.round(armAngle) - 45][EXTENSIONMAXINDEX];
+            double currentExtMin = limits[(int) Math.round(armAngle) - 45][EXTENSIONMININDEX];
+              
+            // set target to the max it can be at the current angle if it is over max, and otherwise, be regular
+            ext.setTarget(Math.max(Math.min(finalExtTarget, currentExtMax), currentExtMin));
+
+            double currentWristMax_ExtMax = limits[(int) Math.round(armAngle) - 45][WRISTMAXINDEX2];
+            double currentWristMin_ExtMax = limits[(int) Math.round(armAngle) - 45][WRISTMININDEX2];
+
+            double currentWristMax_ExtMin = limits[(int) Math.round(armAngle) - 45][WRISTMAXINDEX];
+            double currentWristMin_ExtMin = limits[(int) Math.round(armAngle) - 45][WRISTMININDEX];
+            
+            // wrist is at the limit, and target isn't in opposite direction
+            // so stop wrist
+            wrist.setTarget(currentExtMax - extLength < 0.1 
+                            ? Math.max(Math.min(finalWristTarget, currentWristMax_ExtMax), currentWristMin_ExtMax)
+                            : Math.max(Math.min(finalWristTarget, currentWristMax_ExtMin), currentWristMin_ExtMin));
+
+
+        }else{
+            if (finalArmTarget < currentArmMin || finalArmTarget > currentArmMax) {
+                arm.toggleArm(false); // stop arm
+                System.out.println("SOMETHING VERY WRONG WITH ARM");
+            } else {
+                arm.toggleArm(true);
+            }
+            
+        }
+    }
+    public void limit2(){
         double armAngle = arm.getAbsPos(); // get the current arm angle
         double armTarget = arm.getTarget();
         double extLength = ext.getRelPos(); // get the current extension length

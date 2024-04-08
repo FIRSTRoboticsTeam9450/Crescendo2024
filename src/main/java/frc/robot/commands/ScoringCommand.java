@@ -9,7 +9,6 @@ public class ScoringCommand extends Command{
     Constants.ScoringPos scoringPos;
     Scoring score;
 
-    boolean finished;
 
     public ScoringCommand(Scoring score, Constants.ScoringPos scoringPos) {
         this.scoringPos = scoringPos;
@@ -19,18 +18,13 @@ public class ScoringCommand extends Command{
 
     @Override
     public void initialize() {
-        finished = false;
-    }
-
-    @Override
-    public void execute() {
         score.goToPosition(scoringPos);
-        finished = true;
     }
+    
 
     @Override
     public boolean isFinished() {
-        return finished;
+        return true;
     }
 
 }

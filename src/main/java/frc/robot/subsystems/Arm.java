@@ -39,7 +39,7 @@ public class Arm extends SubsystemBase {
 
     /* PID Constants */
     private PIDConstants pidConstantsClimb = new PIDConstants(30, 4);
-    private PIDConstants pidConstantsDefault = new PIDConstants(40, 4);
+    private PIDConstants pidConstantsDefault = new PIDConstants(40, 1);
     private PIDConstants currentPIDConstants = pidConstantsDefault;
 
     public Arm() {
@@ -118,7 +118,9 @@ public class Arm extends SubsystemBase {
         }
     }
   
-    
+    public boolean finishedPID() {
+        return Math.abs(target - currentAbsPos) < 0.01 ? true : false;
+    }
 
 
     /**Default Arm PID */
