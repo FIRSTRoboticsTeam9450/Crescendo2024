@@ -9,7 +9,7 @@ public class ScoringCommand extends Command{
     Constants.ScoringPos scoringPos;
     Scoring score;
 
-
+    boolean finished;
     public ScoringCommand(Scoring score, Constants.ScoringPos scoringPos) {
         this.scoringPos = scoringPos;
         this.score = score;
@@ -18,13 +18,26 @@ public class ScoringCommand extends Command{
 
     @Override
     public void initialize() {
-        score.goToPosition(scoringPos);
+        finished = false;
+        if (scoringPos.equals(Constants.ScoringPos.GROUND) || scoringPos.equals(Constants.ScoringPos.STORE) && score.getArmAngle() < Constants.Arm.tempArmPosition) {
+            score.goToPosition(Constants.ScoringPos.TEMP);
+        }
+        
+    }
+
+    @Override
+    public void execute() {
+        if (score.isFinished()) {
+            score.goToPosition(scoringPos);
+            finished = true;
+        } 
+        
     }
     
 
     @Override
     public boolean isFinished() {
-        return true;
+        return finished;
     }
 
 }

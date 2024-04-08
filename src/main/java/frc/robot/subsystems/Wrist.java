@@ -31,7 +31,7 @@ public class Wrist extends SubsystemBase {
     // private SimpleMotorFeedforward ff = new SimpleMotorFeedforward(0.00001, 0.00003, 0.00001);
 
     /* PIDConstants */
-    private PIDConstants pidConstantsDefault = new PIDConstants(40, 1);
+    private PIDConstants pidConstantsDefault = new PIDConstants(40, 3);
     private PIDConstants currentPIDConstants = pidConstantsDefault;
 
     public Wrist() {

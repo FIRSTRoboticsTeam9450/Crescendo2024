@@ -5,6 +5,9 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkBase.IdleMode;
+
+import org.littletonrobotics.junction.Logger;
+
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
@@ -36,10 +39,6 @@ public class Scoring extends SubsystemBase {
     private static final int WRISTMAXINDEX2 = 5;
     private static final int WRISTMININDEX2 = 6;
 
-    public double finalArmTarget = 180;
-    public double finalExtTarget = 1;
-    public double finalWristTarget = 180;
-    private static double tempArmTarget = 60;
 
 
 
@@ -166,6 +165,15 @@ public class Scoring extends SubsystemBase {
         return wrist;
     }
 
+    public void increaseExtBy(double inches) {
+        desiredExtensionLength += inches;
+    }  
+    public void increaseArmBy(double angle) {
+        desiredArmAngle += angle;
+    } 
+    public void increaseWristBy(double angle) {
+        desiredWristAngle += angle;
+    }  
     
     /* Movement Logic */
 
@@ -173,10 +181,7 @@ public class Scoring extends SubsystemBase {
         desiredArmAngle = Constants.Arm.groundArmPosition;
         desiredWristAngle = Constants.Wrist.groundWristPosition;
         desiredExtensionLength = Constants.Extension.groundExtPosition;
-        
-        finalArmTarget = desiredArmAngle;
-        finalExtTarget = desiredExtensionLength;
-        finalWristTarget = desiredWristAngle;
+    
         
         // Sets the desired targets for each child subsystem
         ext.setTarget(desiredExtensionLength);
@@ -188,10 +193,6 @@ public class Scoring extends SubsystemBase {
         desiredArmAngle = Constants.Arm.storeArmPosition;
         desiredWristAngle = Constants.Wrist.storeWristPosition;
         desiredExtensionLength = Constants.Extension.storeExtPosition;
-
-        finalArmTarget = desiredArmAngle;
-        finalExtTarget = desiredExtensionLength;
-        finalWristTarget = desiredWristAngle;
         
         // Sets the desired targets for each child subsystem
         ext.setTarget(desiredExtensionLength);
@@ -203,10 +204,6 @@ public class Scoring extends SubsystemBase {
         desiredArmAngle = Constants.Arm.sourceArmPosition;
         desiredWristAngle = Constants.Wrist.sourceWristPosition;
         desiredExtensionLength = Constants.Extension.sourceExtPosition;
-
-        finalArmTarget = desiredArmAngle;
-        finalExtTarget = desiredExtensionLength;
-        finalWristTarget = desiredWristAngle;
         
         // Sets the desired targets for each child subsystem
         ext.setTarget(desiredExtensionLength);
@@ -215,13 +212,16 @@ public class Scoring extends SubsystemBase {
     }
 
     private void goToAmp() {
-        desiredArmAngle = Constants.Arm.ampArmPosition;
-        desiredWristAngle = Constants.Wrist.ampWristPosition;
-        desiredExtensionLength = Constants.Extension.ampExtPosition;
-
-        finalArmTarget = desiredArmAngle;
-        finalExtTarget = desiredExtensionLength;
-        finalWristTarget = desiredWristAngle;
+        if (stateRobotWhenIntaking.equals(Constants.ScoringPos.SOURCE)) {
+            desiredArmAngle = Constants.Arm.ampArmPositionFromSource;
+            desiredWristAngle = Constants.Wrist.ampWristPositionFromSource;
+            desiredExtensionLength = Constants.Extension.ampExtPositionFromSource;
+        } else {
+            desiredArmAngle = Constants.Arm.ampArmPositionFromGround;
+            desiredWristAngle = Constants.Wrist.ampWristPositionFromGround;
+            desiredExtensionLength = Constants.Extension.ampExtPositionFromGround;
+        }
+        
 
         // Sets the desired targets for each child subsystem
         ext.setTarget(desiredExtensionLength);
@@ -234,10 +234,6 @@ public class Scoring extends SubsystemBase {
         desiredWristAngle = Constants.Wrist.climbWristPosition;
         desiredExtensionLength = Constants.Extension.climbExtPosition;
 
-        finalArmTarget = desiredArmAngle;
-        finalExtTarget = desiredExtensionLength;
-        finalWristTarget = desiredWristAngle;
-
         // Sets the desired targets for each child subsystem
         ext.setTarget(desiredExtensionLength);
         arm.setTarget(desiredArmAngle);
@@ -249,9 +245,16 @@ public class Scoring extends SubsystemBase {
         desiredWristAngle = Constants.Wrist.trapWristPosition;
         desiredExtensionLength = Constants.Extension.trapExtPosition;
 
-        finalArmTarget = desiredArmAngle;
-        finalExtTarget = desiredExtensionLength;
-        finalWristTarget = desiredWristAngle;
+        // Sets the desired targets for each child subsystem
+        ext.setTarget(desiredExtensionLength);
+        arm.setTarget(desiredArmAngle);
+        wrist.setTarget(desiredWristAngle);
+    }
+
+    private void goToTemp() {
+        desiredArmAngle = Constants.Arm.tempArmPosition;
+        desiredWristAngle = 180;
+        desiredExtensionLength = 0;
 
         // Sets the desired targets for each child subsystem
         ext.setTarget(desiredExtensionLength);
@@ -261,14 +264,15 @@ public class Scoring extends SubsystemBase {
 
     /** only run once per button press, or logic breaks */
     public void goToPosition(Constants.ScoringPos nextState) {
-        if (!nextState.equals(this.state)) {
-            return; // so that button mashing 1 button wont break
+        if (nextState.equals(this.state)) {
+            return;
         }
-    
+
         lastState = this.state;
         this.state = nextState;
-
-        switch (state) {
+        
+        Logger.recordOutput("Score/State", state);
+        switch (nextState) {
             case GROUND: 
                 goToGround();
                 break;
@@ -287,6 +291,8 @@ public class Scoring extends SubsystemBase {
             case TRAP: 
                 goToTrap();
                 break;
+            case TEMP:
+                goToTemp();
             case NONE:
                 // do nothing
                 break;
@@ -296,7 +302,7 @@ public class Scoring extends SubsystemBase {
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
-        limit();
+        // limit();
 
         // Updates the state for whether the intake took a note or not
         if (getLaserDistance() <= 10 /*mm*/ && getIntakeState() != Constants.IntakeState.HAS_NOTE) {
@@ -331,164 +337,44 @@ public class Scoring extends SubsystemBase {
 
     }
 
+    public boolean isFinished() {
+        return arm.finishedPID() && ext.finishedPID() && wrist.finishedPID();
+    }
+
+    public double getArmAngle() {
+        return arm.getAbsPos();
+    }
+
     public void limit(){
         double armAngle = arm.getAbsPos(); // get the current arm angle
+        // armIndex is capped between min and max indexes of array
+        int armIndex = (int) Math.min(Math.max(armAngle, limits[0][0]), limits[limits.length - 1][0]) - (int) limits[0][0];
         double extLength = ext.getRelPos(); // get the current extension length
-        double wristAngle = wrist.getAbsPos(); // get the current wrist angle
-
-        double currentArmMax = Math.abs(limits[limits.length - 1][ANGLEINDEX]);
-        double currentArmMin = Math.abs(limits[0][ANGLEINDEX]);
+        // double wristAngle = wrist.getAbsPos(); // get the current wrist angle
         
-        // for store to ground and vice versa, may not account for wrist mvmnt
-        if (state.equals(Constants.ScoringPos.GROUND)) {
-            if (lastState.equals(Constants.ScoringPos.STORE)) {
-                if (finalArmTarget != tempArmTarget) {
-                    finalArmTarget = tempArmTarget;
-                }
-            }
-            if (arm.finishedPID()) {
-                finalArmTarget = Constants.Arm.groundArmPosition;
-            }
+        // gets index for arm currently at
+        double currentExtMax = limits[armIndex][EXTENSIONMAXINDEX];
+        double currentExtMin = limits[armIndex][EXTENSIONMININDEX];
             
-        } else if (state.equals(Constants.ScoringPos.STORE)) {
-            if (lastState.equals(Constants.ScoringPos.GROUND)) {
-                if (finalArmTarget != tempArmTarget) {
-                    finalArmTarget = tempArmTarget;
-                }
-            }
-            if (arm.finishedPID()) {
-                finalArmTarget = Constants.Arm.storeArmPosition;
-            }
-        }
+        // set target to the max it can be at the current angle if it is over max, and otherwise, be regular
+        ext.setTarget(Math.max(Math.min(desiredExtensionLength, currentExtMax), currentExtMin));
+
+        double currentWristMax_ExtMax = limits[armIndex][WRISTMAXINDEX2];
+        double currentWristMin_ExtMax = limits[armIndex][WRISTMININDEX2];
+
+        double currentWristMax_ExtMin = limits[armIndex][WRISTMAXINDEX];
+        double currentWristMin_ExtMin = limits[armIndex][WRISTMININDEX];
+        
+        // wrist is at the limit, and target isn't in opposite direction
+        // so stop wrist
+        wrist.setTarget(currentExtMax - extLength < 0.1 
+                        ? Math.max(Math.min(desiredWristAngle, currentWristMax_ExtMax), currentWristMin_ExtMax)
+                        : Math.max(Math.min(desiredWristAngle, currentWristMax_ExtMin), currentWristMin_ExtMin));
+
         
         
-        // if arm angle is between max and min arm angles
-        if(Math.abs(armAngle) > currentArmMin && Math.abs(armAngle) < currentArmMax ){ 
-
-            arm.toggleArm(true); // resume arm
-            double currentExtMax = limits[(int) Math.round(armAngle) - 45][EXTENSIONMAXINDEX];
-            double currentExtMin = limits[(int) Math.round(armAngle) - 45][EXTENSIONMININDEX];
-              
-            // set target to the max it can be at the current angle if it is over max, and otherwise, be regular
-            ext.setTarget(Math.max(Math.min(finalExtTarget, currentExtMax), currentExtMin));
-
-            double currentWristMax_ExtMax = limits[(int) Math.round(armAngle) - 45][WRISTMAXINDEX2];
-            double currentWristMin_ExtMax = limits[(int) Math.round(armAngle) - 45][WRISTMININDEX2];
-
-            double currentWristMax_ExtMin = limits[(int) Math.round(armAngle) - 45][WRISTMAXINDEX];
-            double currentWristMin_ExtMin = limits[(int) Math.round(armAngle) - 45][WRISTMININDEX];
-            
-            // wrist is at the limit, and target isn't in opposite direction
-            // so stop wrist
-            wrist.setTarget(currentExtMax - extLength < 0.1 
-                            ? Math.max(Math.min(finalWristTarget, currentWristMax_ExtMax), currentWristMin_ExtMax)
-                            : Math.max(Math.min(finalWristTarget, currentWristMax_ExtMin), currentWristMin_ExtMin));
-
-
-        }else{
-            if (finalArmTarget < currentArmMin || finalArmTarget > currentArmMax) {
-                arm.toggleArm(false); // stop arm
-                System.out.println("SOMETHING VERY WRONG WITH ARM");
-            } else {
-                arm.toggleArm(true);
-            }
-            
-        }
     }
-    public void limit2(){
-        double armAngle = arm.getAbsPos(); // get the current arm angle
-        double armTarget = arm.getTarget();
-        double extLength = ext.getRelPos(); // get the current extension length
-        double extTarget = -ext.getTarget();
-        double wristAngle = wrist.getAbsPos(); // get the current wrist angle
-        double wristTarget = wrist.getTarget();
-
-        double currentArmMax = Math.abs(limits[limits.length - 1][ANGLEINDEX]);
-        double currentArmMin = Math.abs(limits[0][ANGLEINDEX]);
-        // if arm angle is between max and min arm angles
-        if(Math.abs(armAngle) > currentArmMin && Math.abs(armAngle) < currentArmMax ){ 
-
-            arm.toggleArm(true); // resume arm
-            double currentExtMax = limits[(int) Math.round(armAngle) - 45][EXTENSIONMAXINDEX];
-            double currentExtMin = limits[(int) Math.round(armAngle) - 45][EXTENSIONMININDEX];
-            // if the ext amt is within error amt for max ext
-            // optional version that accounts for final index if you want to look 1 angle ahead: limits[(int) Math.round(armAngle) - 45 + 1 > 235 ? 235 : armAngle - 45 + 1][4]
-            // This part of the if statements basically checks if the extension is less than the max it can be at the current angle
-            // the inside part is the max and min code for the wrist limits
-            if (currentExtMax - extLength < 0.1) { // arm angle increments by 1 but starts by 45, so take armAngle - 45 to get proper index
-                
-                // extension is at the limit, and target isn't in opposite direction
-                // so stop ext
-                if (extTarget > currentExtMax - 0.1) { 
-                    ext.toggleExt(false); // stop ext
-                    System.out.println("EXTENSION STOPPED (MAX)");
-                } else {
-                    ext.toggleExt(true);
-                }
-               
-                
-                
-            //This part of the if statement checks if the extension is greather than the mininum(or at the min ofc) it can be at its current angle
-            // This inside is the max and min angle of the wrist.
-            } else if (extLength - currentExtMin < 0.1) { // if the ext amt is within error amt for min ext
-                
-                // extension is at the limit, and target isn't in opposite direction
-                // so stop ext
-                if (extTarget < currentExtMin + 0.1) { 
-                    ext.toggleExt(false); // stop ext
-                    System.out.println("EXTENSION STOPPED (MIN)");
-                } else {
-                    ext.toggleExt(true);
-                }
-                
-
-
-            } else {
-                ext.toggleExt(true); // resume ext
-            }
-
-            double currentWristMax_ExtMax = limits[(int) Math.round(armAngle) - 45][WRISTMAXINDEX2];
-            double currentWristMin_ExtMax = limits[(int) Math.round(armAngle) - 45][WRISTMININDEX2];
-            
-            // wrist is at the limit, and target isn't in opposite direction
-            // so stop wrist
-            if (currentWristMin_ExtMax + 2 /* 2 degree tolerance */ > wristAngle && wristTarget < currentWristMin_ExtMax + 2) {
-                wrist.toggleWrist(false); // stop wrist
-                System.out.println("WRIST STOPPED");
-            } else if (wristAngle > currentWristMax_ExtMax - 2 && wristTarget > currentWristMax_ExtMax - 2) {
-                wrist.toggleWrist(false); // stop wrist
-                System.out.println("WRIST STOPPED");
-            } else {
-                wrist.toggleWrist(true); // resume wrist
-
-            }
-
-            double currentWristMax_ExtMin = limits[(int) Math.round(armAngle) - 45][WRISTMAXINDEX];
-            double currentWristMin_ExtMin = limits[(int) Math.round(armAngle) - 45][WRISTMININDEX];
-            
-            // wrist is at the limit, and target isn't in opposite direction
-            // so stop wrist
-            if (currentWristMin_ExtMin + 2 /* 2 degree tolerance */ > wristAngle && wristTarget < currentWristMin_ExtMin + 2) {
-                wrist.toggleWrist(false); // stop wrist
-                System.out.println("WRIST STOPPED");
-            } else if (wristAngle > currentWristMax_ExtMin - 2 && wristTarget > currentWristMax_ExtMin - 2) {
-                wrist.toggleWrist(false); // stop wrist
-                System.out.println("WRIST STOPPED");
-            } else {
-                wrist.toggleWrist(true); // resume wrist
-
-            }
-
-        }else{
-            if (armTarget < currentArmMin || armTarget > currentArmMax) {
-                arm.toggleArm(false); // stop arm
-                System.out.println("SOMETHING VERY WRONG WITH ARM");
-            } else {
-                arm.toggleArm(true);
-            }
-            
-        }
-    }
+    
     
     
 

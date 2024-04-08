@@ -39,7 +39,7 @@ public class Arm extends SubsystemBase {
 
     /* PID Constants */
     private PIDConstants pidConstantsClimb = new PIDConstants(30, 4);
-    private PIDConstants pidConstantsDefault = new PIDConstants(40, 1);
+    private PIDConstants pidConstantsDefault = new PIDConstants(40, 3);
     private PIDConstants currentPIDConstants = pidConstantsDefault;
 
     public Arm() {
@@ -133,6 +133,7 @@ public class Arm extends SubsystemBase {
         Logger.recordOutput("Arm/PIDValue", pidValue);
         Logger.recordOutput("Arm/maxVoltage", maxVoltage);
         Logger.recordOutput("Arm/armTarget", target);
+        
         
         if (Math.abs(pidValue) < maxVoltage) { //10 volts good for tele
             setVoltage(pidValue);                

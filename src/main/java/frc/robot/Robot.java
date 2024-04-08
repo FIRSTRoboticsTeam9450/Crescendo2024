@@ -126,7 +126,7 @@ public class Robot extends LoggedRobot
 
     if (disabledTimer.hasElapsed(Constants.Drivebase.WHEEL_LOCK_TIME) && runnable)
     {
-      // m_robotContainer.setDriveBrake(false);
+      m_robotContainer.setDriveBrake(false);
               // m_robotContainer.setArmWristExtBrake(false);
               //m_robotContainer.setArmWristExtBrake(false);
       disabledTimer.stop();
@@ -144,7 +144,7 @@ public class Robot extends LoggedRobot
   {
 
     // m_robotContainer.climbSub.enablePid(false);
-    // m_robotContainer.setDriveBrake(true);
+    m_robotContainer.setDriveBrake(true);
     // m_robotContainer.setArmWristExtBrake(true);
 
     NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(0);
@@ -203,9 +203,9 @@ public class Robot extends LoggedRobot
     // (new InstantCommand(() -> m_robotContainer.armWristSub.runAndResetExtEncoder())).schedule();
     // m_robotContainer.armWristSub.changeHeight(Height.PRECLIMB);
     // m_robotContainer.setDriveMode();
-    // m_robotContainer.setDriveBrake(true);
+    m_robotContainer.setDriveBrake(true);
     // m_robotContainer.setArmWristExtBrake(true);
-    // m_robotContainer.climbSub.enablePid(false);
+    m_robotContainer.climbSub.enablePid(false);
   }
 
   /**
@@ -215,8 +215,8 @@ public class Robot extends LoggedRobot
   public void teleopPeriodic()
   {
     // just in case :)
-    // m_robotContainer.setDriveBrake(true);
-    //m_robotContainer.drivebase.updateOdoLimelight();
+    m_robotContainer.setDriveBrake(true);
+    m_robotContainer.drivebase.updateOdoLimelight();
   }
 
   @Override

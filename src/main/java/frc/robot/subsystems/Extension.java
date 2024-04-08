@@ -30,7 +30,7 @@ public class Extension extends SubsystemBase {
     // removed robot state thing
 
     /* PIDConstants */
-    private PIDConstants pidConstantsDefault = new PIDConstants(1, 1);
+    private PIDConstants pidConstantsDefault = new PIDConstants(1, 3);
     private PIDConstants currentPIDConstants = pidConstantsDefault;
 
 

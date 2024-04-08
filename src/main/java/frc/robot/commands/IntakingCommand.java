@@ -7,6 +7,7 @@ package frc.robot.commands;
 import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 import frc.robot.subsystems.Scoring;
 
 public class IntakingCommand extends Command {
@@ -41,7 +42,7 @@ public class IntakingCommand extends Command {
     if(score.getIntakeTemp() > 60){
         score.setIntakeVoltage(0);
     }else{        
-        if (medianValue <= 10) {
+        if (score.getIntakeState().equals(Constants.IntakeState.HAS_NOTE)) {
           score.setIntakeVoltage(0.01);
           finished = true;
         } else {
