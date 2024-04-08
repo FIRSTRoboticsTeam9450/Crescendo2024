@@ -30,7 +30,7 @@ public class Extension extends SubsystemBase {
     // removed robot state thing
 
     /* PIDConstants */
-    private PIDConstants pidConstantsDefault = new PIDConstants(1, 4);
+    private PIDConstants pidConstantsDefault = new PIDConstants(1, 1);
     private PIDConstants currentPIDConstants = pidConstantsDefault;
 
 
@@ -89,6 +89,10 @@ public class Extension extends SubsystemBase {
     public void runAndResetEncoder() {
         runAndReset = true;
         setVoltage(Constants.Extension.resetExtVoltage);
+    }
+
+    public boolean finishedPID() {
+        return Math.abs(target - (-encoderRel.getPosition())) < 1 ? true : false;
     }
 
     public void setTarget(double targetInches) {

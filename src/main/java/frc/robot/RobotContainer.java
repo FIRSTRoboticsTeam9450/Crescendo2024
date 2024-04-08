@@ -370,8 +370,8 @@ public class RobotContainer {
     //driverController.y().onTrue(new ParallelCommandGroup(new TimedIntakeSetPowerCommand(score, 12, 0.75),
     //    new WaitCommand(0.1).andThen(new ScoringCommand(score, Constants.ScoringPos.CLIMB))));
 
-    driverController.rightTrigger().onFalse(new InstantCommand(() -> score.ext.setTarget(score.ext.getTarget() + 1)));
-    driverController.pov(270).onFalse(new InstantCommand(() -> score.ext.setTarget(score.ext.getTarget() - 1)));
+    driverController.rightTrigger().onFalse(new InstantCommand(() -> score.finalExtTarget += 1));
+    driverController.pov(270).onFalse(new InstantCommand(() -> score.finalExtTarget -= 1));
 
     // driverController.x().onTrue(new AutoClimbCommand(climbSub, armWristSub));
 

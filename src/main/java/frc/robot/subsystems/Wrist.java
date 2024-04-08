@@ -31,7 +31,7 @@ public class Wrist extends SubsystemBase {
     // private SimpleMotorFeedforward ff = new SimpleMotorFeedforward(0.00001, 0.00003, 0.00001);
 
     /* PIDConstants */
-    private PIDConstants pidConstantsDefault = new PIDConstants(40, 4);
+    private PIDConstants pidConstantsDefault = new PIDConstants(40, 1);
     private PIDConstants currentPIDConstants = pidConstantsDefault;
 
     public Wrist() {
@@ -86,6 +86,10 @@ public class Wrist extends SubsystemBase {
         oldPos = getAbsPos();
 */
 
+    }
+
+    public boolean finishedPID() {
+        return Math.abs(target - encoderAbs.getPosition()) < 0.025 ? true : false;
     }
 
     private void setVoltage(double voltage) {
