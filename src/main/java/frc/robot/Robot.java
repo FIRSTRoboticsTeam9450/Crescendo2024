@@ -198,7 +198,8 @@ public class Robot extends LoggedRobot
   public void teleopInit()
   {
     m_robotContainer.score.ext.runAndResetEncoder();
-
+    m_robotContainer.score.goToPosition(Constants.ScoringPos.SOURCE);
+    
     // (new InstantCommand(() -> m_robotContainer.armWristSub.goToPosition(Height.PRECLIMB))).schedule();
     // (new InstantCommand(() -> m_robotContainer.armWristSub.runAndResetExtEncoder())).schedule();
     // m_robotContainer.armWristSub.changeHeight(Height.PRECLIMB);

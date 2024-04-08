@@ -38,8 +38,8 @@ public class Arm extends SubsystemBase {
     private Constants.RobotState state = Constants.RobotState.DEFAULT;
 
     /* PID Constants */
-    private PIDConstants pidConstantsClimb = new PIDConstants(30, 1);
-    private PIDConstants pidConstantsDefault = new PIDConstants(55, 1);
+    private PIDConstants pidConstantsClimb = new PIDConstants(30, 4);
+    private PIDConstants pidConstantsDefault = new PIDConstants(55, 4);
     private PIDConstants currentPIDConstants = pidConstantsDefault;
 
     public Arm() {

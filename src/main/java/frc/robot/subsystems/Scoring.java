@@ -236,9 +236,9 @@ public class Scoring extends SubsystemBase {
         }
 
         // Sets the desired targets for each child subsystem
-        //ext.setTarget(desiredArmAngle);
-        //arm.setTarget(desiredWristAngle);
-        //wrist.setTarget(desiredExtensionLength);
+        ext.setTarget(desiredExtensionLength);
+        arm.setTarget(desiredArmAngle);
+        wrist.setTarget(desiredWristAngle);
        
 
 

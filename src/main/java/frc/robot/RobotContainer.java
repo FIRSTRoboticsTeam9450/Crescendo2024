@@ -83,6 +83,11 @@ public class RobotContainer
   //score.setDefaultCommand(new InstantCommand(() -> score.goToPosition(Constants.ScoringPos.AMP)));
 
   score.setDefaultCommand(new ScoringCommand(score, armController));
+  armController.y().onTrue(new InstantCommand(() -> score.goToPosition(Constants.ScoringPos.SOURCE)));
+  armController.b().onTrue(new InstantCommand(() -> score.goToPosition(Constants.ScoringPos.CLIMB)));
+  armController.x().onTrue(new InstantCommand(() -> score.goToPosition(Constants.ScoringPos.AMP)));
+  armController.a().onTrue(new InstantCommand(() -> score.goToPosition(Constants.ScoringPos.GROUND)));
+  
 
 //     //autoChooser = AutoBuilder.buildAutoChooser();
 //     //autoChooser = new SendableChooser<Command>();
