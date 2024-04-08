@@ -12,15 +12,16 @@ import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import au.grapplerobotics.ConfigurationFailedException;
 import au.grapplerobotics.LaserCan;
 import edu.wpi.first.math.filter.MedianFilter;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class Scoring extends SubsystemBase {
     /* Instantiate Low Level Subsystems */
-    private Extension ext; // Extension Subsystem
-    private Arm arm; // Arm Subsystem
-    private Wrist wrist; // Wrist Subsystem
+    public Extension ext; // Extension Subsystem
+    public Arm arm; // Arm Subsystem
+    public Wrist wrist; // Wrist Subsystem
 
     /* Initializing Motors */
     private CANSparkFlex intake = new CANSparkFlex(Constants.intakeId, MotorType.kBrushless);
@@ -37,13 +38,13 @@ public class Scoring extends SubsystemBase {
 
 
     /* Ramping variables */
-/*  // If you want to ramp intake
+  // If you want to ramp intake
     private boolean rampDownBool;
     private double currentVoltage;
     private double voltageTo;
     private double rampTime;
     private Timer rampDownTimer;
-*/
+
     /* Laser */
     private LaserCan laser;
     private LaserCan.Measurement measurement;
@@ -91,6 +92,8 @@ public class Scoring extends SubsystemBase {
         measurement = laser.getMeasurement();
         medianDistance = new MedianFilter(3);
         setState(Constants.ScoringPos.NONE);
+
+        rampDownTimer = new Timer();
     } 
     
     /** Has a median filter applied in this method */
@@ -109,16 +112,16 @@ public class Scoring extends SubsystemBase {
     public void setIntakeVoltage(double voltage) { intake.setVoltage(-voltage); SmartDashboard.putNumber("Intake Voltage", -voltage);}
     public double getIntakeTemp(){ return intake.getMotorTemperature(); }
     
-/*  // If you want to ramp intake
+  // If you want to ramp intake
     // linear ramp here https://www.desmos.com/calculator/ygpschqwqe
-    public void rampDownVoltage(double currentVoltage, double voltageTo, double rampTime) {
+    public void rampDownIntakeVoltage(double currentVoltage, double voltageTo, double rampTime) {
         this.currentVoltage = currentVoltage;
         this.voltageTo = voltageTo;
         this.rampTime = rampTime;
         rampDownTimer.restart();
         rampDownBool = true;
     }
-*/
+
     public void setState(Constants.ScoringPos state) {
         this.state = state;
     }
@@ -161,39 +164,39 @@ public class Scoring extends SubsystemBase {
     /* Movement Logic */
 
     private void goToGround() {
-        desiredArmAngle = Constants.NewArm.groundArmPosition;
-        desiredWristAngle = Constants.NewWrist.groundWristPosition;
-        desiredExtensionLength = Constants.NewExtension.groundExtPosition;
+        desiredArmAngle = Constants.Arm.groundArmPosition;
+        desiredWristAngle = Constants.Wrist.groundWristPosition;
+        desiredExtensionLength = Constants.Extension.groundExtPosition;
     }   
 
     private void goToStore() {
-        desiredArmAngle = Constants.NewArm.storeArmPosition;
-        desiredWristAngle = Constants.NewWrist.storeWristPosition;
-        desiredExtensionLength = Constants.NewExtension.storeExtPosition;
+        desiredArmAngle = Constants.Arm.storeArmPosition;
+        desiredWristAngle = Constants.Wrist.storeWristPosition;
+        desiredExtensionLength = Constants.Extension.storeExtPosition;
     }
     
     private void goToSource() {
-        desiredArmAngle = Constants.NewArm.sourceArmPosition;
-        desiredWristAngle = Constants.NewWrist.sourceWristPosition;
-        desiredExtensionLength = Constants.NewExtension.sourceExtPosition;
+        desiredArmAngle = Constants.Arm.sourceArmPosition;
+        desiredWristAngle = Constants.Wrist.sourceWristPosition;
+        desiredExtensionLength = Constants.Extension.sourceExtPosition;
     }
 
     private void goToAmp() {
-        desiredArmAngle = Constants.NewArm.ampArmPosition;
-        desiredWristAngle = Constants.NewWrist.ampWristPosition;
-        desiredExtensionLength = Constants.NewExtension.ampExtPosition;
+        desiredArmAngle = Constants.Arm.ampArmPosition;
+        desiredWristAngle = Constants.Wrist.ampWristPosition;
+        desiredExtensionLength = Constants.Extension.ampExtPosition;
     }
 
     private void goToClimb() {
-        desiredArmAngle = Constants.NewArm.climbArmPosition;
-        desiredWristAngle = Constants.NewWrist.climbWristPosition;
-        desiredExtensionLength = Constants.NewExtension.climbExtPosition;
+        desiredArmAngle = Constants.Arm.climbArmPosition;
+        desiredWristAngle = Constants.Wrist.climbWristPosition;
+        desiredExtensionLength = Constants.Extension.climbExtPosition;
     }
 
     private void goToTrap() {
-        desiredArmAngle = Constants.NewArm.trapArmPosition;
-        desiredWristAngle = Constants.NewWrist.trapWristPosition;
-        desiredExtensionLength = Constants.NewExtension.trapExtPosition;
+        desiredArmAngle = Constants.Arm.trapArmPosition;
+        desiredWristAngle = Constants.Wrist.trapWristPosition;
+        desiredExtensionLength = Constants.Extension.trapExtPosition;
     }
 
     public void goToPosition(Constants.ScoringPos state) {
@@ -236,23 +239,23 @@ public class Scoring extends SubsystemBase {
         }
 
         // Sets the desired targets for each child subsystem
-        ext.setTarget(desiredArmAngle);
-        arm.setTarget(desiredWristAngle);
-        wrist.setTarget(desiredExtensionLength);
+        ext.setTarget(desiredExtensionLength);
+        arm.setTarget(desiredArmAngle);
+        wrist.setTarget(desiredWristAngle);
        
 
 
-/*      // If you want to ramp intake
+      // If you want to ramp intake
         if (rampDownBool) {
             if (rampDownTimer.get() < rampTime) {
               setIntakeVoltage(-(currentVoltage - voltageTo) * rampDownTimer.get() / rampTime + currentVoltage);
             } else {
-              stopIntake();
+              intake.stopMotor();
               rampDownBool = false;
               rampDownTimer.stop();
             }
           }
-*/            
+            
     }
 
     /* Limiter Logic */
@@ -263,17 +266,21 @@ public class Scoring extends SubsystemBase {
 
     }
     public void limit(){
-        double armAngle = arm.getRelPos(); // get the current arm angle
+        double armAngle = arm.getAbsPos(); // get the current arm angle
+        double armTarget = arm.getTarget();
         double extLength = ext.getRelPos(); // get the current extension length
-        double extTarget = ext.getTarget();
+        double extTarget = -ext.getTarget();
         double wristAngle = wrist.getAbsPos(); // get the current wrist angle
         double wristTarget = wrist.getTarget();
 
+        double currentArmMax = Math.abs(limits[limits.length - 1][ANGLEINDEX]);
+        double currentArmMin = Math.abs(limits[0][ANGLEINDEX]);
         // if arm angle is between max and min arm angles
-        if(Math.abs(armAngle) > Math.abs(limits[0][ANGLEINDEX]) && Math.abs(armAngle) < Math.abs(limits[190][ANGLEINDEX]) ){ 
+        if(Math.abs(armAngle) > currentArmMin && Math.abs(armAngle) < currentArmMax ){ 
 
             arm.toggleArm(true); // resume arm
             double currentExtMax = limits[(int) Math.round(armAngle) - 45][EXTENSIONMAXINDEX];
+            double currentExtMin = limits[(int) Math.round(armAngle) - 45][EXTENSIONMININDEX];
             // if the ext amt is within error amt for max ext
             // optional version that accounts for final index if you want to look 1 angle ahead: limits[(int) Math.round(armAngle) - 45 + 1 > 235 ? 235 : armAngle - 45 + 1][4]
             // This part of the if statements basically checks if the extension is less than the max it can be at the current angle
@@ -282,57 +289,74 @@ public class Scoring extends SubsystemBase {
                 
                 // extension is at the limit, and target isn't in opposite direction
                 // so stop ext
-                if (extTarget > currentExtMax - 0.1) {
+                if (extTarget > currentExtMax - 0.1) { 
                     ext.toggleExt(false); // stop ext
                     System.out.println("EXTENSION STOPPED (MAX)");
+                } else {
+                    ext.toggleExt(true);
                 }
                
-                double currentWristMax = limits[(int) Math.round(armAngle) - 45][WRISTMAXINDEX2];
-                double currentWristMin = limits[(int) Math.round(armAngle) - 45][WRISTMININDEX2];
                 
-                // wrist is at the limit, and target isn't in opposite direction
-                // so stop wrist
-                if (currentWristMin + 2 /* 2 degree tolerance */ > wristAngle && wristTarget < currentWristMin + 2) {
-                    wrist.toggleWrist(false); // stop wrist
-                    System.out.println("WRIST STOPPED");
-                } else if (wristAngle > currentWristMax - 2 && wristTarget > currentWristMax + 2) {
-                    wrist.toggleWrist(false); // stop wrist
-                    System.out.println("WRIST STOPPED");
-                } else {
-                    wrist.toggleWrist(true); // resume wrist
-
-                }
                 
             //This part of the if statement checks if the extension is greather than the mininum(or at the min ofc) it can be at its current angle
             // This inside is the max and min angle of the wrist.
-            } else if (extLength - limits[(int) Math.round(armAngle) - 45][EXTENSIONMININDEX] < 0.1) { // if the ext amt is within error amt for min ext
-                ext.toggleExt(false); // stop ext
-                System.out.println("EXTENSION STOPPED (MIN)");
-
-                double currentWristMax = limits[(int) Math.round(armAngle) - 45][WRISTMAXINDEX];
-                double currentWristMin = limits[(int) Math.round(armAngle) - 45][WRISTMININDEX];
+            } else if (extLength - currentExtMin < 0.1) { // if the ext amt is within error amt for min ext
                 
-                // wrist is at the limit, and target isn't in opposite direction
-                // so stop wrist
-                if (currentWristMin + 2 /* 2 degree tolerance */ > wristAngle && wristTarget < currentWristMin + 2) {
-                    wrist.toggleWrist(false); // stop wrist
-                    System.out.println("WRIST STOPPED");
-                } else if (wristAngle > currentWristMax - 2 && wristTarget > currentWristMax + 2) {
-                    wrist.toggleWrist(false); // stop wrist
-                    System.out.println("WRIST STOPPED");
+                // extension is at the limit, and target isn't in opposite direction
+                // so stop ext
+                if (extTarget < currentExtMin + 0.1) { 
+                    ext.toggleExt(false); // stop ext
+                    System.out.println("EXTENSION STOPPED (MIN)");
                 } else {
-                    wrist.toggleWrist(true); // resume wrist
-
+                    ext.toggleExt(true);
                 }
+                
 
 
             } else {
                 ext.toggleExt(true); // resume ext
             }
 
+            double currentWristMax_ExtMax = limits[(int) Math.round(armAngle) - 45][WRISTMAXINDEX2];
+            double currentWristMin_ExtMax = limits[(int) Math.round(armAngle) - 45][WRISTMININDEX2];
+            
+            // wrist is at the limit, and target isn't in opposite direction
+            // so stop wrist
+            if (currentWristMin_ExtMax + 2 /* 2 degree tolerance */ > wristAngle && wristTarget < currentWristMin_ExtMax + 2) {
+                wrist.toggleWrist(false); // stop wrist
+                System.out.println("WRIST STOPPED");
+            } else if (wristAngle > currentWristMax_ExtMax - 2 && wristTarget > currentWristMax_ExtMax - 2) {
+                wrist.toggleWrist(false); // stop wrist
+                System.out.println("WRIST STOPPED");
+            } else {
+                wrist.toggleWrist(true); // resume wrist
+
+            }
+
+            double currentWristMax_ExtMin = limits[(int) Math.round(armAngle) - 45][WRISTMAXINDEX];
+            double currentWristMin_ExtMin = limits[(int) Math.round(armAngle) - 45][WRISTMININDEX];
+            
+            // wrist is at the limit, and target isn't in opposite direction
+            // so stop wrist
+            if (currentWristMin_ExtMin + 2 /* 2 degree tolerance */ > wristAngle && wristTarget < currentWristMin_ExtMin + 2) {
+                wrist.toggleWrist(false); // stop wrist
+                System.out.println("WRIST STOPPED");
+            } else if (wristAngle > currentWristMax_ExtMin - 2 && wristTarget > currentWristMax_ExtMin - 2) {
+                wrist.toggleWrist(false); // stop wrist
+                System.out.println("WRIST STOPPED");
+            } else {
+                wrist.toggleWrist(true); // resume wrist
+
+            }
+
         }else{
-            arm.toggleArm(false); // stop arm
-            System.out.println("SOMETHING VERY WRONG WITH ARM");
+            if (armTarget < currentArmMin || armTarget > currentArmMax) {
+                arm.toggleArm(false); // stop arm
+                System.out.println("SOMETHING VERY WRONG WITH ARM");
+            } else {
+                arm.toggleArm(true);
+            }
+            
         }
     }
     
@@ -526,9 +550,9 @@ public class Scoring extends SubsystemBase {
         {234,0,270,90,4.84,270,90},
         {235,0,270,90,4.8,270,90},
     };
-
-    public void updateArm() {
-        arm.updateRelPos();
-    }
-  
+  public void togglePIDs(boolean run) {
+    arm.toggleArm(run);
+    ext.toggleExt(run);
+    wrist.toggleWrist(run);
+  }
 }

@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.robot.subsystems.Examples.ArmWristSubsystem.Height;
 
 import java.io.File;
 import java.io.IOException;
@@ -85,8 +84,6 @@ public class Robot extends LoggedRobot
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
-    m_robotContainer.score.updateArm();
-    System.out.println("updated arm");
     //m_robotContainer.armWristSub.updateRelArmPos();
     // Create a timer to disable motor brake a few seconds after disable.  This will let the robot stop
     // immediately when disabled, but then also let it be pushed more 
@@ -199,7 +196,9 @@ public class Robot extends LoggedRobot
   @Override
   public void teleopInit()
   {
-
+    m_robotContainer.score.ext.runAndResetEncoder();
+    m_robotContainer.score.goToPosition(Constants.ScoringPos.CLIMB);
+    
     // (new InstantCommand(() -> m_robotContainer.armWristSub.goToPosition(Height.PRECLIMB))).schedule();
     // (new InstantCommand(() -> m_robotContainer.armWristSub.runAndResetExtEncoder())).schedule();
     // m_robotContainer.armWristSub.changeHeight(Height.PRECLIMB);
