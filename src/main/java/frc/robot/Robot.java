@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.robot.subsystems.Examples.ArmWristSubsystem.Height;
 
 import java.io.File;
 import java.io.IOException;
@@ -198,7 +197,7 @@ public class Robot extends LoggedRobot
   public void teleopInit()
   {
     m_robotContainer.score.ext.runAndResetEncoder();
-    m_robotContainer.score.goToPosition(Constants.ScoringPos.SOURCE);
+    m_robotContainer.score.goToPosition(Constants.ScoringPos.CLIMB);
     
     // (new InstantCommand(() -> m_robotContainer.armWristSub.goToPosition(Height.PRECLIMB))).schedule();
     // (new InstantCommand(() -> m_robotContainer.armWristSub.runAndResetExtEncoder())).schedule();

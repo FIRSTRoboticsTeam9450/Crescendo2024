@@ -21,7 +21,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class Arm extends SubsystemBase {
-    private double target = convertToRot(180);
+    private double target = convertToRot(Constants.Arm.climbArmPosition);
     private double currentAbsPos;
     private boolean run = true;                                                                                                            
 
@@ -39,7 +39,7 @@ public class Arm extends SubsystemBase {
 
     /* PID Constants */
     private PIDConstants pidConstantsClimb = new PIDConstants(30, 4);
-    private PIDConstants pidConstantsDefault = new PIDConstants(55, 4);
+    private PIDConstants pidConstantsDefault = new PIDConstants(40, 4);
     private PIDConstants currentPIDConstants = pidConstantsDefault;
 
     public Arm() {
@@ -81,7 +81,7 @@ public class Arm extends SubsystemBase {
               
     }
 
-    public void setVoltage(double voltage){
+    private void setVoltage(double voltage){
         Logger.recordOutput("Arm/ArmVoltage", voltage);
         
         motorFront.setVoltage(voltage);
@@ -89,17 +89,19 @@ public class Arm extends SubsystemBase {
     }
 
     private double convertToRot(double angle) {
-        return angle * Constants.NewArm.RotateConversionFactor + Constants.NewArm.AbsEncoderShift;
+        return angle * Constants.Arm.RotateConversionFactor + Constants.Arm.AbsEncoderShift;
 
     }
 
     private double convertToDeg(double rot){
-        return (1/Constants.NewArm.RotateConversionFactor) * (rot - Constants.NewArm.AbsEncoderShift);
+        return (1/Constants.Arm.RotateConversionFactor) * (rot - Constants.Arm.AbsEncoderShift);
     }
 
     /** converts to and sets the position target for the arm */
-    public void setTarget(double targetInches) {
-        this.target = convertToRot(targetInches);
+    public void setTarget(double targetDegrees) {
+        double newTarget = Math.min(targetDegrees, Constants.Arm.armHardwareMax);
+        newTarget = Math.max(newTarget, Constants.Arm.armHardwareMin);
+        target = convertToRot(newTarget);
     }
 
     /** @return the target of the arm in degrees */
@@ -123,24 +125,17 @@ public class Arm extends SubsystemBase {
     private void updatePID(double currentAbsPos) {
         double error = target - currentAbsPos;
         double pidValue = (error) * currentPIDConstants.kP;
-        
-        // the complicated BigDecimal is to limit to 3 decimal places
-        BigDecimal limDecimalPlaces = new BigDecimal(target).setScale(5, RoundingMode.HALF_UP);
-        
+                
         double maxVoltage = currentPIDConstants.maxVoltage;
         
         Logger.recordOutput("Arm/PIDValue", pidValue);
         Logger.recordOutput("Arm/maxVoltage", maxVoltage);
         Logger.recordOutput("Arm/armTarget", target);
-
-        if (Math.abs(currentAbsPos) < 0.1) { // because arm should never be lower than 0.1 pos
-            setVoltage(0);
+        
+        if (Math.abs(pidValue) < maxVoltage) { //10 volts good for tele
+            setVoltage(pidValue);                
         } else {
-            if (Math.abs(pidValue) < maxVoltage) { //10 volts good for tele
-                setVoltage(pidValue);                
-            } else {
-                setVoltage(maxVoltage * Math.signum(pidValue));
-            }
+            setVoltage(maxVoltage * Math.signum(pidValue));
         }
     }
 

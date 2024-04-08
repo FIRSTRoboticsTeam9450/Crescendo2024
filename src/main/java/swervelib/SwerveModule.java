@@ -258,7 +258,8 @@ public class SwerveModule
     this.antiJitterEnabled = antiJitter;
     if (antiJitter)
     {
-      pushOffsetsToControllers();
+      restoreInternalOffset();
+      // pushOffsetsToControllers();
     } else
     {
       restoreInternalOffset();

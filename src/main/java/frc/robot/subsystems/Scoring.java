@@ -12,6 +12,7 @@ import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import au.grapplerobotics.ConfigurationFailedException;
 import au.grapplerobotics.LaserCan;
 import edu.wpi.first.math.filter.MedianFilter;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -37,13 +38,13 @@ public class Scoring extends SubsystemBase {
 
 
     /* Ramping variables */
-/*  // If you want to ramp intake
+  // If you want to ramp intake
     private boolean rampDownBool;
     private double currentVoltage;
     private double voltageTo;
     private double rampTime;
     private Timer rampDownTimer;
-*/
+
     /* Laser */
     private LaserCan laser;
     private LaserCan.Measurement measurement;
@@ -91,6 +92,8 @@ public class Scoring extends SubsystemBase {
         measurement = laser.getMeasurement();
         medianDistance = new MedianFilter(3);
         setState(Constants.ScoringPos.NONE);
+
+        rampDownTimer = new Timer();
     } 
     
     /** Has a median filter applied in this method */
@@ -109,16 +112,16 @@ public class Scoring extends SubsystemBase {
     public void setIntakeVoltage(double voltage) { intake.setVoltage(-voltage); SmartDashboard.putNumber("Intake Voltage", -voltage);}
     public double getIntakeTemp(){ return intake.getMotorTemperature(); }
     
-/*  // If you want to ramp intake
+  // If you want to ramp intake
     // linear ramp here https://www.desmos.com/calculator/ygpschqwqe
-    public void rampDownVoltage(double currentVoltage, double voltageTo, double rampTime) {
+    public void rampDownIntakeVoltage(double currentVoltage, double voltageTo, double rampTime) {
         this.currentVoltage = currentVoltage;
         this.voltageTo = voltageTo;
         this.rampTime = rampTime;
         rampDownTimer.restart();
         rampDownBool = true;
     }
-*/
+
     public void setState(Constants.ScoringPos state) {
         this.state = state;
     }
@@ -161,39 +164,39 @@ public class Scoring extends SubsystemBase {
     /* Movement Logic */
 
     private void goToGround() {
-        desiredArmAngle = Constants.NewArm.groundArmPosition;
-        desiredWristAngle = Constants.NewWrist.groundWristPosition;
-        desiredExtensionLength = Constants.NewExtension.groundExtPosition;
+        desiredArmAngle = Constants.Arm.groundArmPosition;
+        desiredWristAngle = Constants.Wrist.groundWristPosition;
+        desiredExtensionLength = Constants.Extension.groundExtPosition;
     }   
 
     private void goToStore() {
-        desiredArmAngle = Constants.NewArm.storeArmPosition;
-        desiredWristAngle = Constants.NewWrist.storeWristPosition;
-        desiredExtensionLength = Constants.NewExtension.storeExtPosition;
+        desiredArmAngle = Constants.Arm.storeArmPosition;
+        desiredWristAngle = Constants.Wrist.storeWristPosition;
+        desiredExtensionLength = Constants.Extension.storeExtPosition;
     }
     
     private void goToSource() {
-        desiredArmAngle = Constants.NewArm.sourceArmPosition;
-        desiredWristAngle = Constants.NewWrist.sourceWristPosition;
-        desiredExtensionLength = Constants.NewExtension.sourceExtPosition;
+        desiredArmAngle = Constants.Arm.sourceArmPosition;
+        desiredWristAngle = Constants.Wrist.sourceWristPosition;
+        desiredExtensionLength = Constants.Extension.sourceExtPosition;
     }
 
     private void goToAmp() {
-        desiredArmAngle = Constants.NewArm.ampArmPosition;
-        desiredWristAngle = Constants.NewWrist.ampWristPosition;
-        desiredExtensionLength = Constants.NewExtension.ampExtPosition;
+        desiredArmAngle = Constants.Arm.ampArmPosition;
+        desiredWristAngle = Constants.Wrist.ampWristPosition;
+        desiredExtensionLength = Constants.Extension.ampExtPosition;
     }
 
     private void goToClimb() {
-        desiredArmAngle = Constants.NewArm.climbArmPosition;
-        desiredWristAngle = Constants.NewWrist.climbWristPosition;
-        desiredExtensionLength = Constants.NewExtension.climbExtPosition;
+        desiredArmAngle = Constants.Arm.climbArmPosition;
+        desiredWristAngle = Constants.Wrist.climbWristPosition;
+        desiredExtensionLength = Constants.Extension.climbExtPosition;
     }
 
     private void goToTrap() {
-        desiredArmAngle = Constants.NewArm.trapArmPosition;
-        desiredWristAngle = Constants.NewWrist.trapWristPosition;
-        desiredExtensionLength = Constants.NewExtension.trapExtPosition;
+        desiredArmAngle = Constants.Arm.trapArmPosition;
+        desiredWristAngle = Constants.Wrist.trapWristPosition;
+        desiredExtensionLength = Constants.Extension.trapExtPosition;
     }
 
     public void goToPosition(Constants.ScoringPos state) {
@@ -242,17 +245,17 @@ public class Scoring extends SubsystemBase {
        
 
 
-/*      // If you want to ramp intake
+      // If you want to ramp intake
         if (rampDownBool) {
             if (rampDownTimer.get() < rampTime) {
               setIntakeVoltage(-(currentVoltage - voltageTo) * rampDownTimer.get() / rampTime + currentVoltage);
             } else {
-              stopIntake();
+              intake.stopMotor();
               rampDownBool = false;
               rampDownTimer.stop();
             }
           }
-*/            
+            
     }
 
     /* Limiter Logic */

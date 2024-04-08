@@ -12,11 +12,10 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.commands.ExtensionCommand;
 
 public class Extension extends SubsystemBase {
     /* Class Constants */
-    private double target = convertToTics(2);
+    private double target = convertToTics(Constants.Extension.climbExtPosition);
     public boolean runAndReset = true;
     private boolean run = true;
 
@@ -28,13 +27,10 @@ public class Extension extends SubsystemBase {
     /* Limit Switch */
     private DigitalInput lowerHardLimSwitch;
 
-    /* Enums */ 
-    @SuppressWarnings("unused")
-    private Constants.RobotState state = Constants.RobotState.DEFAULT;
+    // removed robot state thing
 
     /* PIDConstants */
-    private PIDConstants pidConstantsClimb = new PIDConstants(0, 0);
-    private PIDConstants pidConstantsDefault = new PIDConstants(1, 1);
+    private PIDConstants pidConstantsDefault = new PIDConstants(1, 4);
     private PIDConstants currentPIDConstants = pidConstantsDefault;
 
 
@@ -61,22 +57,7 @@ public class Extension extends SubsystemBase {
 
     }
 
-    /**
-     * Returns true if the magnet is in range of the lower hard limit switch
-     * 
-     * @return the state of the limit switch
-     */
-    public boolean getLowerLimSwitch() {
-        try {
-            return !lowerHardLimSwitch.get();
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-        }
-        return true;
-
-    }
-
-    public void setVoltage(double voltage) {
+    private void setVoltage(double voltage) {
         motor.setVoltage(voltage);
         Logger.recordOutput("Extension/ExtVoltage", voltage);
 
@@ -107,21 +88,13 @@ public class Extension extends SubsystemBase {
      */
     public void runAndResetEncoder() {
         runAndReset = true;
-        setVoltage(3);
+        setVoltage(Constants.Extension.resetExtVoltage);
     }
 
-    public void setState(Constants.RobotState state) {
-        this.state = state;
-        if (state.equals(Constants.RobotState.CLIMBING)) {
-            currentPIDConstants = pidConstantsClimb;
-        } else {
-            currentPIDConstants = pidConstantsDefault;
-        }
-    }
-
-    public void setTarget(double target) {
-
-        this.target = convertToTics(target);
+    public void setTarget(double targetInches) {
+        double newTarget = Math.min(targetInches, Constants.Extension.extHardwareMax);
+        newTarget = Math.max(newTarget, Constants.Extension.extHardwareMin);
+        target = convertToTics(newTarget);
     }
 
     public double getTarget() {
@@ -129,12 +102,12 @@ public class Extension extends SubsystemBase {
     }
 
     private double convertToTics(double inches) {
-        return inches * (1/Constants.NewExtension.convertToInches);
+        return inches * (1/Constants.Extension.convertToInches);
 
     }
 
     private double convertToInches(double tics){
-        return tics * Constants.NewExtension.convertToInches;
+        return tics * Constants.Extension.convertToInches;
     }
 
     public void updatePID() {
@@ -163,7 +136,7 @@ public class Extension extends SubsystemBase {
         Logger.recordOutput("Extension/target", this.target);
         
         /* Stops motor and resets encoder after limit switch reached */
-        if (getLowerLimSwitch() && runAndReset) {
+        if (!lowerHardLimSwitch.get() && runAndReset) {
             motor.stopMotor();
             setVoltage(0);
             encoderRel.setPosition(1.55);

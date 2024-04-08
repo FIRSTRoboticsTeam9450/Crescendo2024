@@ -85,56 +85,7 @@ public final class Constants
     public static final double pivotHeight = 19;
   }
 
-  public static class Arm{
-    public static final double armLength = 18;
-    public static final double intakeArmTics = 0.1716;
-    public static final double intakeArmAngle = -20;
-    public static final double ampArmTics = 0.531;
-    public static final double ampArmAngle = 115;
-
-    public static final double offsetToAmpFromGround = 0.416;
-    public static final double offsetToAmpFromSource_Hold = 0.386;
-    public static final double offsetToStraightOutPos = 0.125;//0.195
-    public static final double offsetToGround = 0.09;//0.102
-    public static final double offsetToHold = 0.05545 /* 3/4 inch from plate!! */; // 0.035
-    public static final double offsetToSource = 0.2651; //0.255
-
-    public static final double offsetToPreClimb = 0.356;
-
-    public static final double offsetToTrapFromGround = 0.396;
-  }
-
-  public static class MovementLimits{
-    public static final double armHardLowerLimit = 0.12455;//0.08;
-    public static final double armHardUpperLimit = 0.7;//0.51;
-    public static final double wristHardLowerLimit = 0.208; //      0.234
-    public static final double wristHardUpperLimit = 0.862; //    0.8
-    public static final double extHardLowerLimit = 0; // 0.749
-    public static final double extHardUpperLimit = -75 / 2.0833; // 0.059
-  }
-
   public static class Extension{
-    public static final double maxExtensionInches = 12; //14.5
-    public static final double maxExtensionTics = 0.06; 
-    public static final double zeroTics = 0.73;
-
-    public static final double offsetToAmpFromGround = (0.5/0.69 * -75 + 20 - 24) / 2.0833 + 1; // -0.5
-    public static final double offsetToAmpFromSource_Hold = (0.409/0.69 * -75 + 6 - 16) / 2.0833; // -0.409
-    /**Not updated */
-    public static final double offsetToGroundFromHold = 0;
-    public static final double offsetToGround = 0.287/0.69 * -75 / 2.0833; // -0.287
-    public static final double offsetToHold = 0.02/0.69 * -75 / 2.0833; // -0.02
-    public static final double offsetToSource = (0.2/0.69 * -75 + 5 + 4) / 2.0833; // -0.2
-    
-    public static final double offsetToTrapFromGround = (0.5/0.69 * -75 + 20 - 24 - 12) / 2.0833; // -0.5
-
-    public static final double offsetToPreClimb = -5;
-
-
-
-
-  }
-  public static class NewExtension{
     // in inches
     public static final double groundExtPosition = 5.5;
     public static final double storeExtPosition = 0;
@@ -142,20 +93,25 @@ public final class Constants
     public static final double ampExtPosition = 8.5;
     public static final double trapExtPosition = 13;
     public static final double climbExtPosition = 0;
+    
+    public static final double extHardwareMax = 12;
+    public static final double extHardwareMin = 0;
+
+    public static final double resetExtVoltage = 3;
 
     // 12 is for gear ratio
     // might need to consider offset of 0.4
     public static final double convertToInches = 4.7244/12;
 
   }
-   public static class NewArm{
+   public static class Arm{
     // In degrees
     public static final double groundArmPosition = 72;
-    public static final double storeArmPosition = 50;
+    public static final double storeArmPosition = 55;
     public static final double sourceArmPosition = 135;
     public static final double ampArmPosition = 200;
     public static final double trapArmPosition = 165;
-    public static final double climbArmPosition = 180;
+    public static final double climbArmPosition = 170;
 
     /**converts from degrees to rotations */
     public static final double RotateConversionFactor = (1.0/360);
@@ -163,8 +119,10 @@ public final class Constants
     // 180 -> 0.55 abs encoder
     // 90 -> 0.2946 abs encoder
 
+    public static final double armHardwareMax = 225;
+    public static final double armHardwareMin = 55;
   }
-   public static class NewWrist{
+   public static class Wrist{
     // In degrees
     public static final double groundWristPosition = 130;
     public static final double storeWristPosition = 250;
@@ -177,28 +135,12 @@ public final class Constants
     /**converts from degrees to rotations */
     public static final double RotateConversionFactor = -(gearRatio/360);
     public static final double AbsEncoderShift = -1.157;
+
+    public static final double wristHardwareMax = 270;
+    public static final double wristHardwareMin = 90;
     
   }
 
-  public static class Wrist{
-    public static final double straightWristTics = 0.36;
-    public static final double upWristTics = 0.66;
-    public static final double straightWristInches = 8;
-    public static final double upWristInches = 2;
-
-    public static final double offsetToAmpFromGround = 0.137 + 0.12;
-    public static final double offsetToAmpFromSource_Hold = 0.02;
-    /**Not updated */
-    public static final double offsetToGroundFromHold = 0;
-    public static final double offsetToGround = 0.44;
-    public static final double offsetToHold = 0.017;
-    public static final double offsetToSource = 0.279;
-
-    public static final double offsetToTrapFromGround = 0.117;
-
-    public static final double offsetToPreClimbFromGround = 0.367;
-
-  }
   public static enum ScoringPos{
     NONE,
     GROUND,

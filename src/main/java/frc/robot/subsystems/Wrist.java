@@ -18,7 +18,7 @@ import frc.robot.Constants;
 
 public class Wrist extends SubsystemBase {
     /* Class Constants */
-    private double target = convertToRot(180);// 0.485;
+    private double target = convertToRot(Constants.Wrist.climbWristPosition);// 0.485;
     private boolean run = true;
 
     /* Motor */
@@ -30,14 +30,8 @@ public class Wrist extends SubsystemBase {
     /* Wrist FF */ // constants kinda tuned, final tuning still needed
     // private SimpleMotorFeedforward ff = new SimpleMotorFeedforward(0.00001, 0.00003, 0.00001);
 
-
-    /* Enums */ 
-    @SuppressWarnings("unused")
-    private Constants.RobotState state = Constants.RobotState.DEFAULT;
-
     /* PIDConstants */
-    private PIDConstants pidConstantsClimb = new PIDConstants(0, 0);
-    private PIDConstants pidConstantsDefault = new PIDConstants(40, 1);
+    private PIDConstants pidConstantsDefault = new PIDConstants(40, 4);
     private PIDConstants currentPIDConstants = pidConstantsDefault;
 
     public Wrist() {
@@ -59,9 +53,9 @@ public class Wrist extends SubsystemBase {
         return angle;
     }
 
-    double oldVel = 0;
-    double oldTime = 0;
-    double oldPos = 0;
+    // double oldVel = 0;
+    // double oldTime = 0;
+    // double oldPos = 0;
 
     public void updatePID() {
         Logger.recordOutput("Wrist/WristTarget", target);
@@ -94,7 +88,7 @@ public class Wrist extends SubsystemBase {
 
     }
 
-    public void setVoltage(double voltage) {
+    private void setVoltage(double voltage) {
         Logger.recordOutput("Wrist/WristVoltage", voltage);
 
         motor.setVoltage(voltage);
@@ -102,30 +96,23 @@ public class Wrist extends SubsystemBase {
     }
 
     private double convertToRot(double angle) {
-        return angle * Constants.NewWrist.RotateConversionFactor - Constants.NewWrist.AbsEncoderShift;
+        return angle * Constants.Wrist.RotateConversionFactor - Constants.Wrist.AbsEncoderShift;
 
     }
 
     // 0.5648 straight out, 0.8497 straight down
     private double convertToDeg(double rot){
-        return (1/Constants.NewWrist.RotateConversionFactor) * (rot + Constants.NewWrist.AbsEncoderShift);
+        return (1/Constants.Wrist.RotateConversionFactor) * (rot + Constants.Wrist.AbsEncoderShift);
     }
 
-    public void setTarget(double target) {
-        this.target = convertToRot(target);
+    public void setTarget(double targetDegrees) {
+        double newTarget = Math.min(targetDegrees, Constants.Wrist.wristHardwareMax);
+        newTarget = Math.max(newTarget, Constants.Wrist.wristHardwareMin);
+        target = convertToRot(newTarget);
     }
 
     public double getTarget(){
         return convertToDeg(target);
-    }
-
-    public void setState(Constants.RobotState state) {
-        this.state = state;
-        if (state.equals(Constants.RobotState.CLIMBING)) {
-            currentPIDConstants = pidConstantsClimb;
-        } else {
-            currentPIDConstants = pidConstantsDefault;
-        }
     }
     
 
