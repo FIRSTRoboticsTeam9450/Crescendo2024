@@ -18,7 +18,7 @@ import frc.robot.Constants;
 
 public class Wrist extends SubsystemBase {
     /* Class Constants */
-    private double target = Constants.MovementLimits.wristHardLowerLimit + Constants.Wrist.offsetToSource;// 0.485;
+    private double target = convertToRot(180);// 0.485;
     private boolean run = true;
 
     /* Motor */
@@ -37,7 +37,7 @@ public class Wrist extends SubsystemBase {
 
     /* PIDConstants */
     private PIDConstants pidConstantsClimb = new PIDConstants(0, 0);
-    private PIDConstants pidConstantsDefault = new PIDConstants(40, 4.5);
+    private PIDConstants pidConstantsDefault = new PIDConstants(40, 1);
     private PIDConstants currentPIDConstants = pidConstantsDefault;
 
     public Wrist() {
@@ -65,7 +65,7 @@ public class Wrist extends SubsystemBase {
 
     public void updatePID() {
         Logger.recordOutput("Wrist/WristTarget", target);
-        double error = target - getAbsPos();
+        double error = target - convertToRot(getAbsPos());
         double pidValue = (error) * currentPIDConstants.kP; 
 /*
         double changeInTime = Timer.getFPGATimestamp() - oldTime;

@@ -16,8 +16,8 @@ import frc.robot.commands.ExtensionCommand;
 
 public class Extension extends SubsystemBase {
     /* Class Constants */
-    private double target = Constants.MovementLimits.extHardLowerLimit + Constants.Extension.offsetToPreClimb;
-    private boolean runAndReset = true;
+    private double target = convertToTics(2);
+    public boolean runAndReset = true;
     private boolean run = true;
 
     private CANSparkMax motor = new CANSparkMax(Constants.extensionId, MotorType.kBrushless);
@@ -34,7 +34,7 @@ public class Extension extends SubsystemBase {
 
     /* PIDConstants */
     private PIDConstants pidConstantsClimb = new PIDConstants(0, 0);
-    private PIDConstants pidConstantsDefault = new PIDConstants(1, 12);
+    private PIDConstants pidConstantsDefault = new PIDConstants(1, 1);
     private PIDConstants currentPIDConstants = pidConstantsDefault;
 
 
@@ -138,21 +138,21 @@ public class Extension extends SubsystemBase {
     }
 
     public void updatePID() {
-        double error = target - getRelPos();
+        double error = target - convertToTics(getRelPos());
         double pidValue = (error) * currentPIDConstants.kP;
         double maxVoltage = currentPIDConstants.maxVoltage;
         Logger.recordOutput("Extension/maxVoltage", maxVoltage);
 
         if (Math.abs(pidValue) < maxVoltage) {
-            setVoltage(pidValue);
+            setVoltage(-pidValue);
         } else {
-            setVoltage(maxVoltage * Math.signum(pidValue));
+            setVoltage(-maxVoltage * Math.signum(pidValue));
         }
     }
 
     @Override
     public void periodic() {
-        if (true || !runAndReset) {
+        if (!runAndReset) {
             if (run) {
                 updatePID();
             } else {
@@ -160,13 +160,13 @@ public class Extension extends SubsystemBase {
             }
             
         }
-        
+        Logger.recordOutput("Extension/target", this.target);
         
         /* Stops motor and resets encoder after limit switch reached */
         if (getLowerLimSwitch() && runAndReset) {
             motor.stopMotor();
             setVoltage(0);
-            encoderRel.setPosition(0);
+            encoderRel.setPosition(1.55);
             runAndReset = false;
 
         }

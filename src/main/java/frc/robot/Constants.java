@@ -159,7 +159,7 @@ public final class Constants
 
     /**converts from degrees to rotations */
     public static final double RotateConversionFactor = (1.0/360);
-    public static final double AbsEncoderShift = 0.05;
+    public static final double AbsEncoderShift = 0.1177;
     // 180 -> 0.55 abs encoder
     // 90 -> 0.2946 abs encoder
 
@@ -244,6 +244,7 @@ public final class Constants
 
   public static final int armFrontId = 22;
   public static final int armBackId = 33;
+  public static final int armEncoderId = 21;
 
   public static final int extensionId = 23;
 

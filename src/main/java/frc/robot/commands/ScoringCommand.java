@@ -21,16 +21,42 @@ public class ScoringCommand extends Command {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    //score.togglePIDs(false);
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    score.limit();
-    if (armController.getLeftY() > 0.08) score.getExtSub().setVoltage(Math.abs(armController.getLeftY()) * 10 > 3 ? -Math.signum(armController.getLeftY()) * 3 : -armController.getLeftY() * 10);
-    if (armController.getRightY() > 0.08)    score.getArmSub().setVoltage(Math.abs(armController.getRightY()) * 10 > 3 ? Math.signum(armController.getRightY()) * 3 : armController.getRightY() * 10);
-    score.getWristSub().setVoltage(Math.abs(armController.getRightTriggerAxis()) * 10 > 3 ? 3 : armController.getRightTriggerAxis() * 10);
-    score.getWristSub().setVoltage(Math.abs(armController.getLeftTriggerAxis()) * 10 > 3 ? -3 : -armController.getRightTriggerAxis() * 10);
+    //score.togglePIDs(false);
+    if (!score.ext.runAndReset) {
+      //score.limit();
+    }
+
+    if (Math.abs(armController.getLeftY()) > 0.1) {
+      score.wrist.setTarget(score.wrist.getTarget() + armController.getLeftY() * 0.5);
+    }
+
+    if (Math.abs(armController.getRightY()) > 0.1) {
+      score.arm.setTarget(score.arm.getTarget() + armController.getRightY() * 0.5);
+    }
+
+    if (armController.povDown().getAsBoolean()) {
+      score.ext.setTarget(score.ext.getTarget() - 0.02);
+    }
+
+    if (armController.povUp().getAsBoolean()) {
+      score.ext.setTarget(score.ext.getTarget() + 0.02);
+    }
+    /*
+    if (Math.abs(armController.getLeftY()) > 0.08) score.getExtSub().setVoltage(Math.abs(armController.getLeftY()) * 10 > 3 ? -Math.signum(armController.getLeftY()) * 3 : -armController.getLeftY() * 10);
+    if (Math.abs(armController.getRightY()) > 0.08)    score.getArmSub().setVoltage(Math.abs(armController.getRightY()) * 10 > 3 ? Math.signum(armController.getRightY()) * 3 : armController.getRightY() * 10);
+    if (Math.abs(armController.getRightTriggerAxis()) > 0.1) {
+      score.getWristSub().setVoltage(Math.abs(armController.getRightTriggerAxis()) * 10 > 3 ? 3 : armController.getRightTriggerAxis() * 10);
+    } else {
+      score.getWristSub().setVoltage(Math.abs(armController.getLeftTriggerAxis()) * 10 > 3 ? -3 : -armController.getRightTriggerAxis() * 10);
+    }
+    */
 
   }
 
