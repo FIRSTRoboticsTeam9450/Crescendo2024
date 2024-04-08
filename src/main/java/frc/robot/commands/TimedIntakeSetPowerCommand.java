@@ -6,22 +6,22 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Scoring;
 
 public class TimedIntakeSetPowerCommand extends Command {
   /** Creates a new WristIntakeCommand. */
-  private Intake intake;
+  private Scoring score;
   private double voltage, seconds;
   private boolean finished;
   Timer time;
 
-  public TimedIntakeSetPowerCommand(Intake intake, double voltage, double seconds){
+  public TimedIntakeSetPowerCommand(Scoring score, double voltage, double seconds){
     // Use addRequirements() here to declare subsystem dependencies.
-    this.intake = intake;
+    this.score = score;
     this.voltage = voltage;
     this.seconds = seconds;
     time = new Timer();
-    addRequirements(intake);
+    addRequirements(score);
   }
 
   // Called when the command is initially scheduled.
@@ -30,7 +30,7 @@ public class TimedIntakeSetPowerCommand extends Command {
     time.reset();
     time.start();
     finished = false;
-    intake.setIntakeVoltage(-Math.abs(voltage));
+    score.setIntakeVoltage(-Math.abs(voltage));
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -45,7 +45,7 @@ public class TimedIntakeSetPowerCommand extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    intake.rampDownVoltage(-Math.abs(voltage), 0, 0.5);
+    //score.rampDownIntakeVoltage(-Math.abs(voltage), 0, 0.5);
   }
 
   // Returns true when the command should end.

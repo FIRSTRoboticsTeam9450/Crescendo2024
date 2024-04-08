@@ -17,7 +17,7 @@ public class Limelight extends SubsystemBase {
   
   Servo axon;
 
-  Intake intake;
+  Scoring score;
 
   NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
 
@@ -25,10 +25,10 @@ public class Limelight extends SubsystemBase {
 
   MedianFilter median;
 
-  public Limelight(Intake intake) {
+  public Limelight(Scoring score) {
     axon = new Servo(0);
     SmartDashboard.putNumber("set axon angle", 180);
-    this.intake = intake;
+    this.score = score;
     median = new MedianFilter(3);
     resetAngle();
   }
@@ -81,7 +81,7 @@ public class Limelight extends SubsystemBase {
   }
 
   public void resetAngle() {
-    if (intake.getLaserDistance() < 50) {
+    if (score.getLaserDistance() < 50) {
       axon.setAngle(180);
     } else {
       axon.setAngle(130);
@@ -91,7 +91,7 @@ public class Limelight extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    double medianValue = median.calculate(intake.getLaserDistance());
+    double medianValue = median.calculate(score.getLaserDistance());
     //double medianValue = 0;
 
     if (DriverStation.isAutonomous()) {
