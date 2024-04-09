@@ -80,6 +80,10 @@ public class Scoring extends SubsystemBase {
 
         intake.setIdleMode(IdleMode.kBrake);
 
+        desiredArmAngle = Constants.Arm.climbArmPosition;
+        desiredWristAngle = Constants.Wrist.climbWristPosition;
+        desiredExtensionLength = Constants.Extension.climbExtPosition;
+
         // Optionally initialise the settings of the LaserCAN, if you haven't already
         // done so in GrappleHook
         laser = new LaserCan(Constants.laserId);
@@ -417,11 +421,11 @@ public class Scoring extends SubsystemBase {
             { 73, 0, 270, 90, 5.6, 270, 90 },
             { 74, 0, 270, 90, 5.6, 270, 90 },
             { 75, 0, 270, 90, 5.6, 270, 90 },
-            { 76, 0, 270, 90, 2.325, 270, 90 },
-            { 77, 0, 270, 90, 2.418, 270, 90 },
-            { 78, 0, 270, 90, 2.511, 270, 90 },
-            { 79, 0, 270, 90, 2.604, 270, 90 },
-            { 80, 0, 270, 90, 2.697, 270, 90 },
+            { 76, 0, 270, 90, 5.6, 270, 90 },
+            { 77, 0, 270, 90, 5.6, 270, 90 },
+            { 78, 0, 270, 90, 5.6, 270, 90 },
+            { 79, 0, 270, 90, 5.6, 270, 90 },
+            { 80, 0, 270, 90, 5.6, 270, 90 },
             { 81, 0, 270, 90, 2.79, 270, 90 },
             { 82, 0, 270, 90, 2.883, 270, 90 },
             { 83, 0, 270, 90, 2.976, 270, 90 },

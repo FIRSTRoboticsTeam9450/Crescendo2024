@@ -141,7 +141,7 @@ public class AlignSource2 extends Command {
             }
 
             tagPose = table.getEntry("targetpose_robotspace").getDoubleArray(tagPose);
-            robotPose = table.getEntry("botpose_targetspace").getDoubleArray(tagPose);
+            robotPose = table.getEntry("botpose_targetspace").getDoubleArray(robotPose);
 
             double axonPower = servoController.calculate(table.getEntry("ty").getDouble(0));
             MathUtil.clamp(axonPower, -1, 1);
@@ -161,8 +161,8 @@ public class AlignSource2 extends Command {
                 }
             } else {
                 yawController.setSetpoint(0);
-                xController.setSetpoint(-0.22);
-                zController.setSetpoint(-0.3);
+                xController.setSetpoint(-0.39);
+                zController.setSetpoint(-0.43);
             }
             
             yawPower = yawController.calculate(robotPose[4]);
@@ -190,7 +190,7 @@ public class AlignSource2 extends Command {
 
     @Override
     public boolean isFinished() {
-        if (yawController.getPositionError() < 0.1 && xController.getPositionError() < 0.05 && zController.getPositionError() < 0.05 && timer.get() > 1) {
+        if (yawController.getPositionError() < 0.5 && xController.getPositionError() < 0.05 && zController.getPositionError() < 0.05 && timer.get() > 1) {
             drive.drive(new Translation2d(0, 0), 0, false);
             return true;
         }

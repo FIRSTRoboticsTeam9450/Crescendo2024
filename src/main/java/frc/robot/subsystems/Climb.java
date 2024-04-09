@@ -36,7 +36,7 @@ public class Climb extends SubsystemBase {
    * Creates a new Climb subsystem
    */
   public Climb() {
-    runPid = true;
+    runPid = false;
 
     leftMotorVoltage = 0;
     rightMotorVoltage = 0;

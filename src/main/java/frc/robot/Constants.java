@@ -92,7 +92,7 @@ public final class Constants
     public static final double sourceExtPosition = 1.5;
     public static final double ampExtPositionFromSource = 8.5;
     public static final double ampExtPositionFromGround = 10;
-    public static final double trapExtPosition = 13;
+    public static final double trapExtPosition = 12;
     public static final double climbExtPosition = 0;
     
     public static final double extHardwareMax = 12;
@@ -112,7 +112,7 @@ public final class Constants
     public static final double sourceArmPosition = 135;
     public static final double ampArmPositionFromSource = 200;
     public static final double ampArmPositionFromGround = 200;
-    public static final double trapArmPosition = 165;
+    public static final double trapArmPosition = 200;
     public static final double climbArmPosition = 170;
     public static final double tempArmPosition = 80;
 
@@ -132,7 +132,7 @@ public final class Constants
     public static final double sourceWristPosition = 180;
     public static final double ampWristPositionFromSource = 250;
     public static final double ampWristPositionFromGround = 240;
-    public static final double trapWristPosition = 100;
+    public static final double trapWristPosition = 240;
     public static final double climbWristPosition = 180;
     
     public static final double gearRatio = 1.2/1;

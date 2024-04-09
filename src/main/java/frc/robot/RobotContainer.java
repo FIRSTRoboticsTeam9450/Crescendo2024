@@ -83,6 +83,7 @@ public class RobotContainer {
     autoChooser.addOption("Preload Only", "PreloadScoreAlign");
     autoChooser.addOption("Preload + Center", "PreloadGrabCenter");
     autoChooser.addOption("Preload + Close", "TwoNoteAlign");
+    autoChooser.addOption("Center + Preload", "CenterFirst");
 
     autoChooser.setDefaultOption("Preload + Close", "TwoNoteAlign");
 
@@ -96,6 +97,7 @@ public class RobotContainer {
         new IntakingCommand(score, 12));
 
     Command outtake = new TimedIntakeSetPowerCommand(score, 10, 0.75);
+    Command outtakeSlow = new InstantCommand(() -> score.setIntakeVoltage(-5));
     Command resetExt = new InstantCommand(() -> score.ext.runAndResetEncoder());
     Command align = new AlignSource2(drivebase, null, servo, true).withTimeout(2);
     Command armUp = new ScoringCommand(score, Constants.ScoringPos.CLIMB);
@@ -109,6 +111,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("ResetExt", resetExt);
     NamedCommands.registerCommand("AlignAmp", align);
     NamedCommands.registerCommand("ArmUp", armUp);
+    NamedCommands.registerCommand("OuttakeSlow", outtakeSlow);
     // // NamedCommands.registerCommand("Sweep", sweep);
     // // speedModify = () -> driverController.leftTrigger().getAsBoolean(); //
     // accounts for buttons.run() overrun issue by caching value
@@ -341,10 +344,20 @@ public class RobotContainer {
 
     // Climber
     armController.pov(180).onTrue(new ClimbCommand(climbSub, 0));
-    armController.pov(90).onTrue(new ScoringCommand(score, Constants.ScoringPos.STORE).andThen(new WaitCommand(0.5))
-        .andThen(new ClimbCommand(climbSub, 90)));
-    armController.pov(0).onTrue(new ClimbCommand(climbSub, 90));
-    armController.pov(270).onTrue(new ClimbCommand(climbSub, 25));
+    armController.pov(90).onTrue(new SequentialCommandGroup(
+        new InstantCommand(() -> score.arm.setState(Constants.RobotState.CLIMBING)),
+        new ScoringCommand(score, Constants.ScoringPos.STORE), 
+        new WaitCommand(0.5),
+        new ClimbCommand(climbSub, 90)
+    ));
+    armController.pov(0).onTrue(new ParallelCommandGroup(
+        new ClimbCommand(climbSub, 90),
+        new ScoringCommand(score, Constants.ScoringPos.CLIMB)
+    ));
+    armController.pov(270).onTrue(new SequentialCommandGroup(
+        new ClimbCommand(climbSub, 25),
+        new InstantCommand(() -> score.arm.setState(Constants.RobotState.DEFAULT))
+    ));
 
     armController.leftBumper().onTrue(new ResetClimbCommand(climbSub));
 
@@ -362,11 +375,18 @@ public class RobotContainer {
 
     driverController.b().onTrue(new ScoringCommand(score, Constants.ScoringPos.TRAP));
 
-    //driverController.y().onTrue(new ParallelCommandGroup(new TimedIntakeSetPowerCommand(score, 12, 0.75),
-    //    new WaitCommand(0.1).andThen(new ScoringCommand(score, Constants.ScoringPos.CLIMB))));
+    driverController.y().onTrue(new SequentialCommandGroup(
+        new InstantCommand(() -> score.setIntakeVoltage(-12)),
+        new WaitCommand(0.1), 
+        new ScoringCommand(score, Constants.ScoringPos.CLIMB),
+        new WaitCommand(0.5),
+        new InstantCommand(() -> score.setIntakeVoltage(0))
+    ));
 
     driverController.rightTrigger().onFalse(new InstantCommand(() -> score.increaseExtBy(1)));
     driverController.pov(270).onFalse(new InstantCommand(() -> score.increaseExtBy(-1)));
+    driverController.pov(180).onFalse(new InstantCommand(() -> score.increaseWristBy(10)));
+    driverController.pov(0).onFalse(new InstantCommand(() -> score.increaseWristBy(-10)));
 
     // driverController.x().onTrue(new AutoClimbCommand(climbSub, armWristSub));
 

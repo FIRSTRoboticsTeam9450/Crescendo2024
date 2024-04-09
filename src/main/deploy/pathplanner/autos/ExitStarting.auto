@@ -12,18 +12,6 @@
     "data": {
       "commands": [
         {
-          "type": "named",
-          "data": {
-            "name": "ResetExt"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ArmStore"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "StartToExit"

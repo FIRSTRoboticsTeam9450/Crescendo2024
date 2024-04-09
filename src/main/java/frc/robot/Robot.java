@@ -142,6 +142,7 @@ public class Robot extends LoggedRobot
   @Override
   public void autonomousInit()
   {
+    m_robotContainer.climbSub.enablePid(false);
 
     // m_robotContainer.climbSub.enablePid(false);
     m_robotContainer.setDriveBrake(true);
