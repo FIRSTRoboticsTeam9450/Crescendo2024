@@ -87,11 +87,11 @@ public final class Constants
 
   public static class Extension{
     // in inches
-    public static final double groundExtPosition = 5.5;
+    public static final double groundExtPosition = 5;
     public static final double storeExtPosition = 0;
     public static final double sourceExtPosition = 1.5;
     public static final double ampExtPositionFromSource = 8.5;
-    public static final double ampExtPositionFromGround = 8.5;
+    public static final double ampExtPositionFromGround = 10;
     public static final double trapExtPosition = 13;
     public static final double climbExtPosition = 0;
     
@@ -111,10 +111,10 @@ public final class Constants
     public static final double storeArmPosition = 55;
     public static final double sourceArmPosition = 135;
     public static final double ampArmPositionFromSource = 200;
-    public static final double ampArmPositionFromGround = 220;
+    public static final double ampArmPositionFromGround = 200;
     public static final double trapArmPosition = 165;
     public static final double climbArmPosition = 170;
-    public static final double tempArmPosition = 75;
+    public static final double tempArmPosition = 80;
 
     /**converts from degrees to rotations */
     public static final double RotateConversionFactor = (1.0/360);
@@ -128,10 +128,10 @@ public final class Constants
    public static class Wrist{
     // In degrees
     public static final double groundWristPosition = 130;
-    public static final double storeWristPosition = 250;
+    public static final double storeWristPosition = 270;
     public static final double sourceWristPosition = 180;
     public static final double ampWristPositionFromSource = 250;
-    public static final double ampWristPositionFromGround = 180;
+    public static final double ampWristPositionFromGround = 240;
     public static final double trapWristPosition = 100;
     public static final double climbWristPosition = 180;
     

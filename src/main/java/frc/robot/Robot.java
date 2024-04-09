@@ -145,21 +145,18 @@ public class Robot extends LoggedRobot
 
     // m_robotContainer.climbSub.enablePid(false);
     m_robotContainer.setDriveBrake(true);
+    m_robotContainer.score.goToPosition(Constants.ScoringPos.CLIMB);
     // m_robotContainer.setArmWristExtBrake(true);
 
     NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(0);
     
    
 
-    // try {
-    //    (new InstantCommand(() -> m_robotContainer.armWristSub.goToPosition(Height.PRECLIMB))).schedule();
-    //   (new InstantCommand(() -> m_robotContainer.armWristSub.runAndResetExtEncoder())).schedule();
-    //   m_robotContainer.armWristSub.changeHeight(Height.PRECLIMB);
-
-    //   m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-    // } catch (NullPointerException e) {
-    //   e.printStackTrace();
-    // }
+    try {
+      m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    } catch (NullPointerException e) {
+      e.printStackTrace();
+    }
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null)
@@ -216,7 +213,7 @@ public class Robot extends LoggedRobot
   {
     // just in case :)
     m_robotContainer.setDriveBrake(true);
-    m_robotContainer.drivebase.updateOdoLimelight();
+    //m_robotContainer.drivebase.updateOdoLimelight();
   }
 
   @Override

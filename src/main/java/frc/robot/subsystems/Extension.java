@@ -30,8 +30,10 @@ public class Extension extends SubsystemBase {
     // removed robot state thing
 
     /* PIDConstants */
-    private PIDConstants pidConstantsDefault = new PIDConstants(1, 3);
+    private PIDConstants pidConstantsDefault = new PIDConstants(1, 6);
     private PIDConstants currentPIDConstants = pidConstantsDefault;
+
+    private double currentPos;
 
 
     public Extension() {
@@ -70,8 +72,8 @@ public class Extension extends SubsystemBase {
      */
     public double getRelPos() {
 
-        Logger.recordOutput("Extension/ExtPos", -encoderRel.getPosition());
-        double inches = convertToInches(-encoderRel.getPosition());
+        Logger.recordOutput("Extension/ExtPos", -currentPos);
+        double inches = convertToInches(-currentPos);
         Logger.recordOutput("Extension/ExtInches", inches);
         Logger.recordOutput("Extension/ExtPos(converted)", convertToTics(inches));
 
@@ -92,7 +94,7 @@ public class Extension extends SubsystemBase {
     }
 
     public boolean finishedPID() {
-        return Math.abs(target - (-encoderRel.getPosition())) < 1 ? true : false;
+        return Math.abs(target - (-currentPos)) < 1 ? true : false;
     }
 
     public void setTarget(double targetInches) {
@@ -129,6 +131,8 @@ public class Extension extends SubsystemBase {
 
     @Override
     public void periodic() {
+        currentPos = encoderRel.getPosition();
+
         if (!runAndReset) {
             if (run) {
                 updatePID();

@@ -61,7 +61,7 @@ public class RobotContainer {
   // //CommandXboxController driverController = new CommandXboxController(0);
   // // CommandJoystick driverController = new
   // CommandJoystick(3]\[]);//(OperatorConstants.DRIVER_CONTROLLER_PORT);
-  // XboxController driverXbox = new XboxController(0);
+  XboxController driverXbox = new XboxController(0);
   private final SendableChooser<String> autoChooser;
 
   // public boolean driveEnabled = true;
@@ -94,11 +94,6 @@ public class RobotContainer {
     Command armGround = new SequentialCommandGroup(
         new ScoringCommand(score, Constants.ScoringPos.GROUND),
         new IntakingCommand(score, 12));
-    // Command armStart = new InstantCommand(() ->
-    // armWristSub.setArmWristExtGoal(armWristSub.armHardLowerLimit +
-    // Constants.Arm.offsetToAmpFromGround - 0.05,
-    // armWristSub.wristHardLowerLimit + Constants.Wrist.offsetToSource,
-    // armWristSub.extHardLowerLimit - 5));
 
     Command outtake = new TimedIntakeSetPowerCommand(score, 10, 0.75);
     Command resetExt = new InstantCommand(() -> score.ext.runAndResetEncoder());
@@ -375,8 +370,8 @@ public class RobotContainer {
 
     // driverController.x().onTrue(new AutoClimbCommand(climbSub, armWristSub));
 
-    // driverController.leftTrigger().whileTrue(new AlignSource2(drivebase,
-    // driverXbox, servo, false));
+    driverController.leftTrigger().whileTrue(new AlignSource2(drivebase,
+        driverXbox, servo, false));
 
   }
 

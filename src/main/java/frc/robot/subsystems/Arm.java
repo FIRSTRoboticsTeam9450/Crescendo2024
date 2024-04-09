@@ -16,6 +16,7 @@ import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.CANSparkMax;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -38,9 +39,13 @@ public class Arm extends SubsystemBase {
     private Constants.RobotState state = Constants.RobotState.DEFAULT;
 
     /* PID Constants */
-    private PIDConstants pidConstantsClimb = new PIDConstants(30, 4);
-    private PIDConstants pidConstantsDefault = new PIDConstants(40, 3);
+    private PIDConstants pidConstantsClimb = new PIDConstants(30, 6);
+    private PIDConstants pidConstantsDefault = new PIDConstants(40, 6);
     private PIDConstants currentPIDConstants = pidConstantsDefault;
+
+    Timer timer;
+
+    double rampTime = 0.5;
 
     public Arm() {
 
@@ -68,11 +73,15 @@ public class Arm extends SubsystemBase {
         
         SmartDashboard.putNumber("Change Arm Target", target);
         SmartDashboard.putNumber("Max Arm Voltage", currentPIDConstants.maxVoltage);
+
+        timer = new Timer();
+
+        timer.restart();
     }
 
     /** @return the absolute position of the arm in degrees */
     public double getAbsPos(){
-        Logger.recordOutput("Arm/AbsCurrentPos", encoderAbs.getAbsolutePosition().getValue());
+        Logger.recordOutput("Arm/AbsCurrentPos", currentAbsPos);
         double angle = convertToDeg(currentAbsPos);
         Logger.recordOutput("Arm/AbsCurrentAngle", angle);
         // Logger.recordOutput("Arm/ArmCurrentPos(Converted)", convertToRot(angle));
@@ -102,6 +111,8 @@ public class Arm extends SubsystemBase {
         double newTarget = Math.min(targetDegrees, Constants.Arm.armHardwareMax);
         newTarget = Math.max(newTarget, Constants.Arm.armHardwareMin);
         target = convertToRot(newTarget);
+
+        timer.restart();
     }
 
     /** @return the target of the arm in degrees */
@@ -119,7 +130,7 @@ public class Arm extends SubsystemBase {
     }
   
     public boolean finishedPID() {
-        return Math.abs(target - currentAbsPos) < 0.01 ? true : false;
+        return Math.abs(target - currentAbsPos) < 0.03 ? true : false;
     }
 
 
@@ -134,18 +145,22 @@ public class Arm extends SubsystemBase {
         Logger.recordOutput("Arm/maxVoltage", maxVoltage);
         Logger.recordOutput("Arm/armTarget", target);
         
+
+        double outputVoltage = pidValue;
         
-        if (Math.abs(pidValue) < maxVoltage) { //10 volts good for tele
-            setVoltage(pidValue);                
-        } else {
-            setVoltage(maxVoltage * Math.signum(pidValue));
+        if (Math.abs(pidValue) > maxVoltage) { //10 volts good for tele
+            outputVoltage = maxVoltage * Math.signum(pidValue);
         }
+
+        double currentTime = timer.get();
+        double rampMultiplier = currentTime < rampTime ? currentTime / rampTime : 1;
+        outputVoltage *= rampMultiplier;
+
+        setVoltage(outputVoltage);
     }
 
     @Override
     public void periodic() {
-        
-
         currentAbsPos = encoderAbs.getAbsolutePosition().getValue();
 
         //Logger.recordOutput("Arm/AbsCurrentPos", currentAbsPos);

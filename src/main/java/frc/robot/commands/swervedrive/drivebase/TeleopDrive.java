@@ -83,11 +83,11 @@ public class TeleopDrive extends Command
 
     // double xVelocity   = -vX.getAsDouble() * speedModifier;
     // double yVelocity   = -vY.getAsDouble() * speedModifier;
-    double angVelocity = omega.getAsDouble() * speedModifier * 0.7;
+    double angVelocity = -omega.getAsDouble() * speedModifier * 0.7;
 
 
-    double xVelocity   = Math.signum(vX.getAsDouble()) * Math.abs(Math.pow(vX.getAsDouble(), 2)) * speedModifier;
-    double yVelocity   = Math.signum(vY.getAsDouble()) * Math.abs(Math.pow(vY.getAsDouble(), 2)) * speedModifier;
+    double xVelocity   = -Math.signum(vX.getAsDouble()) * Math.abs(Math.pow(vX.getAsDouble(), 2)) * speedModifier;
+    double yVelocity   = -Math.signum(vY.getAsDouble()) * Math.abs(Math.pow(vY.getAsDouble(), 2)) * speedModifier;
     // double angVelocity = -Math.pow(omega.getAsDouble(), 3) * speedModifier;
 
     SmartDashboard.putNumber("vX", xVelocity);

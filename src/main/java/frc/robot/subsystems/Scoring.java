@@ -29,9 +29,8 @@ public class Scoring extends SubsystemBase {
     /* Initializing Motors */
     private CANSparkFlex intake = new CANSparkFlex(Constants.intakeId, MotorType.kBrushless);
 
-
-    /* Constants  */
-    private static final int ANGLEINDEX = 0; 
+    /* Constants */
+    private static final int ANGLEINDEX = 0;
     private static final int EXTENSIONMININDEX = 1;
     private static final int WRISTMAXINDEX = 2;
     private static final int WRISTMININDEX = 3;
@@ -39,11 +38,8 @@ public class Scoring extends SubsystemBase {
     private static final int WRISTMAXINDEX2 = 5;
     private static final int WRISTMININDEX2 = 6;
 
-
-
-
     /* Ramping variables */
-  // If you want to ramp intake
+    // If you want to ramp intake
     private boolean rampDownBool;
     private double currentVoltage;
     private double voltageTo;
@@ -55,16 +51,14 @@ public class Scoring extends SubsystemBase {
     private LaserCan.Measurement measurement;
     MedianFilter medianDistance = new MedianFilter(3);
 
-
     /* Enums */
     private Constants.ScoringPos state = Constants.ScoringPos.CLIMB;
     private Constants.ScoringPos stateRobotWhenIntaking = Constants.ScoringPos.SOURCE;
     private Constants.IntakeState stateOfIntake = Constants.IntakeState.NO_NOTE;
     private Constants.ScoringPos lastState = Constants.ScoringPos.CLIMB;
-    
+
     /* Limits */
     private double desiredArmAngle, desiredWristAngle, desiredExtensionLength;
-
 
     public Scoring() {
         /* Initialize Low Level Subsystems */
@@ -79,13 +73,15 @@ public class Scoring extends SubsystemBase {
         intake.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 65535); // Analog Sensor Voltage + Velocity + position
         intake.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 65535); // Duty cycler velocity + pos
         intake.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 50); // Duty Cycle Absolute Encoder Position and Abs angle
-        intake.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 65535); // Duty Cycle Absolute Encoder Velocity + Frequency
-                                                                      
+        intake.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 65535); // Duty Cycle Absolute Encoder Velocity +
+                                                                      // Frequency
+
         intake.burnFlash();
 
         intake.setIdleMode(IdleMode.kBrake);
 
-        // Optionally initialise the settings of the LaserCAN, if you haven't already done so in GrappleHook
+        // Optionally initialise the settings of the LaserCAN, if you haven't already
+        // done so in GrappleHook
         laser = new LaserCan(Constants.laserId);
         try {
             laser.setRangingMode(LaserCan.RangingMode.LONG);
@@ -95,12 +91,11 @@ public class Scoring extends SubsystemBase {
             System.out.println("Laser configuration failed! " + e);
         }
         measurement = laser.getMeasurement();
-        medianDistance = new MedianFilter(3);
         setState(Constants.ScoringPos.NONE);
 
         rampDownTimer = new Timer();
-    } 
-    
+    }
+
     /** Has a median filter applied in this method */
     public double getLaserDistance() {
         try {
@@ -114,10 +109,16 @@ public class Scoring extends SubsystemBase {
         return 10000; // return a large number if the laser fails
     }
 
-    public void setIntakeVoltage(double voltage) { intake.setVoltage(-voltage); SmartDashboard.putNumber("Intake Voltage", -voltage);}
-    public double getIntakeTemp(){ return intake.getMotorTemperature(); }
-    
-  // If you want to ramp intake
+    public void setIntakeVoltage(double voltage) {
+        intake.setVoltage(-voltage);
+        SmartDashboard.putNumber("Intake Voltage", -voltage);
+    }
+
+    public double getIntakeTemp() {
+        return intake.getMotorTemperature();
+    }
+
+    // If you want to ramp intake
     // linear ramp here https://www.desmos.com/calculator/ygpschqwqe
     public void rampDownIntakeVoltage(double currentVoltage, double voltageTo, double rampTime) {
         this.currentVoltage = currentVoltage;
@@ -134,7 +135,7 @@ public class Scoring extends SubsystemBase {
     public Constants.ScoringPos getState() {
         return this.state; // Returns the state of the robot
     }
-    
+
     private void setStateRobotWhenIntaking(Constants.ScoringPos state) {
         this.stateRobotWhenIntaking = state;
     }
@@ -155,56 +156,59 @@ public class Scoring extends SubsystemBase {
         return lastState;
     }
 
-    public Extension getExtSub(){
+    public Extension getExtSub() {
         return ext;
     }
-    public Arm getArmSub(){
+
+    public Arm getArmSub() {
         return arm;
     }
-    public Wrist getWristSub(){
+
+    public Wrist getWristSub() {
         return wrist;
     }
 
     public void increaseExtBy(double inches) {
         desiredExtensionLength += inches;
-    }  
+    }
+
     public void increaseArmBy(double angle) {
         desiredArmAngle += angle;
-    } 
+    }
+
     public void increaseWristBy(double angle) {
         desiredWristAngle += angle;
-    }  
-    
+    }
+
     /* Movement Logic */
 
     private void goToGround() {
         desiredArmAngle = Constants.Arm.groundArmPosition;
         desiredWristAngle = Constants.Wrist.groundWristPosition;
         desiredExtensionLength = Constants.Extension.groundExtPosition;
-    
-        
-        // Sets the desired targets for each child subsystem
-        ext.setTarget(desiredExtensionLength);
-        arm.setTarget(desiredArmAngle);
-        wrist.setTarget(desiredWristAngle);
-    }   
 
-    private void goToStore() {
-        desiredArmAngle = Constants.Arm.storeArmPosition;
-        desiredWristAngle = Constants.Wrist.storeWristPosition;
-        desiredExtensionLength = Constants.Extension.storeExtPosition;
-        
         // Sets the desired targets for each child subsystem
         ext.setTarget(desiredExtensionLength);
         arm.setTarget(desiredArmAngle);
         wrist.setTarget(desiredWristAngle);
     }
-    
+
+    private void goToStore() {
+        desiredArmAngle = Constants.Arm.storeArmPosition;
+        desiredWristAngle = Constants.Wrist.storeWristPosition;
+        desiredExtensionLength = Constants.Extension.storeExtPosition;
+
+        // Sets the desired targets for each child subsystem
+        ext.setTarget(desiredExtensionLength);
+        arm.setTarget(desiredArmAngle);
+        wrist.setTarget(desiredWristAngle);
+    }
+
     private void goToSource() {
         desiredArmAngle = Constants.Arm.sourceArmPosition;
         desiredWristAngle = Constants.Wrist.sourceWristPosition;
         desiredExtensionLength = Constants.Extension.sourceExtPosition;
-        
+
         // Sets the desired targets for each child subsystem
         ext.setTarget(desiredExtensionLength);
         arm.setTarget(desiredArmAngle);
@@ -221,7 +225,6 @@ public class Scoring extends SubsystemBase {
             desiredWristAngle = Constants.Wrist.ampWristPositionFromGround;
             desiredExtensionLength = Constants.Extension.ampExtPositionFromGround;
         }
-        
 
         // Sets the desired targets for each child subsystem
         ext.setTarget(desiredExtensionLength);
@@ -253,7 +256,7 @@ public class Scoring extends SubsystemBase {
 
     private void goToTemp() {
         desiredArmAngle = Constants.Arm.tempArmPosition;
-        desiredWristAngle = 180;
+        desiredWristAngle = 200;
         desiredExtensionLength = 0;
 
         // Sets the desired targets for each child subsystem
@@ -270,25 +273,25 @@ public class Scoring extends SubsystemBase {
 
         lastState = this.state;
         this.state = nextState;
-        
+
         Logger.recordOutput("Score/State", state);
         switch (nextState) {
-            case GROUND: 
+            case GROUND:
                 goToGround();
                 break;
-            case STORE: 
+            case STORE:
                 goToStore();
                 break;
-            case SOURCE: 
+            case SOURCE:
                 goToSource();
                 break;
-            case AMP: 
+            case AMP:
                 goToAmp();
                 break;
-            case CLIMB: 
+            case CLIMB:
                 goToClimb();
                 break;
-            case TRAP: 
+            case TRAP:
                 goToTrap();
                 break;
             case TEMP:
@@ -302,38 +305,46 @@ public class Scoring extends SubsystemBase {
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
-        // limit();
+        limit();
 
         // Updates the state for whether the intake took a note or not
-        if (getLaserDistance() <= 10 /*mm*/ && getIntakeState() != Constants.IntakeState.HAS_NOTE) {
+        Logger.recordOutput("Last Intake", stateRobotWhenIntaking);
+        Logger.recordOutput("Intake State", stateOfIntake);
+        Logger.recordOutput("Intake/Laser Dist", getLaserDistance());
+
+        double armPosRads = Math.toRadians(arm.getAbsPos());
+        double wristPosRads = Math.toRadians(wrist.getAbsPos());
+
+        double height = 15 - (17 + ext.getRelPos()) * Math.cos(armPosRads) + 9 * Math.cos(armPosRads - wristPosRads);
+
+        Logger.recordOutput("Robot Height", (17 + ext.getRelPos()) * Math.cos(armPosRads));
+        if (getLaserDistance() <= 30 /* mm */ && getIntakeState() != Constants.IntakeState.HAS_NOTE) {
             setIntakeState(Constants.IntakeState.HAS_NOTE);
             setStateRobotWhenIntaking(getState());
-        } else {
+        } else if (getLaserDistance() > 30) {
             setIntakeState(Constants.IntakeState.NO_NOTE);
-            setStateRobotWhenIntaking(Constants.ScoringPos.SOURCE); // default state
+            // setStateRobotWhenIntaking(Constants.ScoringPos.SOURCE); // default state
         }
 
-       
-
-
-      // If you want to ramp intake
+        // If you want to ramp intake
         if (rampDownBool) {
             if (rampDownTimer.get() < rampTime) {
-              setIntakeVoltage(-(currentVoltage - voltageTo) * rampDownTimer.get() / rampTime + currentVoltage);
+                setIntakeVoltage(-(currentVoltage - voltageTo) * rampDownTimer.get() / rampTime + currentVoltage);
             } else {
-              intake.stopMotor();
-              rampDownBool = false;
-              rampDownTimer.stop();
+                intake.stopMotor();
+                rampDownBool = false;
+                rampDownTimer.stop();
             }
-          }
-            
+        }
+
     }
 
     /* Limiter Logic */
-    // add limit code 
+    // add limit code
 
-    //Hmmm maybe not yet(want to find shortest / fastest path kinda like a pathplanner thing?)
-    public void smartLimiter(){
+    // Hmmm maybe not yet(want to find shortest / fastest path kinda like a
+    // pathplanner thing?)
+    public void smartLimiter() {
 
     }
 
@@ -345,18 +356,24 @@ public class Scoring extends SubsystemBase {
         return arm.getAbsPos();
     }
 
-    public void limit(){
+    public void zeroExtension() {
+        ext.runAndResetEncoder();
+    }
+
+    public void limit() {
         double armAngle = arm.getAbsPos(); // get the current arm angle
         // armIndex is capped between min and max indexes of array
-        int armIndex = (int) Math.min(Math.max(armAngle, limits[0][0]), limits[limits.length - 1][0]) - (int) limits[0][0];
+        int armIndex = (int) Math.min(Math.max(armAngle, limits[0][0]), limits[limits.length - 1][0])
+                - (int) limits[0][0];
         double extLength = ext.getRelPos(); // get the current extension length
         // double wristAngle = wrist.getAbsPos(); // get the current wrist angle
-        
+
         // gets index for arm currently at
         double currentExtMax = limits[armIndex][EXTENSIONMAXINDEX];
         double currentExtMin = limits[armIndex][EXTENSIONMININDEX];
-            
-        // set target to the max it can be at the current angle if it is over max, and otherwise, be regular
+
+        // set target to the max it can be at the current angle if it is over max, and
+        // otherwise, be regular
         ext.setTarget(Math.max(Math.min(desiredExtensionLength, currentExtMax), currentExtMin));
 
         double currentWristMax_ExtMax = limits[armIndex][WRISTMAXINDEX2];
@@ -364,211 +381,207 @@ public class Scoring extends SubsystemBase {
 
         double currentWristMax_ExtMin = limits[armIndex][WRISTMAXINDEX];
         double currentWristMin_ExtMin = limits[armIndex][WRISTMININDEX];
-        
+
         // wrist is at the limit, and target isn't in opposite direction
         // so stop wrist
-        wrist.setTarget(currentExtMax - extLength < 0.1 
-                        ? Math.max(Math.min(desiredWristAngle, currentWristMax_ExtMax), currentWristMin_ExtMax)
-                        : Math.max(Math.min(desiredWristAngle, currentWristMax_ExtMin), currentWristMin_ExtMin));
+        wrist.setTarget(currentExtMax - extLength < 0.1
+                ? Math.max(Math.min(desiredWristAngle, currentWristMax_ExtMax), currentWristMin_ExtMax)
+                : Math.max(Math.min(desiredWristAngle, currentWristMax_ExtMin), currentWristMin_ExtMin));
 
-        
-        
     }
-    
-    
-    
 
-    private double[][] limits = new double[][]{
-        //Arm Angle		Extension Min		Wrist Max		Wrist min		Extension max		Wrist Max		Wrist Min
-        {51,0,270,250,0,270,250},
-        {52,0,270,245.7,0.093,270,244},
-        {53,0,270,241.4,0.186,270,238},
-        {54,0,270,237.1,0.279,270,232},
-        {55,0,270,232.8,0.372,270,226},
-        {56,0,270,228.5,0.465,270,220},
-        {57,0,270,224.2,0.558,270,214},
-        {58,0,270,219.9,0.651,270,208},
-        {59,0,270,215.6,0.744,270,202},
-        {60,0,270,211.3,0.837,270,196},
-        {61,0,270,207,0.93,270,190},
-        {62,0,270,202.7,1.023,270,184},
-        {63,0,270,198.4,1.116,270,178},
-        {64,0,270,194.1,1.209,270,172},
-        {65,0,270,189.8,1.302,270,166},
-        {66,0,270,185.5,1.395,270,160},
-        {67,0,270,181.2,1.488,270,154},
-        {68,0,270,176.9,1.581,270,148},
-        {69,0,270,172.6,1.674,270,142},
-        {70,0,270,168.3,1.767,270,136},
-        {71,0,270,164,1.86,270,130},
-        {72,0,270,159.7,1.953,270,130},
-        {73,0,270,155.4,2.046,270,127.7},
-        {74,0,270,151.1,2.139,270,125.4},
-        {75,0,270,146.8,2.232,270,123.1},
-        {76,0,270,142.5,2.325,270,120.8},
-        {77,0,270,138.2,2.418,270,118.5},
-        {78,0,270,133.9,2.511,270,116.2},
-        {79,0,270,129.6,2.604,270,113.9},
-        {80,0,270,125.3,2.697,270,111.6},
-        {81,0,270,121,2.79,270,109.3},
-        {82,0,270,116.7,2.883,270,107},
-        {83,0,270,112.4,2.976,270,104.7},
-        {84,0,270,108.1,3.069,270,102.4},
-        {85,0,270,103.8,3.162,270,100.1},
-        {86,0,270,99.5,3.255,270,97.8},
-        {87,0,270,95.2,3.348,270,95.5},
-        {88,0,270,90.9,3.441,270,93.2},
-        {89,0,270,90,3.5,270,90},
-        {90,0,270,90,3.5,270,90},
-        {91,0,270,90,3.5,270,90},
-        {92,0,270,90,3.5,270,90},
-        {93,0,270,90,3.5,270,90},
-        {94,0,270,90,3.5,270,90},
-        {95,0,270,90,3.54,270,90},
-        {96,0,270,90,3.58,270,90},
-        {97,0,270,90,3.62,270,90},
-        {98,0,270,90,3.66,270,90},
-        {99,0,270,90,3.7,270,90},
-        {100,0,270,90,3.74,270,90},
-        {101,0,270,90,3.78,270,90},
-        {102,0,270,90,3.82,270,90},
-        {103,0,270,90,3.86,270,90},
-        {104,0,270,90,3.9,270,90},
-        {105,0,270,90,3.94,270,90},
-        {106,0,270,90,3.98,270,90},
-        {107,0,270,90,4.02,270,90},
-        {108,0,270,90,4.06,270,90},
-        {109,0,270,90,4.1,270,90},
-        {110,0,270,90,4.14,270,90},
-        {111,0,270,90,4.18,270,90},
-        {112,0,270,90,4.22,270,90},
-        {113,0,270,90,4.26,270,90},
-        {114,0,270,90,4.3,270,90},
-        {115,0,270,90,4.34,270,90},
-        {116,0,270,90,4.38,270,90},
-        {117,0,270,90,4.42,270,90},
-        {118,0,270,90,4.46,270,90},
-        {119,0,270,90,4.5,270,90},
-        {120,0,270,90,4.54,270,90},
-        {121,0,270,90,4.58,270,90},
-        {122,0,270,90,4.62,270,90},
-        {123,0,270,90,4.66,270,90},
-        {124,0,270,90,4.7,270,90},
-        {125,0,270,90,4.74,270,90},
-        {126,0,270,90,4.78,270,90},
-        {127,0,270,90,4.82,270,90},
-        {128,0,270,90,4.86,270,90},
-        {129,0,270,90,4.9,270,90},
-        {130,0,270,90,4.94,270,90},
-        {131,0,270,90,4.98,270,90},
-        {132,0,270,90,5.02,270,90},
-        {133,0,270,90,5.06,270,90},
-        {134,0,270,90,5.1,270,90},
-        {135,0,270,90,5.14,270,90},
-        {136,0,270,90,5.18,270,90},
-        {137,0,270,90,5.22,270,90},
-        {138,0,270,90,5.26,270,90},
-        {139,0,270,90,5.3,270,90},
-        {140,0,270,90,5.34,270,90},
-        {141,0,270,90,5.38,270,90},
-        {142,0,270,90,5.42,270,90},
-        {143,0,270,90,5.46,270,90},
-        {144,0,270,90,5.5,270,90},
-        {145,0,270,90,5.54,270,90},
-        {146,0,270,90,5.58,270,90},
-        {147,0,270,90,5.62,270,90},
-        {148,0,270,90,5.66,270,90},
-        {149,0,270,90,5.7,270,90},
-        {150,0,270,90,5.74,270,90},
-        {151,0,270,90,5.78,270,90},
-        {152,0,270,90,5.82,270,90},
-        {153,0,270,90,5.86,270,90},
-        {154,0,270,90,5.9,270,90},
-        {155,0,270,90,5.94,270,90},
-        {156,0,270,90,5.98,270,90},
-        {157,0,270,90,6.02,270,90},
-        {158,0,270,90,6.06,270,90},
-        {159,0,270,90,6.1,270,90},
-        {160,0,270,90,6.14,270,90},
-        {161,0,270,90,6.18,270,90},
-        {162,0,270,90,6.22,270,90},
-        {163,0,270,90,6.26,270,90},
-        {164,0,270,90,6.3,270,90},
-        {165,0,270,90,6.34,270,90},
-        {166,0,270,90,6.38,270,90},
-        {167,0,270,90,6.42,270,90},
-        {168,0,270,90,6.46,270,90},
-        {169,0,270,90,6.5,270,90},
-        {170,0,270,90,6.54,270,90},
-        {171,0,270,90,6.58,270,90},
-        {172,0,270,90,6.62,270,90},
-        {173,0,270,90,6.66,270,90},
-        {174,0,270,90,6.7,270,90},
-        {175,0,270,90,6.74,270,90},
-        {176,0,270,90,6.78,270,90},
-        {177,0,270,90,6.82,270,90},
-        {178,0,270,90,6.86,270,90},
-        {179,0,270,90,6.9,270,90},
-        {180,0,270,90,7,270,90},
-        {181,0,270,90,6.96,270,90},
-        {182,0,270,90,6.92,270,90},
-        {183,0,270,90,6.88,270,90},
-        {184,0,270,90,6.84,270,90},
-        {185,0,270,90,6.8,270,90},
-        {186,0,270,90,6.76,270,90},
-        {187,0,270,90,6.72,270,90},
-        {188,0,270,90,6.68,270,90},
-        {189,0,270,90,6.64,270,90},
-        {190,0,270,90,6.6,270,90},
-        {191,0,270,90,6.56,270,90},
-        {192,0,270,90,6.52,270,90},
-        {193,0,270,90,6.48,270,90},
-        {194,0,270,90,6.44,270,90},
-        {195,0,270,90,6.4,270,90},
-        {196,0,270,90,6.36,270,90},
-        {197,0,270,90,6.32,270,90},
-        {198,0,270,90,6.28,270,90},
-        {199,0,270,90,6.24,270,90},
-        {200,0,270,90,6.2,270,90},
-        {201,0,270,90,6.16,270,90},
-        {202,0,270,90,6.12,270,90},
-        {203,0,270,90,6.08,270,90},
-        {204,0,270,90,6.04,270,90},
-        {205,0,270,90,6,270,90},
-        {206,0,270,90,5.96,270,90},
-        {207,0,270,90,5.92,270,90},
-        {208,0,270,90,5.88,270,90},
-        {209,0,270,90,5.84,270,90},
-        {210,0,270,90,5.8,270,90},
-        {211,0,270,90,5.76,270,90},
-        {212,0,270,90,5.72,270,90},
-        {213,0,270,90,5.68,270,90},
-        {214,0,270,90,5.64,270,90},
-        {215,0,270,90,5.6,270,90},
-        {216,0,270,90,5.56,270,90},
-        {217,0,270,90,5.52,270,90},
-        {218,0,270,90,5.48,270,90},
-        {219,0,270,90,5.44,270,90},
-        {220,0,270,90,5.4,270,90},
-        {221,0,270,90,5.36,270,90},
-        {222,0,270,90,5.32,270,90},
-        {223,0,270,90,5.28,270,90},
-        {224,0,270,90,5.24,270,90},
-        {225,0,270,90,5.2,270,90},
-        {226,0,270,90,5.16,270,90},
-        {227,0,270,90,5.12,270,90},
-        {228,0,270,90,5.08,270,90},
-        {229,0,270,90,5.04,270,90},
-        {230,0,270,90,5,270,90},
-        {231,0,270,90,4.96,270,90},
-        {232,0,270,90,4.92,270,90},
-        {233,0,270,90,4.88,270,90},
-        {234,0,270,90,4.84,270,90},
-        {235,0,270,90,4.8,270,90},
+    private double[][] limits = new double[][] {
+            // Arm Angle Extension Min Wrist Max Wrist min Extension max Wrist Max Wrist Min
+            { 51, 0, 270, 90, 0, 270, 90 },
+            { 52, 0, 270, 90, 0.093, 270, 90 },
+            { 53, 0, 270, 90, 0.186, 270, 90 },
+            { 54, 0, 270, 90, 0.279, 270, 90 },
+            { 55, 0, 270, 90, 0.372, 270, 90 },
+            { 56, 0, 270, 90, 0.465, 270, 90 },
+            { 57, 0, 270, 90, 0.558, 270, 90 },
+            { 58, 0, 270, 90, 0.651, 270, 90 },
+            { 59, 0, 270, 90, 0.744, 270, 90 },
+            { 60, 0, 270, 90, 0.837, 270, 90 },
+            { 61, 0, 270, 90, 0.93, 270, 90 },
+            { 62, 0, 270, 90, 1.023, 270, 90 },
+            { 63, 0, 270, 90, 1.116, 270, 90 },
+            { 64, 0, 270, 90, 1.209, 270, 90 },
+            { 65, 0, 270, 90, 5.6, 270, 90 },
+            { 66, 0, 270, 90, 5.6, 270, 90 },
+            { 67, 0, 270, 90, 5.6, 270, 90 },
+            { 68, 0, 270, 90, 5.6, 270, 90 },
+            { 69, 0, 270, 90, 5.6, 270, 90 },
+            { 70, 0, 270, 90, 5.6, 270, 90 },
+            { 71, 0, 270, 90, 5.6, 270, 90 },
+            { 72, 0, 270, 90, 5.6, 270, 90 },
+            { 73, 0, 270, 90, 5.6, 270, 90 },
+            { 74, 0, 270, 90, 5.6, 270, 90 },
+            { 75, 0, 270, 90, 5.6, 270, 90 },
+            { 76, 0, 270, 90, 2.325, 270, 90 },
+            { 77, 0, 270, 90, 2.418, 270, 90 },
+            { 78, 0, 270, 90, 2.511, 270, 90 },
+            { 79, 0, 270, 90, 2.604, 270, 90 },
+            { 80, 0, 270, 90, 2.697, 270, 90 },
+            { 81, 0, 270, 90, 2.79, 270, 90 },
+            { 82, 0, 270, 90, 2.883, 270, 90 },
+            { 83, 0, 270, 90, 2.976, 270, 90 },
+            { 84, 0, 270, 90, 3.069, 270, 90 },
+            { 85, 0, 270, 90, 3.162, 270, 90 },
+            { 86, 0, 270, 90, 3.255, 270, 90 },
+            { 87, 0, 270, 90, 3.348, 270, 90 },
+            { 88, 0, 270, 90, 3.441, 270, 90 },
+            { 89, 0, 270, 90, 3.5, 270, 90 },
+            { 90, 0, 270, 90, 3.5, 270, 90 },
+            { 91, 0, 270, 90, 3.5, 270, 90 },
+            { 92, 0, 270, 90, 3.5, 270, 90 },
+            { 93, 0, 270, 90, 3.5, 270, 90 },
+            { 94, 0, 270, 90, 3.5, 270, 90 },
+            { 95, 0, 270, 90, 3.54, 270, 90 },
+            { 96, 0, 270, 90, 3.58, 270, 90 },
+            { 97, 0, 270, 90, 3.62, 270, 90 },
+            { 98, 0, 270, 90, 3.66, 270, 90 },
+            { 99, 0, 270, 90, 3.7, 270, 90 },
+            { 100, 0, 270, 90, 3.74, 270, 90 },
+            { 101, 0, 270, 90, 3.78, 270, 90 },
+            { 102, 0, 270, 90, 3.82, 270, 90 },
+            { 103, 0, 270, 90, 3.86, 270, 90 },
+            { 104, 0, 270, 90, 3.9, 270, 90 },
+            { 105, 0, 270, 90, 3.94, 270, 90 },
+            { 106, 0, 270, 90, 3.98, 270, 90 },
+            { 107, 0, 270, 90, 4.02, 270, 90 },
+            { 108, 0, 270, 90, 4.06, 270, 90 },
+            { 109, 0, 270, 90, 4.1, 270, 90 },
+            { 110, 0, 270, 90, 4.14, 270, 90 },
+            { 111, 0, 270, 90, 4.18, 270, 90 },
+            { 112, 0, 270, 90, 4.22, 270, 90 },
+            { 113, 0, 270, 90, 4.26, 270, 90 },
+            { 114, 0, 270, 90, 4.3, 270, 90 },
+            { 115, 0, 270, 90, 4.34, 270, 90 },
+            { 116, 0, 270, 90, 4.38, 270, 90 },
+            { 117, 0, 270, 90, 4.42, 270, 90 },
+            { 118, 0, 270, 90, 4.46, 270, 90 },
+            { 119, 0, 270, 90, 4.5, 270, 90 },
+            { 120, 0, 270, 90, 4.54, 270, 90 },
+            { 121, 0, 270, 90, 4.58, 270, 90 },
+            { 122, 0, 270, 90, 4.62, 270, 90 },
+            { 123, 0, 270, 90, 4.66, 270, 90 },
+            { 124, 0, 270, 90, 4.7, 270, 90 },
+            { 125, 0, 270, 90, 4.74, 270, 90 },
+            { 126, 0, 270, 90, 4.78, 270, 90 },
+            { 127, 0, 270, 90, 4.82, 270, 90 },
+            { 128, 0, 270, 90, 4.86, 270, 90 },
+            { 129, 0, 270, 90, 4.9, 270, 90 },
+            { 130, 0, 270, 90, 4.94, 270, 90 },
+            { 131, 0, 270, 90, 4.98, 270, 90 },
+            { 132, 0, 270, 90, 5.02, 270, 90 },
+            { 133, 0, 270, 90, 5.06, 270, 90 },
+            { 134, 0, 270, 90, 5.1, 270, 90 },
+            { 135, 0, 270, 90, 5.14, 270, 90 },
+            { 136, 0, 270, 90, 5.18, 270, 90 },
+            { 137, 0, 270, 90, 5.22, 270, 90 },
+            { 138, 0, 270, 90, 5.26, 270, 90 },
+            { 139, 0, 270, 90, 5.3, 270, 90 },
+            { 140, 0, 270, 90, 5.34, 270, 90 },
+            { 141, 0, 270, 90, 5.38, 270, 90 },
+            { 142, 0, 270, 90, 5.42, 270, 90 },
+            { 143, 0, 270, 90, 5.46, 270, 90 },
+            { 144, 0, 270, 90, 5.5, 270, 90 },
+            { 145, 0, 270, 90, 5.54, 270, 90 },
+            { 146, 0, 270, 90, 5.58, 270, 90 },
+            { 147, 0, 270, 90, 5.62, 270, 90 },
+            { 148, 0, 270, 90, 5.66, 270, 90 },
+            { 149, 0, 270, 90, 5.7, 270, 90 },
+            { 150, 0, 270, 90, 5.74, 270, 90 },
+            { 151, 0, 270, 90, 5.78, 270, 90 },
+            { 152, 0, 270, 90, 5.82, 270, 90 },
+            { 153, 0, 270, 90, 5.86, 270, 90 },
+            { 154, 0, 270, 90, 5.9, 270, 90 },
+            { 155, 0, 270, 90, 5.94, 270, 90 },
+            { 156, 0, 270, 90, 5.98, 270, 90 },
+            { 157, 0, 270, 90, 6.02, 270, 90 },
+            { 158, 0, 270, 90, 6.06, 270, 90 },
+            { 159, 0, 270, 90, 6.1, 270, 90 },
+            { 160, 0, 270, 90, 6.14, 270, 90 },
+            { 161, 0, 270, 90, 6.18, 270, 90 },
+            { 162, 0, 270, 90, 6.22, 270, 90 },
+            { 163, 0, 270, 90, 6.26, 270, 90 },
+            { 164, 0, 270, 90, 6.3, 270, 90 },
+            { 165, 0, 270, 90, 6.34, 270, 90 },
+            { 166, 0, 270, 90, 6.38, 270, 90 },
+            { 167, 0, 270, 90, 6.42, 270, 90 },
+            { 168, 0, 270, 90, 6.46, 270, 90 },
+            { 169, 0, 270, 90, 6.5, 270, 90 },
+            { 170, 0, 270, 90, 6.54, 270, 90 },
+            { 171, 0, 270, 90, 6.58, 270, 90 },
+            { 172, 0, 270, 90, 6.62, 270, 90 },
+            { 173, 0, 270, 90, 6.66, 270, 90 },
+            { 174, 0, 270, 90, 6.7, 270, 90 },
+            { 175, 0, 270, 90, 6.74, 270, 90 },
+            { 176, 0, 270, 90, 6.78, 270, 90 },
+            { 177, 0, 270, 90, 6.82, 270, 90 },
+            { 178, 0, 270, 90, 6.86, 270, 90 },
+            { 179, 0, 270, 90, 6.9, 270, 90 },
+            { 180, 0, 270, 90, 7, 270, 90 },
+            { 181, 0, 270, 90, 6.96, 270, 90 },
+            { 182, 0, 270, 90, 6.92, 270, 90 },
+            { 183, 0, 270, 90, 6.88, 270, 90 },
+            { 184, 0, 270, 90, 6.84, 270, 90 },
+            { 185, 0, 270, 90, 7, 270, 90 },
+            { 186, 0, 270, 90, 7, 270, 90 },
+            { 187, 0, 270, 90, 7.5, 270, 90 },
+            { 188, 0, 270, 90, 8, 270, 90 },
+            { 189, 0, 270, 90, 8.5, 270, 90 },
+            { 190, 0, 270, 90, 9, 270, 90 },
+            { 191, 0, 270, 90, 9.5, 270, 90 },
+            { 192, 0, 270, 90, 10, 270, 90 },
+            { 193, 0, 270, 90, 10.5, 270, 90 },
+            { 194, 0, 270, 90, 11, 270, 90 },
+            { 195, 0, 270, 90, 11.5, 270, 90 },
+            { 196, 0, 270, 90, 12, 270, 90 },
+            { 197, 0, 270, 90, 12, 270, 90 },
+            { 198, 0, 270, 90, 12, 270, 90 },
+            { 199, 0, 270, 90, 12, 270, 90 },
+            { 200, 0, 270, 90, 12, 270, 90 },
+            { 201, 0, 270, 90, 12, 270, 90 },
+            { 202, 0, 270, 90, 12, 270, 90 },
+            { 203, 0, 270, 90, 12, 270, 90 },
+            { 204, 0, 270, 90, 12, 270, 90 },
+            { 205, 0, 270, 90, 12, 270, 90 },
+            { 206, 0, 270, 90, 5.96, 270, 90 },
+            { 207, 0, 270, 90, 5.92, 270, 90 },
+            { 208, 0, 270, 90, 5.88, 270, 90 },
+            { 209, 0, 270, 90, 5.84, 270, 90 },
+            { 210, 0, 270, 90, 5.8, 270, 90 },
+            { 211, 0, 270, 90, 5.76, 270, 90 },
+            { 212, 0, 270, 90, 5.72, 270, 90 },
+            { 213, 0, 270, 90, 5.68, 270, 90 },
+            { 214, 0, 270, 90, 5.64, 270, 90 },
+            { 215, 0, 270, 90, 5.6, 270, 90 },
+            { 216, 0, 270, 90, 5.56, 270, 90 },
+            { 217, 0, 270, 90, 5.52, 270, 90 },
+            { 218, 0, 270, 90, 5.48, 270, 90 },
+            { 219, 0, 270, 90, 5.44, 270, 90 },
+            { 220, 0, 270, 90, 5.4, 270, 90 },
+            { 221, 0, 270, 90, 5.36, 270, 90 },
+            { 222, 0, 270, 90, 5.32, 270, 90 },
+            { 223, 0, 270, 90, 5.28, 270, 90 },
+            { 224, 0, 270, 90, 5.24, 270, 90 },
+            { 225, 0, 270, 90, 5.2, 270, 90 },
+            { 226, 0, 270, 90, 5.16, 270, 90 },
+            { 227, 0, 270, 90, 5.12, 270, 90 },
+            { 228, 0, 270, 90, 5.08, 270, 90 },
+            { 229, 0, 270, 90, 5.04, 270, 90 },
+            { 230, 0, 270, 90, 5, 270, 90 },
+            { 231, 0, 270, 90, 4.96, 270, 90 },
+            { 232, 0, 270, 90, 4.92, 270, 90 },
+            { 233, 0, 270, 90, 4.88, 270, 90 },
+            { 234, 0, 270, 90, 4.84, 270, 90 },
+            { 235, 0, 270, 90, 4.8, 270, 90 },
     };
-  public void togglePIDs(boolean run) {
-    arm.toggleArm(run);
-    ext.toggleExt(run);
-    wrist.toggleWrist(run);
-  }
+
+    public void togglePIDs(boolean run) {
+        arm.toggleArm(run);
+        ext.toggleExt(run);
+        wrist.toggleWrist(run);
+    }
 }

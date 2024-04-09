@@ -31,8 +31,10 @@ public class Wrist extends SubsystemBase {
     // private SimpleMotorFeedforward ff = new SimpleMotorFeedforward(0.00001, 0.00003, 0.00001);
 
     /* PIDConstants */
-    private PIDConstants pidConstantsDefault = new PIDConstants(40, 3);
+    private PIDConstants pidConstantsDefault = new PIDConstants(30, 6);
     private PIDConstants currentPIDConstants = pidConstantsDefault;
+
+    private double currentAbsPos;
 
     public Wrist() {
         motor.restoreFactoryDefaults();
@@ -45,8 +47,8 @@ public class Wrist extends SubsystemBase {
     }
 
     public double getAbsPos() {
-        Logger.recordOutput("Wrist/CurrentPos", encoderAbs.getPosition());
-        double angle = convertToDeg(encoderAbs.getPosition());
+        Logger.recordOutput("Wrist/CurrentPos", currentAbsPos);
+        double angle = convertToDeg(currentAbsPos);
         Logger.recordOutput("Wrist/CurrentAngle", angle);
         // Logger.recordOutput("Wrist/CurrentPost(Converted)", convertToRot(angle));
 
@@ -89,7 +91,7 @@ public class Wrist extends SubsystemBase {
     }
 
     public boolean finishedPID() {
-        return Math.abs(target - encoderAbs.getPosition()) < 0.025 ? true : false;
+        return Math.abs(target - currentAbsPos) < 0.03 ? true : false;
     }
 
     private void setVoltage(double voltage) {
@@ -122,6 +124,8 @@ public class Wrist extends SubsystemBase {
 
     @Override
     public void periodic() {
+        currentAbsPos = encoderAbs.getPosition();
+
         if (run) {
             updatePID();
         } else {
