@@ -393,6 +393,10 @@ public class RobotContainer {
     driverController.leftTrigger().whileTrue(new AlignSource2(drivebase,
         driverXbox, servo, false));
 
+    armController.rightStick().onTrue(new InstantCommand( () -> score.setUseVelocityIntake(!score.getUseVelocityIntake()))); // I think this is on click
+    
+
+
   }
 
   /**

@@ -40,6 +40,7 @@ public class Scoring extends SubsystemBase {
 
 
     private boolean laserIsDead;
+    private boolean useVelocityIntake;
 
     /* Ramping variables */
     // If you want to ramp intake
@@ -105,12 +106,23 @@ public class Scoring extends SubsystemBase {
 
         rampDownTimer = new Timer();
         laserIsDead = false;
+        useVelocityIntake = false; // set to true if you want to use velocity intake
+
     }
 
-    /** @return true when the laser is dead */
-    public boolean getLaserIsDead() {
-        return this.laserIsDead;
+    /** @return true when the laser is dead or when we want to use velocity intake */
+    public boolean useVelocityIntake() {
+        return this.laserIsDead || this.useVelocityIntake;
     }
+
+    public void setUseVelocityIntake(boolean useVelocityIntake) {
+        this.useVelocityIntake = useVelocityIntake;
+    }
+
+    public boolean getUseVelocityIntake() {
+        return this.useVelocityIntake;
+    }
+
 
     /** Has a median filter applied in this method */
     public double getLaserDistance() {

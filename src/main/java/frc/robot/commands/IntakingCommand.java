@@ -47,7 +47,8 @@ public class IntakingCommand extends Command {
         score.setIntakeVoltage(0);
     }else{        
         
-        if (score.getLaserIsDead()) {
+        if (score.useVelocityIntake()) { // inside this first iff statement is all the code for velocity intake
+
           if (!ramp) {
             score.setIntakeVoltage(intakeVoltage);
             if(score.getIntakeVelocity() < -2500 || timer.get() > 1){
