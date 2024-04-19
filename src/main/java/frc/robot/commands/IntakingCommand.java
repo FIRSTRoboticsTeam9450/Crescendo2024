@@ -15,6 +15,7 @@ public class IntakingCommand extends Command {
   private Scoring score;
   private double intakeVoltage;
   boolean finished = false;
+  boolean ramp = false;
   private Timer timer = new Timer();
   MedianFilter median = new MedianFilter(3);
 
@@ -31,24 +32,41 @@ public class IntakingCommand extends Command {
     timer.reset();
     timer.start();
     finished = false;
+    ramp = false;
     median = new MedianFilter(3);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double medianValue = median.calculate(score.getLaserDistance());
-
+    // double medianValue = median.calculate(score.getLaserDistance());
+    
+    System.out.println("INTAKE VELOCITY" + score.getIntakeVelocity()); // REMOVE AFTER DONE TESTING
+    
     if(score.getIntakeTemp() > 60){
         score.setIntakeVoltage(0);
     }else{        
-        if (score.getIntakeState().equals(Constants.IntakeState.HAS_NOTE)) {
-          score.setIntakeVoltage(0.01);
-          finished = true;
-        } else {
-          score.setIntakeVoltage(intakeVoltage);
+        
+        if (score.getLaserIsDead()) {
+          if (!ramp) {
+            score.setIntakeVoltage(intakeVoltage);
+            if(score.getIntakeVelocity() < -2500 || timer.get() > 1){
+                ramp = true;
+            }
+          } else if(ramp && score.getIntakeVelocity() > -700){ // velocity might not be right
+              score.setIntakeVoltage(0.01);
+          }
 
+        } else {
+          if (score.getIntakeState().equals(Constants.IntakeState.HAS_NOTE)) {
+            score.setIntakeVoltage(0.01);
+            finished = true;
+          } else {
+            score.setIntakeVoltage(intakeVoltage);
+
+          }
         }
+        
     }
   }
 

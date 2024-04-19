@@ -38,6 +38,9 @@ public class Scoring extends SubsystemBase {
     private static final int WRISTMAXINDEX2 = 5;
     private static final int WRISTMININDEX2 = 6;
 
+
+    private boolean laserIsDead;
+
     /* Ramping variables */
     // If you want to ramp intake
     private boolean rampDownBool;
@@ -101,6 +104,12 @@ public class Scoring extends SubsystemBase {
         setState(Constants.ScoringPos.NONE);
 
         rampDownTimer = new Timer();
+        laserIsDead = false;
+    }
+
+    /** @return true when the laser is dead */
+    public boolean getLaserIsDead() {
+        return this.laserIsDead;
     }
 
     /** Has a median filter applied in this method */
@@ -108,9 +117,15 @@ public class Scoring extends SubsystemBase {
         try {
             measurement = laser.getMeasurement();
             if (measurement != null && measurement.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT) {
+                
+                Logger.recordOutput("Laser/isDead", false);
+                laserIsDead = false;
                 return medianDistance.calculate(measurement.distance_mm);
             }
         } catch (Exception e) {
+            Logger.recordOutput("Laser/isDead", true);
+
+            laserIsDead = true;
             e.printStackTrace();
         }
         return 10000; // return a large number if the laser fails
