@@ -41,6 +41,9 @@ public class Scoring extends SubsystemBase {
     /* Ramping variables */
     // If you want to ramp intake
     private boolean rampDownBool;
+    private boolean noLaserCan;
+    private boolean isIntaking;
+
     private double currentVoltage;
     private double voltageTo;
     private double rampTime;
@@ -69,8 +72,8 @@ public class Scoring extends SubsystemBase {
         /* Frame Periods / Current Limit */
         intake.setSmartCurrentLimit(20);
         intake.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 300); // For follower motors
-        intake.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 65535); // For Motor Position
-        intake.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 65535); // Analog Sensor Voltage + Velocity + position
+        //intake.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 65535); // For Motor Position
+        //intake.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 65535); // Analog Sensor Voltage + Velocity + position
         intake.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 65535); // Duty cycler velocity + pos
         intake.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 50); // Duty Cycle Absolute Encoder Position and Abs angle
         intake.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 65535); // Duty Cycle Absolute Encoder Velocity +
@@ -182,6 +185,14 @@ public class Scoring extends SubsystemBase {
 
     public void increaseWristBy(double angle) {
         desiredWristAngle += angle;
+    }
+
+    public void setIntaking() {
+        isIntaking = true;
+    }
+
+    public double getIntakeVelocity() {
+        return intake.getEncoder().getVelocity();
     }
 
     /* Movement Logic */
@@ -322,13 +333,21 @@ public class Scoring extends SubsystemBase {
         double height = 15 - (17 + ext.getRelPos()) * Math.cos(armPosRads) + 9 * Math.cos(armPosRads - wristPosRads);
 
         Logger.recordOutput("Robot Height", (17 + ext.getRelPos()) * Math.cos(armPosRads));
-        if (getLaserDistance() <= 30 /* mm */ && getIntakeState() != Constants.IntakeState.HAS_NOTE) {
-            setIntakeState(Constants.IntakeState.HAS_NOTE);
-            setStateRobotWhenIntaking(getState());
-        } else if (getLaserDistance() > 30) {
-            setIntakeState(Constants.IntakeState.NO_NOTE);
-            // setStateRobotWhenIntaking(Constants.ScoringPos.SOURCE); // default state
+
+        if (noLaserCan) {
+            if (isIntaking && getIntakeVelocity() < -700) {
+
+            }
+        } else {
+            if (getLaserDistance() <= 30 /* mm */ && getIntakeState() != Constants.IntakeState.HAS_NOTE) {
+                setIntakeState(Constants.IntakeState.HAS_NOTE);
+                setStateRobotWhenIntaking(getState());
+            } else if (getLaserDistance() > 30) {
+                setIntakeState(Constants.IntakeState.NO_NOTE);
+                // setStateRobotWhenIntaking(Constants.ScoringPos.SOURCE); // default state
+            }
         }
+        
 
         // If you want to ramp intake
         if (rampDownBool) {

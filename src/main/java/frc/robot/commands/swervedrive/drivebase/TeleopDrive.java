@@ -57,7 +57,7 @@ public class TeleopDrive extends Command
   @Override
   public void initialize()
   {
-      speedModifier = 0.8;
+      speedModifier = 0.7;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -77,7 +77,7 @@ public class TeleopDrive extends Command
     if (speedModify.getAsBoolean()) {
         speedModifier = 1; // instead of 0.5, because drive utilizes a cubic function for speed
     } else {
-        speedModifier = 0.8; // if the speedModify boolean isn't toggled, then use regular speed
+        speedModifier = 0.7; // if the speedModify boolean isn't toggled, then use regular speed
     }
 
 
@@ -86,8 +86,8 @@ public class TeleopDrive extends Command
     double angVelocity = -omega.getAsDouble() * speedModifier * 0.7;
 
 
-    double xVelocity   = -Math.signum(vX.getAsDouble()) * Math.abs(Math.pow(vX.getAsDouble(), 2)) * speedModifier;
-    double yVelocity   = -Math.signum(vY.getAsDouble()) * Math.abs(Math.pow(vY.getAsDouble(), 2)) * speedModifier;
+    double xVelocity   = -Math.signum(vX.getAsDouble()) * Math.abs(Math.pow(vX.getAsDouble(), 1)) * speedModifier;
+    double yVelocity   = -Math.signum(vY.getAsDouble()) * Math.abs(Math.pow(vY.getAsDouble(), 1)) * speedModifier;
     // double angVelocity = -Math.pow(omega.getAsDouble(), 3) * speedModifier;
 
     SmartDashboard.putNumber("vX", xVelocity);

@@ -94,7 +94,7 @@ public class Extension extends SubsystemBase {
     }
 
     public boolean finishedPID() {
-        return Math.abs(target - (-currentPos)) < 1 ? true : false;
+        return Math.abs(target - (-currentPos)) < 1.5 ? true : false;
     }
 
     public void setTarget(double targetInches) {
