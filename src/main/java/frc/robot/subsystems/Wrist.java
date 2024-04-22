@@ -47,7 +47,6 @@ public class Wrist extends SubsystemBase {
     }
 
     public double getAbsPos() {
-        Logger.recordOutput("Wrist/CurrentPos", currentAbsPos);
         double angle = convertToDeg(currentAbsPos);
         Logger.recordOutput("Wrist/CurrentAngle", angle);
         // Logger.recordOutput("Wrist/CurrentPost(Converted)", convertToRot(angle));
@@ -132,6 +131,7 @@ public class Wrist extends SubsystemBase {
             motor.stopMotor();
         }
 
+        Logger.recordOutput("Wrist/CurrentPos", currentAbsPos);
         
     }
 

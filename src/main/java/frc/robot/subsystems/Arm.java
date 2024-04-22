@@ -164,8 +164,8 @@ public class Arm extends SubsystemBase {
         currentAbsPos = encoderAbs.getAbsolutePosition().getValue();
 
         //Logger.recordOutput("Arm/AbsCurrentPos", currentAbsPos);
-        getAbsPos();
-        SmartDashboard.putNumber("Arm Abs Pos", currentAbsPos);
+        //getAbsPos();
+        //SmartDashboard.putNumber("Arm Abs Pos", currentAbsPos);
 
         if (run) {
             updatePID(currentAbsPos);    
@@ -174,7 +174,7 @@ public class Arm extends SubsystemBase {
             motorFront.stopMotor();
         }
 
-        SmartDashboard.putNumber("Arm Setpoint", target);
+        //SmartDashboard.putNumber("Arm Setpoint", target);
     }
 
      /** changes the boolean for whether or not to run arm...if run == false, then stopMotor() is called */

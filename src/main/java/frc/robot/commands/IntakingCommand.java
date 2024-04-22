@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.subsystems.Scoring;
@@ -34,6 +35,7 @@ public class IntakingCommand extends Command {
     finished = false;
     ramp = false;
     median = new MedianFilter(3);
+    score.setIntaking();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -41,24 +43,24 @@ public class IntakingCommand extends Command {
   public void execute() {
     // double medianValue = median.calculate(score.getLaserDistance());
     
-    System.out.println("INTAKE VELOCITY" + score.getIntakeVelocity()); // REMOVE AFTER DONE TESTING
+    //System.out.println("INTAKE VELOCITY" + score.getIntakeVelocity()); // REMOVE AFTER DONE TESTING
     
     if(score.getIntakeTemp() > 60){
         score.setIntakeVoltage(0);
-    }else{        
+    }else{     
         
-        if (score.useVelocityIntake()) { // inside this first iff statement is all the code for velocity intake
+        // if (score.useVelocityIntake()) { // inside this first iff statement is all the code for velocity intake
 
-          if (!ramp) {
-            score.setIntakeVoltage(intakeVoltage);
-            if(score.getIntakeVelocity() < -2500 || timer.get() > 1){
-                ramp = true;
-            }
-          } else if(ramp && score.getIntakeVelocity() > -700){ // velocity might not be right
-              score.setIntakeVoltage(0.01);
-          }
+        //   if (!ramp) {
+        //     score.setIntakeVoltage(intakeVoltage);
+        //     if(score.getIntakeVelocity() < -2500 || timer.get() > 1){
+        //         ramp = true;
+        //     }
+        //   } else if(ramp && score.getIntakeVelocity() > -700){ // velocity might not be right
+        //       score.setIntakeVoltage(0.01);
+        //   }
 
-        } else {
+        // } else {
           if (score.getIntakeState().equals(Constants.IntakeState.HAS_NOTE)) {
             score.setIntakeVoltage(0.01);
             finished = true;
@@ -66,7 +68,7 @@ public class IntakingCommand extends Command {
             score.setIntakeVoltage(intakeVoltage);
 
           }
-        }
+        //}
         
     }
   }

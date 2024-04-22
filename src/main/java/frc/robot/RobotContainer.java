@@ -84,6 +84,7 @@ public class RobotContainer {
     autoChooser.addOption("Preload + Center", "PreloadGrabCenter");
     autoChooser.addOption("Preload + Close", "TwoNoteAlign");
     autoChooser.addOption("Center + Preload", "CenterFirst");
+    autoChooser.addOption("Preload No Exit", "PreloadScoreAlignNoExit");
 
     autoChooser.setDefaultOption("Preload + Close", "TwoNoteAlign");
 

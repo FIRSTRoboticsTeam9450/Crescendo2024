@@ -47,6 +47,7 @@ public class Scoring extends SubsystemBase {
     private boolean rampDownBool;
     private boolean noLaserCan;
     private boolean isIntaking;
+    private boolean intakeAtSpeed;
 
     private double currentVoltage;
     private double voltageTo;
@@ -143,7 +144,11 @@ public class Scoring extends SubsystemBase {
         return 10000; // return a large number if the laser fails
     }
 
+    // when outtaking set state to no note
     public void setIntakeVoltage(double voltage) {
+        if (voltage < 0 && getUseVelocityIntake()) {
+            setIntakeState(Constants.IntakeState.NO_NOTE);
+        }
         intake.setVoltage(-voltage);
         SmartDashboard.putNumber("Intake Voltage", -voltage);
     }
@@ -348,6 +353,8 @@ public class Scoring extends SubsystemBase {
     public void periodic() {
         // This method will be called once per scheduler run
         limit();
+        SmartDashboard.putBoolean("Has Note", getIntakeState() == Constants.IntakeState.HAS_NOTE);
+        SmartDashboard.putBoolean("Using Laser", !getUseVelocityIntake());
 
         // Updates the state for whether the intake took a note or not
         Logger.recordOutput("Last Intake", stateRobotWhenIntaking);
@@ -361,15 +368,25 @@ public class Scoring extends SubsystemBase {
 
         Logger.recordOutput("Robot Height", (17 + ext.getRelPos()) * Math.cos(armPosRads));
 
-        if (noLaserCan) {
-            if (isIntaking && getIntakeVelocity() < -700) {
-
+        if (useVelocityIntake()) {
+            if (isIntaking && getIntakeVelocity() < -2500 && getIntakeState() != Constants.IntakeState.HAS_NOTE) {
+                intakeAtSpeed = true;
+            }
+            if (intakeAtSpeed) {
+                isIntaking = false;
+                if (getIntakeVelocity() > -700) {
+                    // intook a note
+                    setIntakeState(Constants.IntakeState.HAS_NOTE);
+                    setStateRobotWhenIntaking(getState());
+                    intakeAtSpeed = false;
+                    isIntaking = false;
+                }
             }
         } else {
-            if (getLaserDistance() <= 30 /* mm */ && getIntakeState() != Constants.IntakeState.HAS_NOTE) {
+            if (getLaserDistance() <= 50 /* mm */ && getIntakeState() != Constants.IntakeState.HAS_NOTE) {
                 setIntakeState(Constants.IntakeState.HAS_NOTE);
                 setStateRobotWhenIntaking(getState());
-            } else if (getLaserDistance() > 30) {
+            } else if (getLaserDistance() > 50) {
                 setIntakeState(Constants.IntakeState.NO_NOTE);
                 // setStateRobotWhenIntaking(Constants.ScoringPos.SOURCE); // default state
             }

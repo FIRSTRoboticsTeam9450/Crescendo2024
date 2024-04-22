@@ -251,9 +251,9 @@ public class SwerveSubsystem extends SubsystemBase
   public void periodic()
   {
 
-    double[] poseArr = table.getEntry("targetpose_robotspace").getDoubleArray(new double[6]);
-    SmartDashboard.putNumber("Limelight X", poseArr[0]);
-    SmartDashboard.putNumber("Limelight Z", poseArr[2]);
+    // double[] poseArr = table.getEntry("targetpose_robotspace").getDoubleArray(new double[6]);
+    // SmartDashboard.putNumber("Limelight X", poseArr[0]);
+    // SmartDashboard.putNumber("Limelight Z", poseArr[2]);
     
   }
 

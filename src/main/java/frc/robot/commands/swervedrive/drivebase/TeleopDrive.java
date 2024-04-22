@@ -71,6 +71,7 @@ public class TeleopDrive extends Command
       swerve.zeroGyro();
     }
 
+    
 
 
     // for speedModifier drive enabled
@@ -90,9 +91,9 @@ public class TeleopDrive extends Command
     double yVelocity   = -Math.signum(vY.getAsDouble()) * Math.abs(Math.pow(vY.getAsDouble(), 1)) * speedModifier;
     // double angVelocity = -Math.pow(omega.getAsDouble(), 3) * speedModifier;
 
-    SmartDashboard.putNumber("vX", xVelocity);
-    SmartDashboard.putNumber("vY", yVelocity);
-    SmartDashboard.putNumber("omega", angVelocity);
+    //SmartDashboard.putNumber("vX", xVelocity);
+    //SmartDashboard.putNumber("vY", yVelocity);
+    //SmartDashboard.putNumber("omega", angVelocity);
     
 /*   
     Logger.recordOutput("SwerveStates/ControllerInputLog/TeleopDrive/x", xVelocity * SwerveSubsystem.maximumSpeed);
@@ -102,12 +103,17 @@ public class TeleopDrive extends Command
     Logger.recordOutput("SwerveStates/SwerveModuleAzimuthSetpoint", Math.atan(yVelocity / xVelocity));
 */      
     
-
+    
     // Drive using raw values.
     swerve.drive(new Translation2d(xVelocity * SwerveSubsystem.maximumSpeed, yVelocity * SwerveSubsystem.maximumSpeed),
                  angVelocity * controller.config.maxAngularVelocity,
                  driveMode);
     // SmartDashboard.putNumber("MaxAngVel", controller.config.maxAngularVelocity);
+
+    // lock drivebase if not moving
+    if (vX.getAsDouble() == 0 && vY.getAsDouble() == 0 && omega.getAsDouble() == 0) {
+      swerve.lock();
+    }
   }
 
   // Called once the command ends or is interrupted.

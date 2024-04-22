@@ -138,7 +138,7 @@ public final class Constants
     public static final double gearRatio = 1.2/1;
     /**converts from degrees to rotations */
     public static final double RotateConversionFactor = -(gearRatio/360);
-    public static final double AbsEncoderShift = -1.157;
+    public static final double AbsEncoderShift = -1.171;
 
     public static final double wristHardwareMax = 270;
     public static final double wristHardwareMin = 90;

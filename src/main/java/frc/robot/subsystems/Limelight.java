@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 public class Limelight extends SubsystemBase {
   /** Creates a new LimelightSubsystem. */
@@ -110,22 +111,22 @@ public class Limelight extends SubsystemBase {
       ampMode = true;
     }
 
-    if (DriverStation.isDisabled()) {
-      double[] robotPose = table.getEntry("botpose_targetspace").getDoubleArray(new double[6]);
-      if (robotPose[4] > -0.5 && robotPose[4] < 0.5 && table.getEntry("tid").getDouble(-1) != -1) {
-        if (table.getEntry("ledMode").getInteger(-1) != 3) {
-          table.getEntry("ledMode").setNumber(3);
-        }
+    // if (DriverStation.isDisabled()) {
+    //   double[] robotPose = table.getEntry("botpose_targetspace").getDoubleArray(new double[6]);
+    //   if (robotPose[4] > -0.5 && robotPose[4] < 0.5 && table.getEntry("tid").getDouble(-1) != -1) {
+    //     if (table.getEntry("ledMode").getInteger(-1) != 3) {
+    //       table.getEntry("ledMode").setNumber(3);
+    //     }
 
-      } else {
-          table.getEntry("ledMode").setNumber(0);
-      }
-    } else {
-      table.getEntry("ledMode").setNumber(0);
-    }
+    //   } else {
+    //       table.getEntry("ledMode").setNumber(0);
+    //   }
+    // } else {
+    //   table.getEntry("ledMode").setNumber(0);
+    // }
 
     SmartDashboard.putNumber("laser distance", medianValue);
-    if (medianValue < 50 || DriverStation.isAutonomous() || DriverStation.isDisabled()) {
+    if (score.getIntakeState() == Constants.IntakeState.HAS_NOTE || DriverStation.isAutonomous() || DriverStation.isDisabled()) {
       if (table.getEntry("pipeline").getInteger(-1) == 1) {
         table.getEntry("pipeline").setNumber(0);
         axon.setAngle(180);

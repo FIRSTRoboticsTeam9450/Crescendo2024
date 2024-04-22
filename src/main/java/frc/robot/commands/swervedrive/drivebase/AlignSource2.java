@@ -217,6 +217,8 @@ public class AlignSource2 extends Command {
             System.out.println("AHHHHH");
             System.out.println(drive.getPose());
         }
+
+        System.out.println("No Align :(");
     }
 
 }

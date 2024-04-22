@@ -122,12 +122,12 @@ public class Climb extends SubsystemBase {
   public void updatePID() {
     double leftPower = leftClimbController.calculate(getLeftPosition());
     leftPower = MathUtil.clamp(leftPower, -8, 10);
-    SmartDashboard.putNumber("Left Climb power", leftPower);
+    //SmartDashboard.putNumber("Left Climb power", leftPower);
     setLeftVoltage(leftPower);
 
     double rightPower = rightClimbController.calculate(getRightPosition());
     rightPower = MathUtil.clamp(rightPower, -8, 10);
-    SmartDashboard.putNumber("Right Climb power", rightPower);
+    //SmartDashboard.putNumber("Right Climb power", rightPower);
     setRightVoltage(rightPower);
   }
 
