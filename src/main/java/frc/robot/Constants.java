@@ -9,8 +9,6 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
-import swervelib.math.Matter;
-import swervelib.parser.PIDFConfig;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean constants. This
@@ -22,19 +20,7 @@ import swervelib.parser.PIDFConfig;
  */
 public final class Constants
 {
-
-  public static final double ROBOT_MASS = (148 - 20.3) * 0.453592; // 32lbs * kg per pound
-  public static final Matter CHASSIS    = new Matter(new Translation3d(0, 0, Units.inchesToMeters(8)), ROBOT_MASS);
   public static final double LOOP_TIME  = 0.02; //s, 20ms + 110ms sprk max velocity lag
-
-  public static final class Auton
-  {
-
-    public static final PIDFConfig TranslationPID     = new PIDFConfig(0.7, 0, 0);
-    public static final PIDFConfig angleAutoPID = new PIDFConfig(0.4, 0, 0.01);
-
-    public static final double MAX_ACCELERATION = 1;
-  }
 
   public static final class Drivebase
   {
@@ -51,38 +37,6 @@ public final class Constants
     public static final double LEFT_Y_DEADBAND = 0.1;
     public static final double RIGHT_X_DEADBAND = 0.1;
     public static final double TURN_CONSTANT = 0.75;
-  }
-
-
-  public static class ModuleConversion {
-    //TOO BE UPDATEEDDDDD
-    public static final double WheelDiameter = Units.inchesToMeters(4);
-    public static final double DriveMotorGearRatio = 6.75;
-    public static final double TurnMotorGearRatio = 150.0/7;
-    public static final double DriveEncoderRot2Meter = DriveMotorGearRatio * Math.PI * WheelDiameter;
-    public static final double TurnEncoderRot2Rad = TurnMotorGearRatio * 2 * Math.PI;
-    public static final double DriveEncoderRPM2MeterPerSec = DriveEncoderRot2Meter / 60;
-    public static final double TurnEncoderRPM2RadPerSec = TurnEncoderRot2Rad / 60;
-    //ticks * 1 rotations/4096 ticks  *  gear ratio  * 6pi inches/1 rotation  * 1 ft / 12 inches
-    public static final double drivetcks2ftfactor = 1.0 / 4096 * 6 * Math.PI / 12;
-
-    public static final double WheelRadius = 0.0508;
-    public static final int EncoderResolution = 7168; // tics per revolution
-    public static final double DRIVE_MOTOR_CONVERSION = 2 * Math.PI * WheelRadius; // distance 
-    public static final double TURNING_MOTOR_CONVERSION = 2 * Math.PI; // distance 
-    public static final double VELOCITY_CONVERSION_FACTOR = Math.PI * WheelRadius / 30; //Distance per second
-  }
-
-  public static class Speeds{
-    public static final double MaxSpeed = 21;
-    public static final double MaxAngularSpeed = 4*Math.PI;
-  }
-
-  //Extension Limiting Equation Constants----------------------------
-  public static class Chassis{
-    public static final double pivotToFront = 17;
-    public static final double pivotToBack = 13.75;
-    public static final double pivotHeight = 19;
   }
 
   public static class Extension{
