@@ -94,7 +94,7 @@ public class RobotContainer
         () -> driverController.getRawAxis(4), () -> true); // change the int in the parameter to the appropriate axis
 
     // drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simClosedFieldRel : closedFieldRel);
-      drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simDrvHeadingCorr : drvHeadingCorr);
+      drivebase.setDefaultCommand(!RobotBase.isSimulation() ? simClosedFieldRel : closedFieldRel);
 
   }
 
