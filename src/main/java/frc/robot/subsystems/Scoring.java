@@ -111,6 +111,13 @@ public class Scoring extends SubsystemBase {
 
     }
 
+    public void logStickyFaults() {
+        wrist.logMotorStickyFaults();
+        arm.logMotorBackStickyFaults();
+        arm.logMotorFrontStickyFaults();
+        ext.logMotorStickyFaults();
+    }
+
     /** @return true when the laser is dead or when we want to use velocity intake */
     public boolean useVelocityIntake() {
         return this.laserIsDead || this.useVelocityIntake;

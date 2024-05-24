@@ -11,6 +11,7 @@ import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.BitToStickyfaultString;
 import frc.robot.Constants;
 
 public class Extension extends SubsystemBase {
@@ -57,6 +58,11 @@ public class Extension extends SubsystemBase {
 
         runAndResetEncoder();
 
+    }
+
+    public void logMotorStickyFaults() {
+        BitToStickyfaultString.getStickyFaultString(motor.getStickyFaults());
+        motor.clearFaults();
     }
 
     private void setVoltage(double voltage) {

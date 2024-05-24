@@ -14,6 +14,7 @@ import com.revrobotics.SparkAbsoluteEncoder;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.BitToStickyfaultString;
 import frc.robot.Constants;
 
 public class Wrist extends SubsystemBase {
@@ -44,6 +45,11 @@ public class Wrist extends SubsystemBase {
         motor.setIdleMode(IdleMode.kBrake);
 
         motor.burnFlash();
+    }
+
+    public void logMotorStickyFaults() {
+        BitToStickyfaultString.getStickyFaultString(motor.getStickyFaults());
+        motor.clearFaults();
     }
 
     public double getAbsPos() {

@@ -19,6 +19,7 @@ import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.BitToStickyfaultString;
 import frc.robot.Constants;
 
 public class Arm extends SubsystemBase {
@@ -48,7 +49,6 @@ public class Arm extends SubsystemBase {
     double rampTime = 0.5;
 
     public Arm() {
-
         motorFront.restoreFactoryDefaults();
         motorBack.restoreFactoryDefaults();
         
@@ -89,6 +89,17 @@ public class Arm extends SubsystemBase {
         return angle;
               
     }
+
+    public void logMotorFrontStickyFaults() {
+        BitToStickyfaultString.getStickyFaultString(motorFront.getStickyFaults());
+        motorFront.clearFaults();
+    }
+
+    public void logMotorBackStickyFaults() {
+        BitToStickyfaultString.getStickyFaultString(motorBack.getStickyFaults());
+        motorBack.clearFaults();
+    }
+
 
     private void setVoltage(double voltage){
         Logger.recordOutput("Arm/ArmVoltage", voltage);
