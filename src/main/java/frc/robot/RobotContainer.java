@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -36,6 +37,7 @@ public class RobotContainer {
   public final Limelight servo = new Limelight(score);
   public final Climb climbSub = new Climb();
 
+  // try switching maxspeed and maxangularspeed to see what happens
   private double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps; // kSpeedAt12VoltsMps desired top speed
   private double MaxAngularRate = 1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
 
@@ -57,11 +59,15 @@ public class RobotContainer {
 
   private void configureBindings() {
     drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
-        drivetrain.applyRequest(() -> drive.withVelocityX(-driverController.getLeftY() * MaxSpeed) // Drive forward with Brian added - sign
+      new ParallelCommandGroup(
+        new RepeatCommand(new InstantCommand(() -> System.out.println("Vel X: " + -driverController.getLeftY() * MaxSpeed + " Vel Y: " + -driverController.getLeftX() * MaxSpeed 
+                        + " Rot Vel: " + -driverController.getRightX() * MaxAngularRate)))
+            
+            , drivetrain.applyRequest(() -> drive.withVelocityX(-driverController.getLeftY() * MaxSpeed) // Drive forward with Brian added - sign
                                                                                            // negative Y (forward)
             .withVelocityY(-driverController.getLeftX() * MaxSpeed) // Drive left with negative X (left) brian added - sign
             .withRotationalRate(-driverController.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
-        ));
+            )));
 
     driverController.a().whileTrue(drivetrain.applyRequest(() -> brake));
     driverController.b().whileTrue(drivetrain
@@ -125,10 +131,21 @@ public class RobotContainer {
 
     armController.rightStick().onTrue(new InstantCommand( () -> score.setUseVelocityIntake(!score.getUseVelocityIntake()))); // I think this is on click
 
+    /* GET DRIVE MOTOR ETC.
+    SwerveDrivetrain drive = new SwerveDrivetrain(null, null);
+    drive.getModule(0).getDriveMotor();
+    */
+    
   }
 
   public RobotContainer() {
     configureBindings();
+  }
+
+  public void logDriveStickyFaults() {
+    for (int i = 0; i < 3; i++) {
+      //BitToStickyfaultString.getStickyFaultString(drivetrain.getModule(i).getDriveMotor().getStickyFaultField()); // max 24 bit instead of 16 
+    }
   }
 
   public Command getAutonomousCommand() {
