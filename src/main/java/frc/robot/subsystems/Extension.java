@@ -5,10 +5,10 @@ import org.littletonrobotics.junction.Logger;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
-import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkFlex;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkLimitSwitch;
 
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.BitToStickyfaultString;
@@ -20,13 +20,13 @@ public class Extension extends SubsystemBase {
     public boolean runAndReset = true;
     private boolean run = true;
 
-    private CANSparkMax motor = new CANSparkMax(Constants.extensionId, MotorType.kBrushless);
-
+    private CANSparkFlex motor = new CANSparkFlex(Constants.extensionId, MotorType.kBrushless);
+    
     /* Ext Rel Encoder */
     private RelativeEncoder encoderRel;
 
     /* Limit Switch */
-    private DigitalInput lowerHardLimSwitch;
+    private SparkLimitSwitch lowerHardLimSwitch; 
 
     // removed robot state thing
 
@@ -47,7 +47,7 @@ public class Extension extends SubsystemBase {
         motor.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 65535); // For Motor Position
 
         /* for extension 'reset' at hard lower limit */
-        lowerHardLimSwitch = new DigitalInput(2);
+        lowerHardLimSwitch = motor.getForwardLimitSwitch(SparkLimitSwitch.Type.kNormallyOpen);
 
         motor.setIdleMode(IdleMode.kBrake);
 
@@ -57,7 +57,7 @@ public class Extension extends SubsystemBase {
         motor.burnFlash();
 
         runAndResetEncoder();
-
+        
     }
 
     public void logMotorStickyFaults() {
@@ -150,7 +150,7 @@ public class Extension extends SubsystemBase {
         Logger.recordOutput("Extension/target", this.target);
         
         /* Stops motor and resets encoder after limit switch reached */
-        if (!lowerHardLimSwitch.get() && runAndReset) {
+        if (!lowerHardLimSwitch.isLimitSwitchEnabled() && runAndReset) {
             motor.stopMotor();
             setVoltage(0);
             encoderRel.setPosition(1.55);

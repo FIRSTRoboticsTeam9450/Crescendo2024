@@ -7,26 +7,26 @@ package frc.robot.subsystems;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkLimitSwitch;
 
 /**
  * Manages two climber modules with independent limit switches and PID controllers
  */
 public class Climb extends SubsystemBase {
-  CANSparkMax leftClimb;
-  CANSparkMax rightClimb;
+  CANSparkFlex leftClimb;
+  CANSparkFlex rightClimb;
   RelativeEncoder leftEncoder;
   RelativeEncoder rightEncoder;
   PIDController leftClimbController;
   PIDController rightClimbController;
-  DigitalInput leftLimitSwitch;
-  DigitalInput rightLimitSwitch;
+  SparkLimitSwitch leftLimitSwitch;
+  SparkLimitSwitch rightLimitSwitch;
   private double leftMotorVoltage;
   private double rightMotorVoltage;
   private boolean runPid;
@@ -41,8 +41,8 @@ public class Climb extends SubsystemBase {
     leftMotorVoltage = 0;
     rightMotorVoltage = 0;
 
-    leftClimb = new CANSparkMax(Constants.lClimberId, MotorType.kBrushless);
-    rightClimb = new CANSparkMax(Constants.rClimberId, MotorType.kBrushless);
+    leftClimb = new CANSparkFlex(Constants.lClimberId, MotorType.kBrushless);
+    rightClimb = new CANSparkFlex(Constants.rClimberId, MotorType.kBrushless);
 
     leftClimb.setSmartCurrentLimit(40);
     rightClimb.setSmartCurrentLimit(40);
@@ -57,8 +57,8 @@ public class Climb extends SubsystemBase {
     leftClimbController.setSetpoint(10);
     rightClimbController.setSetpoint(10);
 
-    leftLimitSwitch = new DigitalInput(0);
-    rightLimitSwitch = new DigitalInput(1);
+    leftLimitSwitch = leftClimb.getForwardLimitSwitch(SparkLimitSwitch.Type.kNormallyOpen);
+    rightLimitSwitch = rightClimb.getForwardLimitSwitch(SparkLimitSwitch.Type.kNormallyOpen);
   } 
 
   /**
@@ -147,7 +147,7 @@ public class Climb extends SubsystemBase {
    */
   public boolean getLeftLimitSwitch() {
     try {
-      return !leftLimitSwitch.get();
+      return !leftLimitSwitch.isLimitSwitchEnabled();
     } catch (NullPointerException e) {
       e.printStackTrace();
     }
@@ -160,7 +160,7 @@ public class Climb extends SubsystemBase {
    */
   public boolean getRightLimitSwitch() {
     try {
-      return !rightLimitSwitch.get();
+      return !rightLimitSwitch.isLimitSwitchEnabled();
     } catch (NullPointerException e) {
       e.printStackTrace();
     }

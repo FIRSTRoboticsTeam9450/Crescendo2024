@@ -35,7 +35,7 @@ public class TunerConstants {
     private static final ClosedLoopOutputType steerClosedLoopOutput = ClosedLoopOutputType.Voltage;
     // The closed-loop output type to use for the drive motors;
     // This affects the PID/FF gains for the drive motors
-    private static final ClosedLoopOutputType driveClosedLoopOutput = ClosedLoopOutputType.Voltage;
+    private static final ClosedLoopOutputType driveClosedLoopOutput = ClosedLoopOutputType.TorqueCurrentFOC;
 
     // The stator current at which the wheels start to slip;
     // This needs to be tuned to your individual robot
@@ -62,9 +62,9 @@ public class TunerConstants {
 
     // Every 1 rotation of the azimuth results in kCoupleRatio drive motor turns;
     // This may need to be tuned to your individual robot
-    private static final double kCoupleRatio = 3.5714285714285716; // brian could not confirm, left default value
+    private static final double kCoupleRatio = 3.125; // brian could not confirm, left default value
 
-    private static final double kDriveGearRatio = 6.746031746031747;
+    private static final double kDriveGearRatio = 5.90277;
     private static final double kSteerGearRatio = 21.428571428571427;
     private static final double kWheelRadiusInches = 2;
 

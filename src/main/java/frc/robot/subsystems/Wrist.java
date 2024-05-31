@@ -27,7 +27,7 @@ public class Wrist extends SubsystemBase {
 
     /* Absolute Encoder */
     private SparkAbsoluteEncoder encoderAbs = motor.getAbsoluteEncoder(Type.kDutyCycle);
-
+    
     /* Wrist FF */ // constants kinda tuned, final tuning still needed
     // private SimpleMotorFeedforward ff = new SimpleMotorFeedforward(0.00001, 0.00003, 0.00001);
 
@@ -41,6 +41,7 @@ public class Wrist extends SubsystemBase {
         motor.restoreFactoryDefaults();
 
         motor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 300); // For follower motors
+        motor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20); // change periodic rate for duty cycle encoders
 
         motor.setIdleMode(IdleMode.kBrake);
 

@@ -14,7 +14,7 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.ctre.phoenix6.hardware.CANcoder;
-import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkFlex;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -27,10 +27,9 @@ public class Arm extends SubsystemBase {
     private double currentAbsPos;
     private boolean run = true;                                                                                                            
 
-
     /* Motors */
-    private CANSparkMax motorFront = new CANSparkMax(Constants.armFrontId, MotorType.kBrushless);
-    private CANSparkMax motorBack = new CANSparkMax(Constants.armBackId, MotorType.kBrushless);
+    private CANSparkFlex motorFront = new CANSparkFlex(Constants.armFrontId, MotorType.kBrushless);
+    private CANSparkFlex motorBack = new CANSparkFlex(Constants.armBackId, MotorType.kBrushless);
 
     /* Encoders */
     private CANcoder encoderAbs = new CANcoder(Constants.armEncoderId); // fix this id
