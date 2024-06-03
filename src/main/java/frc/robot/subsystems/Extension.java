@@ -49,7 +49,7 @@ public class Extension extends SubsystemBase {
         /* for extension 'reset' at hard lower limit */
         lowerHardLimSwitch = motor.getForwardLimitSwitch(SparkLimitSwitch.Type.kNormallyOpen);
 
-        motor.setIdleMode(IdleMode.kBrake);
+        motor.setIdleMode(IdleMode.kCoast);
 
         /* encoder :) */
         encoderRel = motor.getEncoder();
@@ -150,7 +150,7 @@ public class Extension extends SubsystemBase {
         Logger.recordOutput("Extension/target", this.target);
         
         /* Stops motor and resets encoder after limit switch reached */
-        if (!lowerHardLimSwitch.isLimitSwitchEnabled() && runAndReset) {
+        if (lowerHardLimSwitch.isLimitSwitchEnabled() && runAndReset) {
             motor.stopMotor();
             setVoltage(0);
             encoderRel.setPosition(1.55);

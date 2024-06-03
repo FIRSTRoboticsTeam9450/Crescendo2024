@@ -60,8 +60,8 @@ public class Arm extends SubsystemBase {
         motorBack.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 300);
 
         /* motor idlemodes */
-        motorFront.setIdleMode(IdleMode.kBrake);
-        motorBack.setIdleMode(IdleMode.kBrake);
+        motorFront.setIdleMode(IdleMode.kCoast);
+        motorBack.setIdleMode(IdleMode.kCoast);
         
         /* motor inversions */
         motorFront.setInverted(true); // b/c we flipped direction of motor
