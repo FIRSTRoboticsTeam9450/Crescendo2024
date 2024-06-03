@@ -31,7 +31,7 @@ public class Extension extends SubsystemBase {
     // removed robot state thing
 
     /* PIDConstants */
-    private PIDConstants pidConstantsDefault = new PIDConstants(1, 6);
+    private PIDConstants pidConstantsDefault = new PIDConstants(1.5, 6);
     private PIDConstants currentPIDConstants = pidConstantsDefault;
 
     private double currentPos;
@@ -50,6 +50,8 @@ public class Extension extends SubsystemBase {
         lowerHardLimSwitch = motor.getReverseLimitSwitch(SparkLimitSwitch.Type.kNormallyOpen);
 
         motor.setIdleMode(IdleMode.kCoast);
+
+        motor.setInverted(true);
 
         /* encoder :) */
         encoderRel = motor.getEncoder();
@@ -78,10 +80,9 @@ public class Extension extends SubsystemBase {
      */
     public double getRelPos() {
 
-        Logger.recordOutput("Extension/ExtPos", -currentPos);
-        double inches = convertToInches(-currentPos);
+        Logger.recordOutput("Extension/ExtPos", currentPos);
+        double inches = convertToInches(currentPos);
         Logger.recordOutput("Extension/ExtInches", inches);
-        Logger.recordOutput("Extension/ExtPos(converted)", convertToTics(inches));
 
         return inches;
 
@@ -100,7 +101,7 @@ public class Extension extends SubsystemBase {
     }
 
     public boolean finishedPID() {
-        return Math.abs(target - (-currentPos)) < 1.5 ? true : false;
+        return Math.abs(target - (currentPos)) < 1.5 ? true : false;
     }
 
     public void setTarget(double targetInches) {
@@ -129,9 +130,9 @@ public class Extension extends SubsystemBase {
         Logger.recordOutput("Extension/maxVoltage", maxVoltage);
 
         if (Math.abs(pidValue) < maxVoltage) {
-            setVoltage(-pidValue);
+            setVoltage(pidValue);
         } else {
-            setVoltage(-maxVoltage * Math.signum(pidValue));
+            setVoltage(maxVoltage * Math.signum(pidValue));
         }
     }
 
@@ -140,20 +141,14 @@ public class Extension extends SubsystemBase {
         currentPos = encoderRel.getPosition();
 
         if (!runAndReset) {
-            if (run) {
-                updatePID();
-            } else {
-                motor.stopMotor();
-            }
-            
+            updatePID();
         }
-        Logger.recordOutput("Extension/target", this.target);
+        Logger.recordOutput("Extension/target(tics)", this.target);
         
         /* Stops motor and resets encoder after limit switch reached */
         if (lowerHardLimSwitch.isLimitSwitchEnabled() && runAndReset) {
             motor.stopMotor();
-            setVoltage(0);
-            encoderRel.setPosition(1.55);
+            encoderRel.setPosition(0);
             runAndReset = false;
 
         }

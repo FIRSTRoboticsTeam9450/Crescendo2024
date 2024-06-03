@@ -59,15 +59,11 @@ public class RobotContainer {
 
   private void configureBindings() {
     drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
-      new ParallelCommandGroup(
-        new RepeatCommand(new InstantCommand(() -> System.out.println("Vel X: " + -driverController.getLeftY() * MaxSpeed + " Vel Y: " + -driverController.getLeftX() * MaxSpeed 
-                        + " Rot Vel: " + -driverController.getRightX() * MaxAngularRate)))
-            
-            , drivetrain.applyRequest(() -> drive.withVelocityX(-driverController.getLeftY() * MaxSpeed) // Drive forward with Brian added - sign
+            drivetrain.applyRequest(() -> drive.withVelocityX(-driverController.getLeftY() * MaxSpeed) // Drive forward with Brian added - sign
                                                                                            // negative Y (forward)
             .withVelocityY(-driverController.getLeftX() * MaxSpeed) // Drive left with negative X (left) brian added - sign
             .withRotationalRate(-driverController.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
-            )));
+    ));
 
     driverController.a().whileTrue(drivetrain.applyRequest(() -> brake));
     driverController.b().whileTrue(drivetrain

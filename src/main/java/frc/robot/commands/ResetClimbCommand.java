@@ -39,7 +39,7 @@ public class ResetClimbCommand extends Command {
   @Override
   public boolean isFinished() {
     // stop command once both motors have reached the bottom
-    return climb.isStopped();
+    return climb.isLeftStopped() && climb.isRightStopped();
   }
 
   

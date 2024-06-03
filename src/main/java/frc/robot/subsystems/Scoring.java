@@ -360,8 +360,8 @@ public class Scoring extends SubsystemBase {
     public void periodic() {
         // This method will be called once per scheduler run
         limit();
-        SmartDashboard.putBoolean("Has Note", getIntakeState() == Constants.IntakeState.HAS_NOTE);
-        SmartDashboard.putBoolean("Using Laser", !getUseVelocityIntake());
+        // SmartDashboard.putBoolean("Has Note", getIntakeState() == Constants.IntakeState.HAS_NOTE);
+        // SmartDashboard.putBoolean("Using Laser", !getUseVelocityIntake());
 
         // Updates the state for whether the intake took a note or not
         Logger.recordOutput("Last Intake", stateRobotWhenIntaking);
@@ -369,9 +369,9 @@ public class Scoring extends SubsystemBase {
         Logger.recordOutput("Intake/Laser Dist", getLaserDistance());
 
         double armPosRads = Math.toRadians(arm.getAbsPos());
-        double wristPosRads = Math.toRadians(wrist.getAbsPos());
+        // double wristPosRads = Math.toRadians(wrist.getAbsPos());
 
-        double height = 15 - (17 + ext.getRelPos()) * Math.cos(armPosRads) + 9 * Math.cos(armPosRads - wristPosRads);
+        // double height = 15 - (17 + ext.getRelPos()) * Math.cos(armPosRads) + 9 * Math.cos(armPosRads - wristPosRads);
 
         Logger.recordOutput("Robot Height", (17 + ext.getRelPos()) * Math.cos(armPosRads));
 

@@ -30,7 +30,7 @@ public class Climb extends SubsystemBase {
   private double leftMotorVoltage;
   private double rightMotorVoltage;
   private boolean runPid;
-  private boolean stopped;
+  private boolean rightStopped, leftStopped;
   
   /**
    * Creates a new Climb subsystem
@@ -40,6 +40,9 @@ public class Climb extends SubsystemBase {
 
     leftMotorVoltage = 0;
     rightMotorVoltage = 0;
+
+    leftStopped = true;
+    rightStopped = true;
 
     leftClimb = new CANSparkFlex(Constants.lClimberId, MotorType.kBrushless);
     rightClimb = new CANSparkFlex(Constants.rClimberId, MotorType.kBrushless);
@@ -112,9 +115,14 @@ public class Climb extends SubsystemBase {
     rightClimbController.setSetpoint(position + 1);
   }
 
-  public boolean isStopped() {
-    return stopped;
+  public boolean isLeftStopped() {
+    return leftStopped;
   }
+  public boolean isRightStopped() {
+    return rightStopped;
+  }
+
+
 
   /**
    * Updates the motor output voltage based on their current position
@@ -193,21 +201,24 @@ public class Climb extends SubsystemBase {
       updatePID();
     }
     
-    // Set voltage to 0 and reset encoder if either module is going down and the limit switch trips 
-    if (getLeftLimitSwitch() && leftMotorVoltage < 0) {
-      leftMotorVoltage = 0;
-      leftEncoder.setPosition(0);
-    }
-    if (getRightLimitSwitch() && rightMotorVoltage < 0) {
-      rightMotorVoltage = 0;
-      rightEncoder.setPosition(0);
-    }
+    if (Math.abs(leftMotorVoltage) > 0) {
+      // Set voltage to 0 and reset encoder if either module is going down and the limit switch trips 
+      if (getLeftLimitSwitch() && leftMotorVoltage < 0) {
+        leftMotorVoltage = 0;
+        leftEncoder.setPosition(0);
+        leftStopped = true;
+        
+      }
+      
+    } 
 
-    stopped = leftMotorVoltage == 0 && rightMotorVoltage == 0;
-
-    // Update motor voltages
-    leftClimb.setVoltage(leftMotorVoltage);
-    rightClimb.setVoltage(rightMotorVoltage);
+    if (Math.abs(rightMotorVoltage) > 0) {
+      if (getRightLimitSwitch() && rightMotorVoltage < 0) {
+        rightMotorVoltage = 0;
+        rightEncoder.setPosition(0);
+        rightStopped = true;
+      }
+    }
 
 
     /* 

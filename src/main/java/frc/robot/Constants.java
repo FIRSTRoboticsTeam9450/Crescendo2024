@@ -52,11 +52,11 @@ public final class Constants
     public static final double extHardwareMax = 12;
     public static final double extHardwareMin = 0;
 
-    public static final double resetExtVoltage = 3;
+    public static final double resetExtVoltage = -3;
 
     // 12 is for gear ratio
     // might need to consider offset of 0.4
-    public static final double convertToInches = 4.7244/5;
+    public static final double convertToInches = 1/0.331604;
 
   }
    public static class Arm{

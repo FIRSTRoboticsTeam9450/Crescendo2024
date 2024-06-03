@@ -63,6 +63,7 @@ public class Robot extends LoggedRobot {
     disabledTimer.restart();
     runnable = true;
     m_robotContainer.score.logStickyFaults(); // Log sticky faults
+  
 
   }
 
