@@ -58,7 +58,7 @@ public class TunerConstants {
 
     // Theoretical free speed (m/s) at 12v applied output;
     // This needs to be tuned to your individual robot
-    public static final double kSpeedAt12VoltsMps = 3.66; // brian default was 4.73 (measured by driving across floor with a timer)
+    public static final double kSpeedAt12VoltsMps = 5.22; // brian default was 4.73 (measured by driving across floor with a timer)
 
     // Every 1 rotation of the azimuth results in kCoupleRatio drive motor turns;
     // This may need to be tuned to your individual robot

@@ -147,7 +147,7 @@ public class Climb extends SubsystemBase {
    */
   public boolean getLeftLimitSwitch() {
     try {
-      return !leftLimitSwitch.isLimitSwitchEnabled();
+      return leftLimitSwitch.isLimitSwitchEnabled();
     } catch (NullPointerException e) {
       e.printStackTrace();
     }
@@ -160,7 +160,7 @@ public class Climb extends SubsystemBase {
    */
   public boolean getRightLimitSwitch() {
     try {
-      return !rightLimitSwitch.isLimitSwitchEnabled();
+      return rightLimitSwitch.isLimitSwitchEnabled();
     } catch (NullPointerException e) {
       e.printStackTrace();
     }
@@ -192,7 +192,7 @@ public class Climb extends SubsystemBase {
     if (runPid) {
       updatePID();
     }
-
+    
     // Set voltage to 0 and reset encoder if either module is going down and the limit switch trips 
     if (getLeftLimitSwitch() && leftMotorVoltage < 0) {
       leftMotorVoltage = 0;

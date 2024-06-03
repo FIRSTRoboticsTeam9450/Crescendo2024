@@ -43,7 +43,7 @@ public class Wrist extends SubsystemBase {
         motor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 300); // For follower motors
         motor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20); // change periodic rate for duty cycle encoders
 
-        motor.setIdleMode(IdleMode.kBrake);
+        motor.setIdleMode(IdleMode.kCoast);
 
         motor.burnFlash();
     }
