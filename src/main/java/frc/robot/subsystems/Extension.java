@@ -47,7 +47,7 @@ public class Extension extends SubsystemBase {
         motor.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 65535); // For Motor Position
 
         /* for extension 'reset' at hard lower limit */
-        lowerHardLimSwitch = motor.getForwardLimitSwitch(SparkLimitSwitch.Type.kNormallyOpen);
+        lowerHardLimSwitch = motor.getReverseLimitSwitch(SparkLimitSwitch.Type.kNormallyOpen);
 
         motor.setIdleMode(IdleMode.kBrake);
 
