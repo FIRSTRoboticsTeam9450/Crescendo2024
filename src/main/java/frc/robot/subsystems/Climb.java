@@ -155,7 +155,7 @@ public class Climb extends SubsystemBase {
    */
   public boolean getLeftLimitSwitch() {
     try {
-      return leftLimitSwitch.isLimitSwitchEnabled();
+      return leftLimitSwitch.isPressed();
     } catch (NullPointerException e) {
       e.printStackTrace();
     }
@@ -168,7 +168,7 @@ public class Climb extends SubsystemBase {
    */
   public boolean getRightLimitSwitch() {
     try {
-      return rightLimitSwitch.isLimitSwitchEnabled();
+      return rightLimitSwitch.isPressed();
     } catch (NullPointerException e) {
       e.printStackTrace();
     }
