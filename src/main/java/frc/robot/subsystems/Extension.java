@@ -31,7 +31,7 @@ public class Extension extends SubsystemBase {
     // removed robot state thing
 
     /* PIDConstants */
-    private PIDConstants pidConstantsDefault = new PIDConstants(1.5, 6);
+    private PIDConstants pidConstantsDefault = new PIDConstants(3.0, 6);
     private PIDConstants currentPIDConstants = pidConstantsDefault;
 
     private double currentPos;
@@ -96,8 +96,10 @@ public class Extension extends SubsystemBase {
      * This method should be called in the init of the {@link ExtensionCommand}.
      */
     public void runAndResetEncoder() {
-        runAndReset = true;
-        setVoltage(Constants.Extension.resetExtVoltage);
+        if (!lowerHardLimSwitch.isPressed()){
+            runAndReset = true;
+            setVoltage(Constants.Extension.resetExtVoltage);
+        }
     }
 
     public boolean finishedPID() {
@@ -120,7 +122,7 @@ public class Extension extends SubsystemBase {
     }
 
     private double convertToInches(double tics){
-        return tics * Constants.Extension.convertToInches;
+        return tics * Constants.Extension.convertToInches; // this needs an adjustment of about .95
     }
 
     public void updatePID() {
@@ -146,7 +148,7 @@ public class Extension extends SubsystemBase {
         Logger.recordOutput("Extension/target(tics)", this.target);
         
         /* Stops motor and resets encoder after limit switch reached */
-        if (lowerHardLimSwitch.isLimitSwitchEnabled() && runAndReset) {
+        if (lowerHardLimSwitch.isPressed() && runAndReset) {
             motor.stopMotor();
             encoderRel.setPosition(0);
             runAndReset = false;
