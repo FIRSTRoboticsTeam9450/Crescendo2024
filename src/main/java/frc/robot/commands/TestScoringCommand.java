@@ -42,11 +42,11 @@ public class TestScoringCommand extends Command {
     }
 
     if (armController.povDown().getAsBoolean()) {
-      score.ext.setTarget(score.ext.getTarget() - 0.02);
+      score.ext.setTargetInches(score.ext.getTargetInches() - 0.02);
     }
 
     if (armController.povUp().getAsBoolean()) {
-      score.ext.setTarget(score.ext.getTarget() + 0.02);
+      score.ext.setTargetInches(score.ext.getTargetInches() + 0.02);
     }
     /*
     if (Math.abs(armController.getLeftY()) > 0.08) score.getExtSub().setVoltage(Math.abs(armController.getLeftY()) * 10 > 3 ? -Math.signum(armController.getLeftY()) * 3 : -armController.getLeftY() * 10);

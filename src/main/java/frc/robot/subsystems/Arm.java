@@ -90,12 +90,12 @@ public class Arm extends SubsystemBase {
     }
 
     public void logMotorFrontStickyFaults() {
-        BitToStickyfaultString.getStickyFaultString(motorFront.getStickyFaults());
+        BitToStickyfaultString.getStickyFaultString(motorFront.getStickyFaults(), "Arm MotorFront");
         motorFront.clearFaults();
     }
 
     public void logMotorBackStickyFaults() {
-        BitToStickyfaultString.getStickyFaultString(motorBack.getStickyFaults());
+        BitToStickyfaultString.getStickyFaultString(motorBack.getStickyFaults(), "Arm MotorBack");
         motorBack.clearFaults();
     }
 

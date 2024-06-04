@@ -242,7 +242,7 @@ public class Scoring extends SubsystemBase {
         desiredExtensionLength = Constants.Extension.groundExtPosition;
 
         // Sets the desired targets for each child subsystem
-        ext.setTarget(desiredExtensionLength);
+        ext.setTargetInches(desiredExtensionLength);
         arm.setTarget(desiredArmAngle);
         wrist.setTarget(desiredWristAngle);
     }
@@ -253,7 +253,7 @@ public class Scoring extends SubsystemBase {
         desiredExtensionLength = Constants.Extension.storeExtPosition;
 
         // Sets the desired targets for each child subsystem
-        ext.setTarget(desiredExtensionLength);
+        ext.setTargetInches(desiredExtensionLength);
         arm.setTarget(desiredArmAngle);
         wrist.setTarget(desiredWristAngle);
     }
@@ -264,7 +264,7 @@ public class Scoring extends SubsystemBase {
         desiredExtensionLength = Constants.Extension.sourceExtPosition;
 
         // Sets the desired targets for each child subsystem
-        ext.setTarget(desiredExtensionLength);
+        ext.setTargetInches(desiredExtensionLength);
         arm.setTarget(desiredArmAngle);
         wrist.setTarget(desiredWristAngle);
     }
@@ -281,7 +281,7 @@ public class Scoring extends SubsystemBase {
         }
 
         // Sets the desired targets for each child subsystem
-        ext.setTarget(desiredExtensionLength);
+        ext.setTargetInches(desiredExtensionLength);
         arm.setTarget(desiredArmAngle);
         wrist.setTarget(desiredWristAngle);
     }
@@ -292,7 +292,7 @@ public class Scoring extends SubsystemBase {
         desiredExtensionLength = Constants.Extension.climbExtPosition;
 
         // Sets the desired targets for each child subsystem
-        ext.setTarget(desiredExtensionLength);
+        ext.setTargetInches(desiredExtensionLength);
         arm.setTarget(desiredArmAngle);
         wrist.setTarget(desiredWristAngle);
     }
@@ -303,7 +303,7 @@ public class Scoring extends SubsystemBase {
         desiredExtensionLength = Constants.Extension.trapExtPosition;
 
         // Sets the desired targets for each child subsystem
-        ext.setTarget(desiredExtensionLength);
+        ext.setTargetInches(desiredExtensionLength);
         arm.setTarget(desiredArmAngle);
         wrist.setTarget(desiredWristAngle);
     }
@@ -314,7 +314,7 @@ public class Scoring extends SubsystemBase {
         desiredExtensionLength = 0;
 
         // Sets the desired targets for each child subsystem
-        ext.setTarget(desiredExtensionLength);
+        ext.setTargetInches(desiredExtensionLength);
         arm.setTarget(desiredArmAngle);
         wrist.setTarget(desiredWristAngle);
     }
@@ -359,7 +359,7 @@ public class Scoring extends SubsystemBase {
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
-        limit();
+        // limit(); this is spamming the subsystems
         // SmartDashboard.putBoolean("Has Note", getIntakeState() == Constants.IntakeState.HAS_NOTE);
         // SmartDashboard.putBoolean("Using Laser", !getUseVelocityIntake());
 
@@ -448,7 +448,7 @@ public class Scoring extends SubsystemBase {
 
         // set target to the max it can be at the current angle if it is over max, and
         // otherwise, be regular
-        ext.setTarget(Math.max(Math.min(desiredExtensionLength, currentExtMax), currentExtMin));
+        ext.setTargetInches(Math.max(Math.min(desiredExtensionLength, currentExtMax), currentExtMin));
 
         double currentWristMax_ExtMax = limits[armIndex][WRISTMAXINDEX2];
         double currentWristMin_ExtMax = limits[armIndex][WRISTMININDEX2];

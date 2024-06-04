@@ -49,7 +49,7 @@ public class Wrist extends SubsystemBase {
     }
 
     public void logMotorStickyFaults() {
-        BitToStickyfaultString.getStickyFaultString(motor.getStickyFaults());
+        BitToStickyfaultString.getStickyFaultString(motor.getStickyFaults(), "Wrist");
         motor.clearFaults();
     }
 

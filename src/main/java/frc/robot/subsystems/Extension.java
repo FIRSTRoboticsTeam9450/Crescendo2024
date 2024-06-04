@@ -15,150 +15,156 @@ import frc.robot.BitToStickyfaultString;
 import frc.robot.Constants;
 
 public class Extension extends SubsystemBase {
-    /* Class Constants */
-    private double target = convertToTics(Constants.Extension.climbExtPosition);
-    public boolean runAndReset = true;
-    private boolean run = true;
+    // Class Constants
+    // target is stored in inches
+    private double targetInches = 0;
 
-    private CANSparkFlex motor = new CANSparkFlex(Constants.extensionId, MotorType.kBrushless);
+    // this only needs to run once after powerup
+    public boolean runAndReset = true;
+
+    // these are in ticks or rotations
+    private double currentPosInches;
+
+    // holds the previous output voltage 
+    // initialize to an illegal voltage so
+    // voltage is set on start
+    private double prevVoltage = -100;
     
-    /* Ext Rel Encoder */
+    // it is really the controller but we like to call it motor
+    private CANSparkFlex motor;
+    
+    // Relative Encoder
     private RelativeEncoder encoderRel;
 
-    /* Limit Switch */
+    // Limit Switch
     private SparkLimitSwitch lowerHardLimSwitch; 
 
-    // removed robot state thing
-
-    /* PIDConstants */
-    private PIDConstants pidConstantsDefault = new PIDConstants(3.0, 6);
-    private PIDConstants currentPIDConstants = pidConstantsDefault;
-
-    private double currentPos;
+    // PIDConstants for our simple PID
+    private PIDConstants currentPIDConstants = new PIDConstants(1.3, 6);
 
 
+    // constructor
     public Extension() {
+        motor = new CANSparkFlex(Constants.extensionId, MotorType.kBrushless);
         motor.restoreFactoryDefaults();
-
         motor.setSmartCurrentLimit(40);
 
-        /* Periodic frame rate */
+        // Periodic frame rate
         motor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 300); // For follower motors
         motor.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 65535); // For Motor Position
 
-        /* for extension 'reset' at hard lower limit */
+        // to protect extension mechanism if the code drives it too low
         lowerHardLimSwitch = motor.getReverseLimitSwitch(SparkLimitSwitch.Type.kNormallyOpen);
 
+        // the pid will hold it
         motor.setIdleMode(IdleMode.kCoast);
 
         motor.setInverted(true);
 
-        /* encoder :) */
+        // get initial value
         encoderRel = motor.getEncoder();
 
+        // this is probably not needed but it only runs once per powerup
         motor.burnFlash();
 
-        runAndResetEncoder();
+        runAndReset = true;
         
+        Logger.recordOutput("Extension/maxVoltage", currentPIDConstants.maxVoltage);
     }
 
     public void logMotorStickyFaults() {
-        BitToStickyfaultString.getStickyFaultString(motor.getStickyFaults());
+        BitToStickyfaultString.getStickyFaultString(motor.getStickyFaults(), "Extension");
         motor.clearFaults();
     }
 
-    private void setVoltage(double voltage) {
-        motor.setVoltage(voltage);
-        Logger.recordOutput("Extension/ExtVoltage", voltage);
+    int c=0;
+    // this is the only place the voltage is set on the motor
+    private void setVoltage(double newVoltage) {
 
-        SmartDashboard.putNumber("Ext Voltage", voltage);
+        if (newVoltage != prevVoltage){
+            prevVoltage = newVoltage;
 
-    }
-
-    /**
-     * @return the positive relative position of the extension (normally negative)
-     */
-    public double getRelPos() {
-
-        Logger.recordOutput("Extension/ExtPos", currentPos);
-        double inches = convertToInches(currentPos);
-        Logger.recordOutput("Extension/ExtInches", inches);
-
-        return inches;
-
-    }
-
-    /**
-     * Toggles a boolean so that
-     * the periodic method runs the motor toward the lowerHardLimit at 10 volts,
-     * then
-     * will stop the motor and reset encoder after limit switch reached.
-     * This method should be called in the init of the {@link ExtensionCommand}.
-     */
-    public void runAndResetEncoder() {
-        if (!lowerHardLimSwitch.isPressed()){
-            runAndReset = true;
-            setVoltage(Constants.Extension.resetExtVoltage);
+            if (Math.abs(newVoltage) > currentPIDConstants.maxVoltage){
+                newVoltage = currentPIDConstants.maxVoltage*Math.signum(newVoltage);
+            }
+            // this only called here
+            motor.setVoltage(newVoltage);
+            
+            Logger.recordOutput("Extension/ExtVoltage", newVoltage);
+            SmartDashboard.putNumber("Ext Voltage", newVoltage);
         }
     }
 
+    /**
+     * Only called once at the start of update
+     * @return the positive relative position of the extension (normally negative)
+     */
+    private void updateCurrentPosInches() {
+        double currentPos = encoderRel.getPosition();
+        currentPosInches = convertToInches(currentPos);
+
+        Logger.recordOutput("Extension/ExtPos", currentPos);
+        Logger.recordOutput("Extension/ExtInches", currentPosInches);
+    }
+
+    public double getRelPos(){
+        return currentPosInches;
+    }
+
+    // is the arm within .5 inches of target
     public boolean finishedPID() {
-        return Math.abs(target - (currentPos)) < 1.5 ? true : false;
+        return Math.abs(targetInches - currentPosInches) < .5 ? true : false;
     }
 
-    public void setTarget(double targetInches) {
-        double newTarget = Math.min(targetInches, Constants.Extension.extHardwareMax);
-        newTarget = Math.max(newTarget, Constants.Extension.extHardwareMin);
-        target = convertToTics(newTarget);
+    // this is how other classes tell us what to do
+    public void setTargetInches(double newTarget) {
+        double target = Math.min(newTarget, Constants.Extension.extHardwareMax);
+        targetInches = Math.max(target, Constants.Extension.extHardwareMin);
     }
 
-    public double getTarget() {
-        return convertToInches(target);
+    public double getTargetInches() {
+        return targetInches;
     }
 
-    private double convertToTics(double inches) {
-        return inches * (1/Constants.Extension.convertToInches);
-
-    }
+    // private double convertToTics(double inches) {
+    //     return inches / Constants.Extension.convertToInches;
+    // }
 
     private double convertToInches(double tics){
         return tics * Constants.Extension.convertToInches; // this needs an adjustment of about .95
     }
 
+    // targetInches and currentPosInches should already be set
+    // the pid works with tics
     public void updatePID() {
-        double error = target - convertToTics(getRelPos());
-        double pidValue = (error) * currentPIDConstants.kP;
-        double maxVoltage = currentPIDConstants.maxVoltage;
-        Logger.recordOutput("Extension/maxVoltage", maxVoltage);
-
-        if (Math.abs(pidValue) < maxVoltage) {
-            setVoltage(pidValue);
-        } else {
-            setVoltage(maxVoltage * Math.signum(pidValue));
-        }
+        setVoltage((targetInches - currentPosInches) * currentPIDConstants.kP);
     }
 
     @Override
     public void periodic() {
-        currentPos = encoderRel.getPosition();
-
+        
+        updateCurrentPosInches(); // must be called at start of update
         if (!runAndReset) {
             updatePID();
         }
-        Logger.recordOutput("Extension/target(tics)", this.target);
-        
         /* Stops motor and resets encoder after limit switch reached */
-        if (lowerHardLimSwitch.isPressed() && runAndReset) {
-            motor.stopMotor();
-            encoderRel.setPosition(0);
-            runAndReset = false;
-
+        else {
+            if (lowerHardLimSwitch.isPressed()) {
+                setVoltage(0);
+                encoderRel.setPosition(0);
+                runAndReset = false;
+            }
+            else {
+                setVoltage(Constants.Extension.resetExtVoltage);
+            }
         }
+        Logger.recordOutput("Extension/target(tics)", this.targetInches);
     }
 
+    // no longer used
     /** changes the boolean for whether or not to run ext...if run == false, then stopMotor() is called */
-    public void toggleExt(boolean run) {
-        this.run = run;
-    }
+    public void toggleExt(boolean run) {}
+
+    public void runAndResetEncoder(){}
 
 }

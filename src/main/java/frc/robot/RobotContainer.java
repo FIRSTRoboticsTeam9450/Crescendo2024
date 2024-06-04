@@ -77,6 +77,13 @@ public class RobotContainer {
     }
     drivetrain.registerTelemetry(logger::telemeterize);
 
+    driverController.povDown().onTrue(new InstantCommand(() -> 
+      score.ext.setTargetInches(score.ext.getTargetInches() - 2)));
+
+    driverController.povUp().onTrue(new InstantCommand(() -> 
+      score.ext.setTargetInches(score.ext.getTargetInches() + 2)));
+ 
+
 
     // ARM
     armController.leftTrigger().onTrue(new ScoringCommand(score, Constants.ScoringPos.AMP));
