@@ -56,7 +56,7 @@ public final class Constants
 
     // 12 is for gear ratio
     // might need to consider offset of 0.4
-    public static final double convertToInches = 1/0.331604;
+    public static final double convertToInches = 0.93;
 
   }
    public static class Arm{

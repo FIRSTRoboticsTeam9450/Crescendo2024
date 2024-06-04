@@ -31,7 +31,7 @@ public class Extension extends SubsystemBase {
     // removed robot state thing
 
     /* PIDConstants */
-    private PIDConstants pidConstantsDefault = new PIDConstants(3.0, 6);
+    private PIDConstants pidConstantsDefault = new PIDConstants(1.0, 6);
     private PIDConstants currentPIDConstants = pidConstantsDefault;
 
     private double currentPos;
@@ -150,7 +150,7 @@ public class Extension extends SubsystemBase {
         /* Stops motor and resets encoder after limit switch reached */
         if (lowerHardLimSwitch.isPressed() && runAndReset) {
             motor.stopMotor();
-            encoderRel.setPosition(0);
+            encoderRel.setPosition(-0.423);
             runAndReset = false;
 
         }
