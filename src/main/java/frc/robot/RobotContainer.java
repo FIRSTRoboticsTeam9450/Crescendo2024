@@ -5,7 +5,6 @@
 package frc.robot;
 
 import com.ctre.phoenix6.Utils;
-import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 
@@ -17,7 +16,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -83,14 +81,12 @@ public class RobotContainer {
     driverController.povUp().onTrue(new InstantCommand(() -> 
       score.ext.setTargetInches(score.ext.getTargetInches() + 2)));
  
-
-
     // ARM
     armController.leftTrigger().onTrue(new ScoringCommand(score, Constants.ScoringPos.AMP));
 
     // /* hold */
     armController.rightTrigger().onTrue(new SequentialCommandGroup(
-        new TimedIntakeSetPowerCommand(score, 10, 0.75),
+        new TimedIntakeSetPowerCommand(score, 10,0.75),
         new ScoringCommand(score, Constants.ScoringPos.STORE)));
     
     // source
@@ -146,9 +142,8 @@ public class RobotContainer {
   }
 
   public void logDriveStickyFaults() {
-    for (int i = 0; i < 3; i++) {
-      //BitToStickyfaultString.getStickyFaultString(drivetrain.getModule(i).getDriveMotor().getStickyFaultField()); // max 24 bit instead of 16 
-    }
+    climbSub.logMotorLeftStickyFaults();
+    climbSub.logMotorRightStickyFaults();
   }
 
   public Command getAutonomousCommand() {

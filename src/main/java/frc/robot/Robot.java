@@ -8,9 +8,7 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -24,7 +22,6 @@ public class Robot extends LoggedRobot {
   private RobotContainer m_robotContainer;
 
   private Timer disabledTimer;
-  private boolean runnable;
 
   @Override
   public void robotInit() {
@@ -61,10 +58,9 @@ public class Robot extends LoggedRobot {
   @Override
   public void disabledInit() {
     disabledTimer.restart();
-    runnable = true;
     m_robotContainer.score.logStickyFaults(); // Log sticky faults
-  
-
+    m_robotContainer.logDriveStickyFaults();
+    System.out.println("________"); // just a divider
   }
 
   @Override

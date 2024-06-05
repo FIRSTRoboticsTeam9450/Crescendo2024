@@ -18,6 +18,7 @@ import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.BitToStickyfaultString;
 import frc.robot.Constants;
 
 public class Scoring extends SubsystemBase {
@@ -30,7 +31,6 @@ public class Scoring extends SubsystemBase {
     private CANSparkFlex intake = new CANSparkFlex(Constants.intakeId, MotorType.kBrushless);
 
     /* Constants */
-    private static final int ANGLEINDEX = 0;
     private static final int EXTENSIONMININDEX = 1;
     private static final int WRISTMAXINDEX = 2;
     private static final int WRISTMININDEX = 3;
@@ -45,7 +45,6 @@ public class Scoring extends SubsystemBase {
     /* Ramping variables */
     // If you want to ramp intake
     private boolean rampDownBool;
-    private boolean noLaserCan;
     private boolean isIntaking;
     private boolean intakeAtSpeed;
 
@@ -116,7 +115,14 @@ public class Scoring extends SubsystemBase {
         arm.logMotorBackStickyFaults();
         arm.logMotorFrontStickyFaults();
         ext.logMotorStickyFaults();
+        logMotorStickyFaults();
     }
+
+    public void logMotorStickyFaults() {
+        BitToStickyfaultString.getStickyFaultString(intake.getStickyFaults(), "Intake Motor");
+        intake.clearFaults();
+    }
+
 
     /** @return true when the laser is dead or when we want to use velocity intake */
     public boolean useVelocityIntake() {
@@ -198,6 +204,7 @@ public class Scoring extends SubsystemBase {
         return this.stateOfIntake;
     }
 
+    @SuppressWarnings("unused")
     private Constants.ScoringPos getLastState() {
         return lastState;
     }

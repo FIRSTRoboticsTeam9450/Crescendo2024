@@ -4,10 +4,6 @@
 
 package frc.robot.subsystems;
 
-import java.lang.constant.ConstantDescs;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-
 import org.littletonrobotics.junction.Logger;
 
 import com.revrobotics.CANSparkBase.IdleMode;
@@ -40,7 +36,7 @@ public class Arm extends SubsystemBase {
 
     /* PID Constants */
     private PIDConstants pidConstantsClimb = new PIDConstants(40, 10);
-    private PIDConstants pidConstantsDefault = new PIDConstants(37.5, 8);
+    private PIDConstants pidConstantsDefault = new PIDConstants(30, 8); // (37.5, 8);
     private PIDConstants currentPIDConstants = pidConstantsDefault;
 
     Timer timer;
@@ -190,7 +186,5 @@ public class Arm extends SubsystemBase {
      /** changes the boolean for whether or not to run arm...if run == false, then stopMotor() is called */
      public void toggleArm(boolean run) {
         this.run = run;
-    }
-
-    
+    }   
 }

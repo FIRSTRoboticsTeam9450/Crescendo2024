@@ -6,8 +6,9 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj.DigitalInput;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.BitToStickyfaultString;
 import frc.robot.Constants;
 
 import com.revrobotics.CANSparkFlex;
@@ -71,6 +72,17 @@ public class Climb extends SubsystemBase {
   public void setLeftVoltage(double volts) {
     leftMotorVoltage = volts;
   }
+
+  public void logMotorLeftStickyFaults() {
+    BitToStickyfaultString.getStickyFaultString(leftClimb.getStickyFaults(), "Climb MotorLeft");
+    leftClimb.clearFaults();
+  }
+
+  public void logMotorRightStickyFaults() {
+    BitToStickyfaultString.getStickyFaultString(rightClimb.getStickyFaults(), "Climb MotorRight");
+    rightClimb.clearFaults();
+  }
+
 
   /**
    * Sets a specified voltage to the right climber motor
