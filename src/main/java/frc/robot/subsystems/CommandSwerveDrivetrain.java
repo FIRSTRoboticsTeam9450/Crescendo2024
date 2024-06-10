@@ -1,10 +1,13 @@
 package frc.robot.subsystems;
 
+import java.util.Map;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
+import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 
@@ -15,6 +18,8 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc.robot.BitToStickyfaultString;
+import frc.robot.Constants;
 
 /**
  * Class that extends the Phoenix SwerveDrivetrain class and implements
@@ -43,6 +48,95 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         if (Utils.isSimulation()) {
             startSimThread();
         }
+    }
+
+    /**
+     * Gets the sticky faults from the drive motors as an int (in bits), sending them to BitToStickyfaultString.java and clears the faults.
+     */
+    public void getStickyFaults() {
+        
+
+        int i = 0;
+        for (SwerveModule swerveModule : Modules) {
+            
+            BitToStickyfaultString.getStickyFaultString(getStickyFaults(swerveModule.getDriveMotor()),
+                                                        Constants.SwerveModuleMaps.driveMotorMap.get(i), 
+                                                        Constants.stickyFaultNames.stickyFaultStringCTRE);
+            BitToStickyfaultString.getStickyFaultString(getStickyFaults(swerveModule.getSteerMotor()),
+                                                        Constants.SwerveModuleMaps.steerMotorMap.get(i), 
+                                                        Constants.stickyFaultNames.stickyFaultStringCTRE);
+            i++;
+        }
+
+        
+        
+    }
+
+    /**for each individual motor, not meant to be called directly to get a sticky fault */
+    public int getStickyFaults(TalonFX motor) {
+        int stickyFaultBits = 0;
+        int shiftInt = 1;
+        
+        stickyFaultBits = motor.getStickyFault_BootDuringEnable().getValue() ? stickyFaultBits >> 1 : stickyFaultBits + shiftInt;
+        shiftInt = shiftInt >> 1;
+
+        stickyFaultBits = motor.getStickyFault_BridgeBrownout().getValue() ? stickyFaultBits >> 1 : stickyFaultBits + shiftInt;
+        shiftInt = shiftInt >> 1;
+
+        stickyFaultBits = motor.getStickyFault_DeviceTemp().getValue() ? stickyFaultBits >> 1 : stickyFaultBits + shiftInt;
+        shiftInt = shiftInt >> 1;
+
+        stickyFaultBits = motor.getStickyFault_ForwardHardLimit().getValue() ? stickyFaultBits >> 1 : stickyFaultBits + shiftInt;
+        shiftInt = shiftInt >> 1;
+
+        stickyFaultBits = motor.getStickyFault_ForwardSoftLimit().getValue() ? stickyFaultBits >> 1 : stickyFaultBits + shiftInt;
+        shiftInt = shiftInt >> 1;
+
+        stickyFaultBits = motor.getStickyFault_FusedSensorOutOfSync().getValue() ? stickyFaultBits >> 1 : stickyFaultBits + shiftInt;
+        shiftInt = shiftInt >> 1;
+
+        stickyFaultBits = motor.getStickyFault_Hardware().getValue() ? stickyFaultBits >> 1 : stickyFaultBits + shiftInt;
+        shiftInt = shiftInt >> 1;
+
+        stickyFaultBits = motor.getStickyFault_MissingDifferentialFX().getValue() ? stickyFaultBits >> 1 : stickyFaultBits + shiftInt;
+        shiftInt = shiftInt >> 1;
+        
+        stickyFaultBits = motor.getStickyFault_OverSupplyV().getValue() ? stickyFaultBits >> 1 : stickyFaultBits + shiftInt;
+        shiftInt = shiftInt >> 1;
+
+        stickyFaultBits = motor.getStickyFault_ProcTemp().getValue() ? stickyFaultBits >> 1 : stickyFaultBits + shiftInt;
+        shiftInt = shiftInt >> 1;
+
+        stickyFaultBits = motor.getStickyFault_RemoteSensorDataInvalid().getValue() ? stickyFaultBits >> 1 : stickyFaultBits + shiftInt;
+        shiftInt = shiftInt >> 1;
+
+        stickyFaultBits = motor.getStickyFault_RemoteSensorPosOverflow().getValue() ? stickyFaultBits >> 1 : stickyFaultBits + shiftInt;
+        shiftInt = shiftInt >> 1;
+
+        stickyFaultBits = motor.getStickyFault_RemoteSensorReset().getValue() ? stickyFaultBits >> 1 : stickyFaultBits + shiftInt;
+        shiftInt = shiftInt >> 1;
+
+        stickyFaultBits = motor.getStickyFault_ReverseHardLimit().getValue() ? stickyFaultBits >> 1 : stickyFaultBits + shiftInt;
+        shiftInt = shiftInt >> 1;
+
+        stickyFaultBits = motor.getStickyFault_ReverseSoftLimit().getValue() ? stickyFaultBits >> 1 : stickyFaultBits + shiftInt;
+        shiftInt = shiftInt >> 1;
+
+        stickyFaultBits = motor.getStickyFault_StatorCurrLimit().getValue() ? stickyFaultBits >> 1 : stickyFaultBits + shiftInt;
+        shiftInt = shiftInt >> 1;
+
+        stickyFaultBits = motor.getStickyFault_SupplyCurrLimit().getValue() ? stickyFaultBits >> 1 : stickyFaultBits + shiftInt;
+        shiftInt = shiftInt >> 1;
+
+        stickyFaultBits = motor.getStickyFault_Undervoltage().getValue() ? stickyFaultBits >> 1 : stickyFaultBits + shiftInt;
+        shiftInt = shiftInt >> 1;
+
+        stickyFaultBits = motor.getStickyFault_UnstableSupplyV().getValue() ? stickyFaultBits >> 1 : stickyFaultBits + shiftInt;
+        shiftInt = shiftInt >> 1;
+
+        motor.clearStickyFaults();
+
+        return stickyFaultBits;
     }
 
     public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {

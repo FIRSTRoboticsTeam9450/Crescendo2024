@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -39,6 +42,36 @@ public final class Constants
     public static final double TURN_CONSTANT = 0.75;
   }
 
+  public static class stickyFaultNames {
+    public static String[] stickyFaultStringRevMotor = {"Brownout", "Over Current", "Watchdog Reset", "Motor Type Fault", 
+                             "Sensor Fault", "Stall", "EEPROM Fault", "CAN TX Fault", "CAN RX Fault", 
+                             "Has Reset", "Gate Driver Fault", "Other Fault", "Soft Limit Forward", 
+                             "Soft Limit Reverse", "Hard Limit Forward", "Hard Limit Reverse"};
+    public static String[] stickyFaultStringRevPDH = {"Brownout", "CAN Warning", "Hardware", "CAN Bus Off", 
+                             "Firmware", "Has Reset", "CSA Channel Invalid"};
+
+    public static String[] stickyFaultStringCTRE = {"Boot During Enable", "Bridge Brownout", "Device Temp", "Forward Hard Limit", 
+                             "Forward Soft Limit", "Fused Sensor Out Of Sync", "Hardware", "Missing Differential FX", "Over Supply V", 
+                             "Proc Temp", "Remote Sensor Data Invalid", "Remote Sensor Pos Overflow", "Remote Sensor Reset", 
+                             "Reverse Hard Limit", "Reverse Soft Limit", "Stator Curr Limit", "Supply Curr Limit", "Under Voltage", "Unstable Supply V"};
+  }
+
+  public static class SwerveModuleMaps {
+    public static Map<Integer, String> driveMotorMap = new HashMap<Integer, String>() {{ 
+      put(0, "Front Left Drive Motor"); 
+      put(1, "Front Right Drive Motor");
+      put(2, "Back Left Drive Motor"); 
+      put(3, "Back Right Drive Motor");
+    }};
+
+    public static Map<Integer, String> steerMotorMap = new HashMap<Integer, String>() {{ 
+      put(0, "Front Left Angle Motor"); 
+      put(1, "Front Right Angle Motor");
+      put(2, "Back Left Angle Motor"); 
+      put(3, "Back Right Angle Motor");
+    }};
+  }
+
   public static class Extension{
     // in inches
     public static final double groundExtPosition = 5;
@@ -71,13 +104,13 @@ public final class Constants
     public static final double tempArmPosition = 80;
 
     /**converts from degrees to rotations */
-    public static final double RotateConversionFactor = (1.0/360);
-    public static final double AbsEncoderShift = 0.1177;
+    public static final double RotateConversionFactor = (0.367 / 180.0); // old: 1 / 360
+    public static final double AbsEncoderShift = 0.41; // old: 0.1177
     // 180 -> 0.55 abs encoder
     // 90 -> 0.2946 abs encoder
-
-    public static final double armHardwareMax = 225;
-    public static final double armHardwareMin = 55;
+    // 0.52
+    public static final double armHardwareMax = 225; //0.9053 (raw abs encoder)
+    public static final double armHardwareMin = 55; //0.41 (raw abs encoder)
   }
    public static class Wrist{
     // In degrees
@@ -121,7 +154,7 @@ public final class Constants
   }
 
   //-----------------------------------------------------------------
-  
+
   public static final int flDriveId = 1; //1
   public static final int flTurnId = 2; //2
   public static final int flAbsoluteId = 3;
@@ -157,6 +190,9 @@ public final class Constants
   public static final int rClimberId = 31;
   
   public static final int laserId = 32;
+
+    public static final int pdhId = 35; //1
+
 
   public static final double baseWidth = 0.4953;
   public static final double baseLength = 0.6477;

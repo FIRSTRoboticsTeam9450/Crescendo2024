@@ -141,9 +141,13 @@ public class RobotContainer {
     configureBindings();
   }
 
-  public void logDriveStickyFaults() {
+  public void logClimbStickyFaults() {
     climbSub.logMotorLeftStickyFaults();
     climbSub.logMotorRightStickyFaults();
+  }
+
+  public void logDriveStickyFaults() {
+    drivetrain.getStickyFaults();
   }
 
   public Command getAutonomousCommand() {

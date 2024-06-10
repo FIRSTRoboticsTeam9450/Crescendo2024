@@ -8,16 +8,20 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.inputs.LoggedPowerDistribution;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
+  public PowerDistribution pdh = new PowerDistribution(35, ModuleType.kRev); // id 35, type is rev
 
   private RobotContainer m_robotContainer;
 
@@ -58,9 +62,22 @@ public class Robot extends LoggedRobot {
   @Override
   public void disabledInit() {
     disabledTimer.restart();
+    
+    System.out.println("\n________"); // just a divider
+  
     m_robotContainer.score.logStickyFaults(); // Log sticky faults
+    m_robotContainer.logClimbStickyFaults();
     m_robotContainer.logDriveStickyFaults();
-    System.out.println("________"); // just a divider
+    
+    
+    System.out.println("________\n"); // just a divider
+  
+  }
+
+  public void logPDHStickyFaults() {
+    BitToStickyfaultString.getStickyFaultString((int) LoggedPowerDistribution.getInstance().getInputs().stickyFaults, "PDH", Constants.stickyFaultNames.stickyFaultStringRevPDH);
+    pdh.clearStickyFaults();
+    pdh.getStickyFaults();
   }
 
   @Override

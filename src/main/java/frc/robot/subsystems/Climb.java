@@ -74,12 +74,12 @@ public class Climb extends SubsystemBase {
   }
 
   public void logMotorLeftStickyFaults() {
-    BitToStickyfaultString.getStickyFaultString(leftClimb.getStickyFaults(), "Climb MotorLeft");
+    BitToStickyfaultString.getStickyFaultStringRevMotor(leftClimb.getStickyFaults(), "Climb MotorLeft");
     leftClimb.clearFaults();
   }
 
   public void logMotorRightStickyFaults() {
-    BitToStickyfaultString.getStickyFaultString(rightClimb.getStickyFaults(), "Climb MotorRight");
+    BitToStickyfaultString.getStickyFaultStringRevMotor(rightClimb.getStickyFaults(), "Climb MotorRight");
     rightClimb.clearFaults();
   }
 

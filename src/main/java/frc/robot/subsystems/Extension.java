@@ -73,7 +73,7 @@ public class Extension extends SubsystemBase {
     }
 
     public void logMotorStickyFaults() {
-        BitToStickyfaultString.getStickyFaultString(motor.getStickyFaults(), "Extension");
+        BitToStickyfaultString.getStickyFaultStringRevMotor(motor.getStickyFaults(), "Extension");
         motor.clearFaults();
     }
 

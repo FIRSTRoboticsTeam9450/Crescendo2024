@@ -115,11 +115,11 @@ public class Scoring extends SubsystemBase {
         arm.logMotorBackStickyFaults();
         arm.logMotorFrontStickyFaults();
         ext.logMotorStickyFaults();
-        logMotorStickyFaults();
+        logMotorStickyFaults(); // intake
     }
 
     public void logMotorStickyFaults() {
-        BitToStickyfaultString.getStickyFaultString(intake.getStickyFaults(), "Intake Motor");
+        BitToStickyfaultString.getStickyFaultStringRevMotor(intake.getStickyFaults(), "Intake Motor");
         intake.clearFaults();
     }
 
