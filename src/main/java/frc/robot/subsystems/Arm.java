@@ -21,7 +21,8 @@ import frc.robot.Constants;
 public class Arm extends SubsystemBase {
     private double target = convertToRot(Constants.Arm.climbArmPosition);
     private double currentAbsPos;
-    private boolean run = true;                                                                                                            
+    private boolean run = true;     
+    private boolean ffEnable = false;                                                                                                       
 
     /* Motors */
     private CANSparkFlex motorFront = new CANSparkFlex(Constants.armFrontId, MotorType.kBrushless);
@@ -163,8 +164,14 @@ public class Arm extends SubsystemBase {
         double rampMultiplier = currentTime < rampTime ? currentTime / rampTime : 1;
         outputVoltage *= rampMultiplier;
 
-        setVoltage(outputVoltage);
+        setVoltage(ffEnable ? outputVoltage - 0.075 : outputVoltage);
+
     }
+
+    public void setFFEnable(boolean enable) {
+        ffEnable = enable;
+    }
+
 
     @Override
     public void periodic() {

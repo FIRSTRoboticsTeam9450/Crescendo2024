@@ -241,6 +241,11 @@ public class Scoring extends SubsystemBase {
         return intake.getEncoder().getVelocity();
     }
 
+    public void setArmFFEnable (boolean enable) {
+        arm.setFFEnable(enable);
+
+    }
+
     /* Movement Logic */
 
     private void goToGround() {

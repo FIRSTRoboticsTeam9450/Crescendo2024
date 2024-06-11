@@ -23,6 +23,8 @@ public class ScoringCommand extends Command{
     public void initialize() {
         timer.restart();
         finished = false;
+        score.setArmFFEnable(false);
+
         if (scoringPos.equals(Constants.ScoringPos.GROUND) || scoringPos.equals(Constants.ScoringPos.STORE) && score.getArmAngle() < Constants.Arm.tempArmPosition) {
             score.goToPosition(Constants.ScoringPos.TEMP);
         }
@@ -33,8 +35,13 @@ public class ScoringCommand extends Command{
     public void execute() {
         if (score.isFinished() || timer.get() > 2) {
             score.goToPosition(scoringPos);
+            if (scoringPos.equals(Constants.ScoringPos.STORE)) {
+                score.setArmFFEnable(true);
+            }
+
             finished = true;
         } 
+        
         
     }
     
