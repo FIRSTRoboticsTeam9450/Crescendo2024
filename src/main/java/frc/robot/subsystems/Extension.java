@@ -40,7 +40,7 @@ public class Extension extends SubsystemBase {
     private SparkLimitSwitch lowerHardLimSwitch; 
 
     // PIDConstants for our simple PID
-    private PIDConstants currentPIDConstants = new PIDConstants(1.3, 6);
+    private PIDConstants currentPIDConstants = new PIDConstants(1, 6);
 
 
     // constructor
@@ -113,7 +113,7 @@ public class Extension extends SubsystemBase {
 
     // is the arm within .5 inches of target
     public boolean finishedPID() {
-        return Math.abs(targetInches - currentPosInches) < .5 ? true : false;
+        return Math.abs(targetInches - currentPosInches) < .7 ? true : false;
     }
 
     // this is how other classes tell us what to do

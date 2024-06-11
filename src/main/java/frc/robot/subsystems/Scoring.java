@@ -366,7 +366,7 @@ public class Scoring extends SubsystemBase {
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
-        // limit(); this is spamming the subsystems
+        limit(); //this is spamming the subsystems
         // SmartDashboard.putBoolean("Has Note", getIntakeState() == Constants.IntakeState.HAS_NOTE);
         // SmartDashboard.putBoolean("Using Laser", !getUseVelocityIntake());
 

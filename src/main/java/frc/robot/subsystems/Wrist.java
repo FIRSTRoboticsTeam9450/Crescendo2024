@@ -97,7 +97,7 @@ public class Wrist extends SubsystemBase {
     }
 
     public boolean finishedPID() {
-        return Math.abs(target - currentAbsPos) < 0.03 ? true : false;
+        return Math.abs(target - currentAbsPos) < 0.06 ? true : false;
     }
 
     private void setVoltage(double voltage) {
