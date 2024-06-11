@@ -104,8 +104,11 @@ public final class Constants
     public static final double tempArmPosition = 80;
 
     /**converts from degrees to rotations */
-    public static final double RotateConversionFactor = (0.367 / 180.0); // old: 1 / 360
-    public static final double AbsEncoderShift = 0.41; // old: 0.1177
+    // 360 comes from the 1 to 1 gear between encoder and arm
+    // .277 comes from the encoder reading at 180 degrees (straight up) .777 - 180/360 (.5)
+
+    public static final double RotateConversionFactor = (1.0/360.0); // see comment above for derivation
+    public static final double AbsEncoderShift = .277;           // see comment above for derivation
     // 180 -> 0.55 abs encoder
     // 90 -> 0.2946 abs encoder
     // 0.52

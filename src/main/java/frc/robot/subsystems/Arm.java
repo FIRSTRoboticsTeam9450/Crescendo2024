@@ -85,6 +85,7 @@ public class Arm extends SubsystemBase {
               
     }
 
+
     public void logMotorFrontStickyFaults() {
         BitToStickyfaultString.getStickyFaultStringRevMotor(motorFront.getStickyFaults(), "Arm MotorFront");
         motorFront.clearFaults();
@@ -102,14 +103,14 @@ public class Arm extends SubsystemBase {
         motorFront.setVoltage(voltage);
         motorBack.setVoltage(voltage);
     }
-
     private double convertToRot(double angle) {
-        return angle * Constants.Arm.RotateConversionFactor + Constants.Arm.AbsEncoderShift;
-
+        // angle/360.0+.277
+        return angle * Constants.Arm.RotateConversionFactor + Constants.Arm.AbsEncoderShift; 
     }
 
     private double convertToDeg(double rot){
-        return (1/Constants.Arm.RotateConversionFactor) * (rot - Constants.Arm.AbsEncoderShift);
+        // (rot-.277)*360
+        return (rot - Constants.Arm.AbsEncoderShift)/Constants.Arm.RotateConversionFactor;
     }
 
     /** converts to and sets the position target for the arm */
