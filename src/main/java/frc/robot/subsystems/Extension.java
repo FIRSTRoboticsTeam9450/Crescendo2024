@@ -165,6 +165,8 @@ public class Extension extends SubsystemBase {
     /** changes the boolean for whether or not to run ext...if run == false, then stopMotor() is called */
     public void toggleExt(boolean run) {}
 
-    public void runAndResetEncoder(){}
+    public void runAndResetEncoder(){
+        runAndReset = true;
+    }
 
 }

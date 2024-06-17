@@ -89,7 +89,7 @@ public final class Constants
 
     // 12 is for gear ratio
     // might need to consider offset of 0.4
-    public static final double convertToInches = .93;
+    public static final double convertToInches = 0.523;
 
   }
    public static class Arm{
@@ -108,7 +108,7 @@ public final class Constants
     // .277 comes from the encoder reading at 180 degrees (straight up) .777 - 180/360 (.5)
 
     public static final double RotateConversionFactor = (1.0/360.0); // see comment above for derivation
-    public static final double AbsEncoderShift = .277;           // see comment above for derivation
+    public static final double AbsEncoderShift = 0;           // see comment above for derivation
     // 180 -> 0.55 abs encoder
     // 90 -> 0.2946 abs encoder
     // 0.52

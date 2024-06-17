@@ -139,6 +139,7 @@ public class Wrist extends SubsystemBase {
         }
 
         Logger.recordOutput("Wrist/CurrentPos", currentAbsPos);
+        Logger.recordOutput("Wrist/ReachedTarget", finishedPID());
         
     }
 
