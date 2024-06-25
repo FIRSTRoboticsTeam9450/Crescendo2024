@@ -40,7 +40,7 @@ public class Extension extends SubsystemBase {
     private SparkLimitSwitch lowerHardLimSwitch; 
 
     // PIDConstants for our simple PID
-    private PIDConstants currentPIDConstants = new PIDConstants(1, 6);
+    private PIDConstants currentPIDConstants = new PIDConstants(1, 10);
 
 
     // constructor
@@ -159,6 +159,7 @@ public class Extension extends SubsystemBase {
             }
         }
         Logger.recordOutput("Extension/target(tics)", this.targetInches);
+        Logger.recordOutput("Extension/ReachedTarget", finishedPID());
     }
 
     // no longer used

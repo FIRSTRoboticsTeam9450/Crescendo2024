@@ -74,7 +74,7 @@ public final class Constants
 
   public static class Extension{
     // in inches
-    public static final double groundExtPosition = 5;
+    public static final double groundExtPosition = 6.5;
     public static final double storeExtPosition = 0;
     public static final double sourceExtPosition = 1.5;
     public static final double ampExtPositionFromSource = 8.5;
@@ -94,7 +94,7 @@ public final class Constants
   }
    public static class Arm{
     // In degrees
-    public static final double groundArmPosition = 72;
+    public static final double groundArmPosition = 76;
     public static final double storeArmPosition = 55;
     public static final double sourceArmPosition = 135;
     public static final double ampArmPositionFromSource = 200;
@@ -118,17 +118,17 @@ public final class Constants
    public static class Wrist{
     // In degrees
     public static final double groundWristPosition = 130;
-    public static final double storeWristPosition = 270;
+    public static final double storeWristPosition = 265;
     public static final double sourceWristPosition = 180;
     public static final double ampWristPositionFromSource = 250;
     public static final double ampWristPositionFromGround = 240;
     public static final double trapWristPosition = 240;
     public static final double climbWristPosition = 180;
     
-    public static final double gearRatio = 1.2/1;
+    public static final double gearRatio = 1;
     /**converts from degrees to rotations */
     public static final double RotateConversionFactor = -(gearRatio/360);
-    public static final double AbsEncoderShift = -1.171;
+    public static final double AbsEncoderShift = -0.9944;
 
     public static final double wristHardwareMax = 270;
     public static final double wristHardwareMin = 90;
@@ -194,7 +194,7 @@ public final class Constants
   
   public static final int laserId = 32;
 
-    public static final int pdhId = 35; //1
+    public static final int pdhId = 35; //1 // 30.5 for 185
 
 
   public static final double baseWidth = 0.4953;

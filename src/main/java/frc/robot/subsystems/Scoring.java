@@ -82,7 +82,7 @@ public class Scoring extends SubsystemBase {
         intake.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 50); // Duty Cycle Absolute Encoder Position and Abs angle
         intake.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 65535); // Duty Cycle Absolute Encoder Velocity +
                                                                       // Frequency
-
+        intake.setInverted(false);
         intake.burnFlash();
 
         intake.setIdleMode(IdleMode.kBrake);
@@ -147,6 +147,10 @@ public class Scoring extends SubsystemBase {
                 Logger.recordOutput("Laser/isDead", false);
                 laserIsDead = false;
                 return medianDistance.calculate(measurement.distance_mm);
+            } else {
+                Logger.recordOutput("Laser/isDead", true);
+
+                laserIsDead = true;
             }
         } catch (Exception e) {
             Logger.recordOutput("Laser/isDead", true);
@@ -159,8 +163,9 @@ public class Scoring extends SubsystemBase {
 
     // when outtaking set state to no note
     public void setIntakeVoltage(double voltage) {
-        if (voltage < 0 && getUseVelocityIntake()) {
+        if (voltage < 0 && useVelocityIntake()) {
             setIntakeState(Constants.IntakeState.NO_NOTE);
+            System.out.println("JKSDGLSDHGLSDJFHSDLKJFHSDLKJFH");
         }
         intake.setVoltage(-voltage);
         SmartDashboard.putNumber("Intake Voltage", -voltage);
@@ -373,12 +378,14 @@ public class Scoring extends SubsystemBase {
         // This method will be called once per scheduler run
         limit(); //this is spamming the subsystems
         // SmartDashboard.putBoolean("Has Note", getIntakeState() == Constants.IntakeState.HAS_NOTE);
-        // SmartDashboard.putBoolean("Using Laser", !getUseVelocityIntake());
+        SmartDashboard.putBoolean("Using Laser", !getUseVelocityIntake());
 
         // Updates the state for whether the intake took a note or not
         Logger.recordOutput("Last Intake", stateRobotWhenIntaking);
         Logger.recordOutput("Intake State", stateOfIntake);
         Logger.recordOutput("Intake/Laser Dist", getLaserDistance());
+        Logger.recordOutput("Intake/speed", intake.getEncoder().getVelocity());
+        Logger.recordOutput("Finished Moving", isFinished());
 
         double armPosRads = Math.toRadians(arm.getAbsPos());
         // double wristPosRads = Math.toRadians(wrist.getAbsPos());
@@ -387,13 +394,15 @@ public class Scoring extends SubsystemBase {
 
         Logger.recordOutput("Robot Height", (17 + ext.getRelPos()) * Math.cos(armPosRads));
 
+        Logger.recordOutput("Has Note", getIntakeState() == Constants.IntakeState.HAS_NOTE);
+
         if (useVelocityIntake()) {
-            if (isIntaking && getIntakeVelocity() < -2500 && getIntakeState() != Constants.IntakeState.HAS_NOTE) {
+            if (isIntaking && getIntakeVelocity() < -3 && getIntakeState() != Constants.IntakeState.HAS_NOTE) {
                 intakeAtSpeed = true;
             }
             if (intakeAtSpeed) {
                 isIntaking = false;
-                if (getIntakeVelocity() > -700) {
+                if (getIntakeVelocity() > -2.5) {
                     // intook a note
                     setIntakeState(Constants.IntakeState.HAS_NOTE);
                     setStateRobotWhenIntaking(getState());
@@ -492,22 +501,22 @@ public class Scoring extends SubsystemBase {
             { 62, 0, 270, 90, 1.023, 270, 90 },
             { 63, 0, 270, 90, 1.116, 270, 90 },
             { 64, 0, 270, 90, 1.209, 270, 90 },
-            { 65, 0, 270, 90, 5.6, 270, 90 },
-            { 66, 0, 270, 90, 5.6, 270, 90 },
-            { 67, 0, 270, 90, 5.6, 270, 90 },
-            { 68, 0, 270, 90, 5.6, 270, 90 },
-            { 69, 0, 270, 90, 5.6, 270, 90 },
-            { 70, 0, 270, 90, 5.6, 270, 90 },
-            { 71, 0, 270, 90, 5.6, 270, 90 },
-            { 72, 0, 270, 90, 5.6, 270, 90 },
-            { 73, 0, 270, 90, 5.6, 270, 90 },
-            { 74, 0, 270, 90, 5.6, 270, 90 },
-            { 75, 0, 270, 90, 5.6, 270, 90 },
-            { 76, 0, 270, 90, 5.6, 270, 90 },
-            { 77, 0, 270, 90, 5.6, 270, 90 },
-            { 78, 0, 270, 90, 5.6, 270, 90 },
-            { 79, 0, 270, 90, 5.6, 270, 90 },
-            { 80, 0, 270, 90, 5.6, 270, 90 },
+            { 65, 0, 270, 90, 8, 270, 90 },
+            { 66, 0, 270, 90, 8, 270, 90 },
+            { 67, 0, 270, 90, 8, 270, 90 },
+            { 68, 0, 270, 90, 8, 270, 90 },
+            { 69, 0, 270, 90, 8, 270, 90 },
+            { 70, 0, 270, 90, 8, 270, 90 },
+            { 71, 0, 270, 90, 8, 270, 90 },
+            { 72, 0, 270, 90, 8, 270, 90 },
+            { 73, 0, 270, 90, 8, 270, 90 },
+            { 74, 0, 270, 90, 8, 270, 90 },
+            { 75, 0, 270, 90, 8, 270, 90 },
+            { 76, 0, 270, 90, 8, 270, 90 },
+            { 77, 0, 270, 90, 8, 270, 90 },
+            { 78, 0, 270, 90, 8, 270, 90 },
+            { 79, 0, 270, 90, 8, 270, 90 },
+            { 80, 0, 270, 90, 8, 270, 90 },
             { 81, 0, 270, 90, 2.79, 270, 90 },
             { 82, 0, 270, 90, 2.883, 270, 90 },
             { 83, 0, 270, 90, 2.976, 270, 90 },

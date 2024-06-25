@@ -37,7 +37,7 @@ public class Arm extends SubsystemBase {
 
     /* PID Constants */
     private PIDConstants pidConstantsClimb = new PIDConstants(40, 10);
-    private PIDConstants pidConstantsDefault = new PIDConstants(30, 6); // (37.5, 8);
+    private PIDConstants pidConstantsDefault = new PIDConstants(30, 8); // (37.5, 8);
     private PIDConstants currentPIDConstants = pidConstantsDefault;
 
     Timer timer;
@@ -189,6 +189,7 @@ public class Arm extends SubsystemBase {
         }
 
         //SmartDashboard.putNumber("Arm Setpoint", target);
+        Logger.recordOutput("Arm/ReachedTarget", finishedPID());
     }
 
      /** changes the boolean for whether or not to run arm...if run == false, then stopMotor() is called */
